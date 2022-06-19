@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoTest.CodeGenerator\AutoTest.CodeGenerator.csproj" />
+    <ProjectReference Include="..\AutoTest.CodeInterpreter\AutoTest.CodeInterpreter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generators\NUnit\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
