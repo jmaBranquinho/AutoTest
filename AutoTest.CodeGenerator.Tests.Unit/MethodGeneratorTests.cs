@@ -26,7 +26,7 @@ public void UnitTestMethod()
                 .AddBody(string.Empty)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ public void UnitTestMethod()
                 .AddBody(string.Empty)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ public void UnitTestMethod()
                 .AddBody(string.Empty)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ public void UnitTestMethod(int param1)
                 .AddBody(string.Empty)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ public void UnitTestMethod(int param1, SomeObj param2)
                 .AddBody(string.Empty)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
         [Fact]
@@ -136,23 +136,8 @@ public void UnitTestMethod()
                 .AddBody(methodBody)
                 .Generate();
 
-            AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method);
         }
 
-        // TODO: extract to some helper class
-        private void AssertSimilarStrings(string expected, string actual)
-        {
-            expected = ReOrderReformatSpaces(expected);
-            actual = ReOrderReformatSpaces(actual);
-
-            actual.Should().BeEquivalentTo(expected);
-        }
-
-        // TODO: extract to some helper class
-        private string ReOrderReformatSpaces(string text) => text
-            .Replace("    ", "\t")
-            .Replace("\r\n\t", "\t\r\n")
-            .Replace("\r\n\t\r\n", "\t\r\n\r\n")
-            .Replace("\t\r\n\t", "\t\t\r\n");
     }
 }

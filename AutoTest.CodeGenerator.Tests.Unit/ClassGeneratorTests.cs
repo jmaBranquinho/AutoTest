@@ -25,10 +25,7 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -49,10 +46,7 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -75,10 +69,7 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -97,10 +88,7 @@ public class UnitTestClass
                 .WithAnnotation("[SomeAnnotation]")
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -121,10 +109,7 @@ public class UnitTestClass
                 .WithAnnotations(new List<string> { "[SomeAnnotation1]", "[SomeAnnotation2]", "[SomeAnnotation3]" })
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -148,10 +133,7 @@ public class UnitTestClass
                 .WithDIParameter("param1", "int")
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -178,10 +160,7 @@ public class UnitTestClass
                 .WithDIParameter("param2", "SomeObj")
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -202,10 +181,7 @@ public class UnitTestClass
                 .WithParameter("param1", "int")
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -228,10 +204,7 @@ public class UnitTestClass
                 .WithParameter("param2", "SomeObj")
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -260,10 +233,7 @@ public class UnitTestClass
                 .WithMethod(method)
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
 
         [Fact]
@@ -298,17 +268,7 @@ public class UnitTestClass
                 .WithMethod(method)
                 .Generate();
 
-            expected = ReOrderReformatSpaces(expected);
-            @class = ReOrderReformatSpaces(@class);
-
-            @class.Should().BeEquivalentTo(expected);
+            UnitTestHelper.AssertSimilarStrings(expected, @class);
         }
-
-        // TODO: extract to some helper class
-        private string ReOrderReformatSpaces(string text) => text
-            .Replace("    ", "\t")
-            .Replace("\r\n\t", "\t\r\n")
-            .Replace("\r\n\t\r\n", "\t\r\n\r\n")
-            .Replace("\t\r\n\t", "\t\t\r\n");
     }
 }
