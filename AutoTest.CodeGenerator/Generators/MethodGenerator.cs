@@ -3,6 +3,8 @@ using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
+    // TODO: add alternative to change accessability
+    // TODO: add alternative to change return type
     public class MethodGenerator :
             IMethodNameSelectionStage,
             IMethodAnnotationSelectionStage,
@@ -61,7 +63,7 @@ namespace AutoTest.CodeGenerator.Generators
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(Environment.NewLine, _annotations);
-            stringBuilder.Append(Environment.NewLine);
+            stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
             stringBuilder.Append($"public void {_name}(");
             stringBuilder.AppendJoin(", ", AddParameters());
             stringBuilder.Append(")");

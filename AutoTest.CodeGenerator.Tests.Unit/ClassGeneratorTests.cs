@@ -304,6 +304,7 @@ public class UnitTestClass
             @class.Should().BeEquivalentTo(expected);
         }
 
+        // TODO: extract to some helper class
         private string ReOrderReformatSpaces(string text) => text
             .Replace("    ", "\t")
             .Replace("\r\n\t", "\t\r\n")

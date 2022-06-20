@@ -3,6 +3,7 @@ using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
+    // TODO: add alternative to change accessability
     // TODO: add alternatives for when usings, methods, etc. are not needed (e.g. WithNoAnnotations())
     public class ClassGenerator :
             IClassNameSelectionStage,
