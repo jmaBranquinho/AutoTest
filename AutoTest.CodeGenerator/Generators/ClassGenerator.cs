@@ -3,7 +3,6 @@ using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
-    // TODO: remove ctor if not needed
     // TODO: add alternatives for when usings, methods, etc. are not needed (e.g. WithNoAnnotations())
     public class ClassGenerator :
             IClassNameSelectionStage,
@@ -80,7 +79,11 @@ namespace AutoTest.CodeGenerator.Generators
         {
             var stringBuilder = new StringBuilder();
 
-            var body = new List<string> { AddCtor() };
+            var body = new List<string>();
+            if (IsCtorRequired())
+            {
+                body.Add(AddCtor());
+            }
             body.AddRange(_methods);
 
             stringBuilder
@@ -125,6 +128,9 @@ namespace AutoTest.CodeGenerator.Generators
                 .ToString()
                 .AddNewContext(string.Join(Environment.NewLine, body));
         }
+
+        // TODO: missing some more scenarios
+        private bool IsCtorRequired() => _parameters.Any(p => p.IsInjected);
     }
 
     public interface IClassNameSelectionStage

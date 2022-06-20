@@ -16,10 +16,7 @@ namespace AutoTest.CodeGenerator.Tests.Unit
             var expected = @"
 public class UnitTestClass
 {
-	public UnitTestClass()
-	{
-		
-	}
+    
 }
 ".Trim();
 
@@ -28,7 +25,10 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            Assert.Equal(expected, @class);
+            expected = ReOrderReformatSpaces(expected);
+            @class = ReOrderReformatSpaces(@class);
+
+            @class.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -39,10 +39,7 @@ using System;
 
 public class UnitTestClass
 {
-	public UnitTestClass()
-	{
-		
-	}
+    
 }
 ".Trim();
 
@@ -52,7 +49,10 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            Assert.Equal(expected, @class);
+            expected = ReOrderReformatSpaces(expected);
+            @class = ReOrderReformatSpaces(@class);
+
+            @class.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -65,10 +65,7 @@ using Xunit;
 
 public class UnitTestClass
 {
-	public UnitTestClass()
-	{
-		
-	}
+    
 }
 ".Trim();
 
@@ -78,7 +75,10 @@ public class UnitTestClass
                 .WithAnnotations(Enumerable.Empty<string>())
                 .Generate();
 
-            Assert.Equal(expected, @class);
+            expected = ReOrderReformatSpaces(expected);
+            @class = ReOrderReformatSpaces(@class);
+
+            @class.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -88,10 +88,7 @@ public class UnitTestClass
 [SomeAnnotation]
 public class UnitTestClass
 {
-	public UnitTestClass()
-	{
-		
-	}
+    
 }
 ".Trim();
 
@@ -100,7 +97,10 @@ public class UnitTestClass
                 .WithAnnotation("[SomeAnnotation]")
                 .Generate();
 
-            Assert.Equal(expected, @class);
+            expected = ReOrderReformatSpaces(expected);
+            @class = ReOrderReformatSpaces(@class);
+
+            @class.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -112,10 +112,7 @@ public class UnitTestClass
 [SomeAnnotation3]
 public class UnitTestClass
 {
-	public UnitTestClass()
-	{
-		
-	}
+    
 }
 ".Trim();
 
@@ -124,7 +121,10 @@ public class UnitTestClass
                 .WithAnnotations(new List<string> { "[SomeAnnotation1]", "[SomeAnnotation2]", "[SomeAnnotation3]" })
                 .Generate();
 
-            Assert.Equal(expected, @class);
+            expected = ReOrderReformatSpaces(expected);
+            @class = ReOrderReformatSpaces(@class);
+
+            @class.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -151,7 +151,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
@@ -182,7 +181,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
@@ -194,10 +192,7 @@ public class UnitTestClass
 {
     private int _param1;
     
-    public UnitTestClass()
-    {
-        
-    }
+    
 }
 ".Trim();
 
@@ -210,7 +205,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
@@ -223,10 +217,7 @@ public class UnitTestClass
     private int _param1;
     private SomeObj _param2;
     
-    public UnitTestClass()
-    {
-        
-    }
+    
 }
 ".Trim();
 
@@ -240,7 +231,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
@@ -257,11 +247,6 @@ public int Return1()
             var expected = @"
 public class UnitTestClass
 {
-    public UnitTestClass()
-    {
-        
-    }
-    
     public int Return1()
     {
         return 1;
@@ -278,7 +263,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
@@ -295,11 +279,6 @@ public int Return1()
             var expected = @"
 public class UnitTestClass
 {
-    public UnitTestClass()
-    {
-        
-    }
-    
     public int Return1()
     {
         return 1;
@@ -322,7 +301,6 @@ public class UnitTestClass
             expected = ReOrderReformatSpaces(expected);
             @class = ReOrderReformatSpaces(@class);
 
-            Assert.Equal(expected, @class);
             @class.Should().BeEquivalentTo(expected);
         }
 
