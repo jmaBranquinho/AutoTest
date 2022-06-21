@@ -1,4 +1,5 @@
 ﻿using AutoTest.CodeGenerator.Generators;
+using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
@@ -9,7 +10,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         abstract protected string _parameterMethodAnnotation { get; }
         abstract protected string _parameterAnnotationTemplate { get; }
 
-        public abstract string GenerateMethod(string methodName);
+        public abstract string GenerateMethod(string methodName, MethodWrapper method);
 
         protected string GenerateMethod(string methodName, string methodBody, params (string Name, string Type, string Value)[] parameters)
         {

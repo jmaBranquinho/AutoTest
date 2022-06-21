@@ -1,4 +1,5 @@
-﻿using AutoTest.TestGenerator.Generators.Abstracts;
+﻿using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.TestGenerator.Generators.Abstracts;
 using System.Text;
 
 namespace AutoTest.TestGenerator.Generators.XUnit
@@ -10,7 +11,7 @@ namespace AutoTest.TestGenerator.Generators.XUnit
         protected override string _parameterMethodAnnotation => "[Theory]";
         protected override string _parameterAnnotationTemplate => "[InlineData({0})]";
 
-        public override string GenerateMethod(string methodName)
+        public override string GenerateMethod(string methodName, MethodWrapper method)
         {
             var methodBody = string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(), GenerateAssertSection());
             return GenerateMethod(methodName, methodBody);

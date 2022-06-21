@@ -1,7 +1,9 @@
-﻿namespace AutoTest.TestGenerator.Generators.Interfaces
+﻿using AutoTest.CodeInterpreter.Wrappers;
+
+namespace AutoTest.TestGenerator.Generators.Interfaces
 {
     public interface ITestMethodGenerator
     {
-        string GenerateMethod(string methodName);
+        string GenerateMethod(string methodName, MethodWrapper method);
     }
 }
