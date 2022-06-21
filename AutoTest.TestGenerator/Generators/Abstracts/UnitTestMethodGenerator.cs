@@ -1,34 +1,39 @@
-﻿namespace AutoTest.TestGenerator.Generators.Abstracts
+﻿using AutoTest.CodeGenerator.Generators;
+using AutoTest.TestGenerator.Generators.Interfaces;
+
+namespace AutoTest.TestGenerator.Generators.Abstracts
 {
-    public abstract class UnitTestMethodGenerator
+    public abstract class UnitTestMethodGenerator : ITestMethodGenerator
     {
         abstract protected string _parameterlessMethodAnnotation { get; }
         abstract protected string _parameterMethodAnnotation { get; }
         abstract protected string _parameterAnnotationTemplate { get; }
 
-        protected string NewParameterlessMethod(string methodBody) => $"{_parameterlessMethodAnnotation}{Environment.NewLine}{methodBody}";
+        public abstract string GenerateMethod(string methodName);
 
-        // TODO: currently supporting only 1 scenario. Params only supports 1 dim array
-        protected string NewParameterMethod(string methodBody, params (string Name, string Type, string Value)[] parameters)
+        protected string GenerateMethod(string methodName, string methodBody, params (string Name, string Type, string Value)[] parameters)
         {
-            string formattedParameters;
-
-            var areAllBuiltInTypes = !parameters.Any(p => !IsBuiltInType(p.Type));
-
-            if (areAllBuiltInTypes)
+            var hasParameters = parameters.Count() > 0;
+            var annotations = new List<string> { hasParameters ? _parameterMethodAnnotation : _parameterlessMethodAnnotation };
+            // TODO: currently supporting only 1 scenario. Params only supports 1 dim array
+            // TODO: currently only supports built-in types
+            if (hasParameters)
             {
-                formattedParameters = string.Format(_parameterAnnotationTemplate, string.Join(", ", parameters.Select(p => p.Value)));
-            }
-            else
-            {
-                // TODO: implement this logic
-                throw new NotImplementedException();
+                annotations.AddRange(parameters.Select(p => string.Format(_parameterAnnotationTemplate, $"{p.Type} {p.Name}")));
             }
 
-            return $"{_parameterMethodAnnotation}{Environment.NewLine}{formattedParameters}{methodBody}";
+            var methodStage1 = MethodGenerator.NewMethod()
+                .WithMethodName(methodName)
+                .AddAnnotations(annotations);
+
+            var methodStage2 = parameters.Length > 0 
+                ? methodStage1.AddParameters(parameters.Select(x => (x.Name, x.Type)).ToList()) 
+                : methodStage1.WithNoParameters();
+
+            return methodStage2.AddBody(methodBody).Generate();
         }
 
-        private bool IsBuiltInType(string type) => BuiltInTypes.Any(t => t.Name == type);
+        private static bool IsBuiltInType(string type) => BuiltInTypes.Any(t => t.Name == type);
 
         private static List<Type> BuiltInTypes = new()
         {
