@@ -8,10 +8,10 @@ namespace AutoTest.CodeGenerator.Models
     {
         private string _name;
         private IEnumerable<string> _annotations;
-        private IEnumerable<(string Name, string Type)> _parameters;
+        private IEnumerable<(string Name, Type Type)> _parameters;
         private string _body;
 
-        public Method(string name, IEnumerable<string> annotations, IEnumerable<(string Name, string Type)> parameters, string body)
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<(string Name, Type Type)> parameters, string body)
         {
             _name = name;
             _annotations = annotations;
@@ -31,12 +31,20 @@ namespace AutoTest.CodeGenerator.Models
             return stringBuilder.ToString().AddNewContext(_body);
         }
 
-        private static IEnumerable<string> FormatParameters(IEnumerable<(string Name, string Type)> parameters)
+        private static IEnumerable<string> FormatParameters(IEnumerable<(string Name, Type Type)> parameters)
         {
             foreach (var parameter in parameters)
             {
-                yield return $"{parameter.Type} {parameter.Name.FormatAsVariable()}";
+                yield return $"{TypeToString(parameter.Type)} {parameter.Name.FormatAsVariable()}";
             }
         }
+
+        public static string TypeToString(Type type) => BuiltInTypesStringValue.TryGetValue(type, out var value) ? value : type.ToString();
+
+        private static Dictionary<Type, string> BuiltInTypesStringValue = new()
+        {
+            { typeof(int), "int" },
+            // TODO complete
+        };
     }
 }

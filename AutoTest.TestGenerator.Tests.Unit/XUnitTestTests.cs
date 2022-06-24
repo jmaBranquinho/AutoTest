@@ -5,6 +5,7 @@ using AutoTest.TestGenerator.Generators.XUnit.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -80,11 +81,11 @@ public void UnitTestMethod(int x)
     
 }
 ".Trim();
-            var parameters = new List<List<(string Name, string Type, object Value)>>
+            var parameters = new List<List<(string Name, Type Type, object Value)>>
             {
-                new List<(string Name, string Type, object Value)>
+                new List<(string Name, Type Type, object Value)>
                 {
-                    ("x", XUnitTest.TypeToString(typeof(int)), 1 ),
+                    ("x", typeof(int), 1 ),
                 }
             };
             var method = new XUnitTest("UnitTestMethod", parameters, new List<StatementWrapper> { methodSyntax }).ToString();
