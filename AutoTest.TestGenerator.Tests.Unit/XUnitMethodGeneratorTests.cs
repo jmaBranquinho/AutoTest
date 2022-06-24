@@ -26,11 +26,11 @@ namespace AutoTest.TestGenerator.Tests.Unit
 [Fact]
 public void UnitTestMethod()
 {
-    // arrange
+    // Arrange
     
-    // act
+    // Act
     
-    // assert
+    // Assert
     
 }
 ".Trim();

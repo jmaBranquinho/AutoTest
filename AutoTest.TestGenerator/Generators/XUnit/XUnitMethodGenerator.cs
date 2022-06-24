@@ -1,5 +1,6 @@
 ﻿using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Abstracts;
+using AutoTest.TestGenerator.Generators.XUnit.Models;
 using System.Text;
 
 namespace AutoTest.TestGenerator.Generators.XUnit
@@ -13,6 +14,9 @@ namespace AutoTest.TestGenerator.Generators.XUnit
 
         public override string GenerateMethod(string methodName, MethodWrapper method)
         {
+            //method.ExecutionPaths.Select(x => new XUnitTest(x));
+
+
             var methodBody = string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(), GenerateAssertSection());
             return GenerateMethod(methodName, methodBody);
         }
@@ -20,7 +24,7 @@ namespace AutoTest.TestGenerator.Generators.XUnit
         private string GenerateArrangeSection()
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// arrange");
+            stringBuilder.AppendLine("// Arrange");
             // TODO: implement
 
             return stringBuilder.ToString();
@@ -29,7 +33,7 @@ namespace AutoTest.TestGenerator.Generators.XUnit
         private string GenerateActSection()
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// act");
+            stringBuilder.AppendLine("// Act");
             // TODO: implement
 
             return stringBuilder.ToString();
@@ -38,7 +42,7 @@ namespace AutoTest.TestGenerator.Generators.XUnit
         private string GenerateAssertSection()
         {
                         var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// assert");
+            stringBuilder.AppendLine("// Assert");
             // TODO: implement
 
             return stringBuilder.ToString();
