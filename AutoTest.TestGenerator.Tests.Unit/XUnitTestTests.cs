@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using AutoTest.CodeGenerator.Tests.Unit;
+﻿using AutoTest.CodeGenerator.Tests.Unit;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.XUnit.Models;
 using Microsoft.CodeAnalysis;
@@ -14,12 +13,6 @@ namespace AutoTest.TestGenerator.Tests.Unit
 {
     public class XUnitTestTests
     {
-        private readonly Fixture _fixture;
-
-        public XUnitTestTests()
-        {
-            _fixture = new Fixture();
-        }
 
         [Fact]
         public void OnlyName()
@@ -53,6 +46,7 @@ public void UnitTestMethod()
     // Arrange
     
     // Act
+    var actual = _sut.TestMethod();
     
     // Assert
     
@@ -76,6 +70,7 @@ public void UnitTestMethod(int x)
     // Arrange
     
     // Act
+    var actual = _sut.TestMethod(x);
     
     // Assert
     
@@ -104,21 +99,27 @@ public void UnitTestMethod(int x)
         }
 
         private string _simpleClassAndMethodWithoutParameters = @"
-public class TestClass
+namespace TestNameSpace
 {
-    public int TestMethod(int x) 
+    public class TestClass
     {
-        return x;
+        public int TestMethod(int x) 
+        {
+            return x;
+        }
     }
 }
 ".Trim();
 
         private string _simpleClassAndMethodWithParameters = @"
-public class TestClass
+namespace TestNameSpace
 {
-    public int TestMethod() 
+    public class TestClass
     {
-        return 0;
+        public int TestMethod() 
+        {
+            return 0;
+        }
     }
 }
 ".Trim();

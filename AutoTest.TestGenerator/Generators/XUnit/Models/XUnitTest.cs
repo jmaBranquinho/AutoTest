@@ -1,121 +1,18 @@
-﻿using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Wrappers;
-using System.Text;
+﻿using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.TestGenerator.Generators.Abstracts;
 
 namespace AutoTest.TestGenerator.Generators.XUnit.Models
 {
-    public class XUnitTest : Method
+    public class XUnitTest : UnitTest
     {
-        private const string _parameterlessMethodAnnotation = "[Fact]";
-        private const string _parameterMethodAnnotation = "[Theory]";
-        private const string _parameterAnnotationTemplate = "[InlineData({0})]";
+        protected override string _parameterlessMethodAnnotation => "[Fact]";
+        protected override string _parameterMethodAnnotation => "[Theory]";
+        protected override string _parameterAnnotationTemplate => "[InlineData({0})]";
 
-        private IEnumerable<StatementWrapper> _methodStatements;
+        public XUnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) : base(name, parameters, methodStatements)
+        { }
 
-        public XUnitTest(string name, IEnumerable<StatementWrapper> methodStatements)
-            : base(name, new List<string>() { _parameterlessMethodAnnotation }, Enumerable.Empty<(string Name, Type Type)>(), FormatXUnitTestBody(methodStatements)) 
-        {
-            // TODO validate if should be parameterized test
-        }
-
-        public XUnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) 
-            : base(name, FormatXUnitParameterTestAnnotations(parameters), FormatXUnitTestMethodParameter(parameters), FormatXUnitTestBody(methodStatements)) { }
-
-        private static string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements)
-        {
-            return string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(), GenerateAssertSection());
-        }
-
-        private static string GenerateArrangeSection()
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Arrange");
-            // TODO: implement
-
-            return stringBuilder.ToString();
-        }
-
-        private static string GenerateActSection()
-        {
-            // TODO: implement
-
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Act");
-            //var methodDeclaration = (MethodDeclarationSyntax) _methodStatements.First().SyntaxNode;
-            //stringBuilder.AppendLine($"var result = _sut.{methodDeclaration}();");
-
-            return stringBuilder.ToString();
-        }
-
-        private static string GenerateAssertSection()
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Assert");
-            // TODO: implement
-
-            return stringBuilder.ToString();
-        }
-
-        private static IEnumerable<(string Name, Type Type)> FormatXUnitTestMethodParameter(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList)
-        {
-            if (parametersList is null || !parametersList.Any())
-            {
-                return Enumerable.Empty<(string Name, Type Type)>();
-            }
-
-            return parametersList.First().Select(p => (p.Name, p.Type));
-        }
-
-        private static IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList)
-        {
-            if (parametersList is null || !parametersList.Any())
-            {
-                return new List<string>() { _parameterlessMethodAnnotation };
-            }
-
-            var annotations = new List<string>();
-            annotations.Add(_parameterMethodAnnotation);
-
-            var isNotUsingBuiltInTypes = parametersList.Any(x1 => x1.Any(x2 => !IsBuiltInType(x2.Type)));
-
-            if (isNotUsingBuiltInTypes)
-            {
-                // TODO
-                throw new NotImplementedException();
-            }
-
-            foreach (var parametersForMethod in parametersList)
-            {
-                annotations.Add(string.Format(_parameterAnnotationTemplate, string.Join(", ", parametersForMethod.Select(p => p.Value))));
-            }
-
-            return annotations;
-        }
-
-        private static bool IsBuiltInType(Type type) => BuiltInTypes.Any(t => t == type);
-
-        private static List<Type> BuiltInTypes = new()
-        {
-            // value types
-            typeof(bool),
-            typeof(byte),
-            typeof(sbyte),
-            typeof(char),
-            typeof(decimal),
-            typeof(double),
-            typeof(float),
-            typeof(int),
-            typeof(uint),
-            typeof(nint),
-            typeof(nuint),
-            typeof(long),
-            typeof(ulong),
-            typeof(short),
-            typeof(ushort),
-            // reference types
-            typeof(object),
-            typeof(string),
-            // missing dynamic
-        };
+        public XUnitTest(string name, IEnumerable<StatementWrapper> methodStatements) : base(name, Enumerable.Empty<IEnumerable<(string Name, Type Type, object Value)>>(), methodStatements)
+        { }
     }
 }

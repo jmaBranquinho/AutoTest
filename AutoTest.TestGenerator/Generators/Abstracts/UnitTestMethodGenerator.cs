@@ -1,5 +1,4 @@
-﻿using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Constraints;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
@@ -8,16 +7,16 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 {
     public abstract class UnitTestMethodGenerator : ITestMethodGenerator
     {
-        public IEnumerable<Method> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention)
+        public IEnumerable<UnitTest> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention)
         {
-            Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, Method> createUnitTest = GenerateUnitTest(method);
+            Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, UnitTest> createUnitTest = GenerateUnitTest(method);
 
             return method.ExecutionPaths.Select(path => 
                 createUnitTest(FormatMethodName(method.Name, namingConvention), GenerateParameters(method.Parameters, path), path))
                     .ToList();
         }
 
-        protected abstract Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, Method> GenerateUnitTest(MethodWrapper method);
+        protected abstract Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, UnitTest> GenerateUnitTest(MethodWrapper method);
 
         // TODO: implement the rest
         private IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> GenerateParameters(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
@@ -64,7 +63,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         // TODO: implement
         private static string FormatMethodName(string methodName, TestNamingConventions namingConvention)
         {
-            return methodName;
+            return $"{methodName}_WhenSomething_ShouldSomething";
         }
     }
 }

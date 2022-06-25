@@ -7,7 +7,7 @@ namespace AutoTest.TestGenerator.Generators.XUnit
 {
     public class XUnitMethodGenerator : UnitTestMethodGenerator
     {
-        protected override Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, Method> GenerateUnitTest(MethodWrapper method) 
+        protected override Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, UnitTest> GenerateUnitTest(MethodWrapper method) 
             => method.Parameters.Any()
                 ? ((name, parameters, statements) => new XUnitTest(name, parameters, statements))
                 : ((name, _, statements) => new XUnitTest(name, statements));

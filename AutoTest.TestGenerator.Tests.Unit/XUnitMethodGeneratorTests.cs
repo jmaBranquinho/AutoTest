@@ -1,4 +1,3 @@
-using AutoFixture;
 using AutoTest.CodeGenerator.Tests.Unit;
 using AutoTest.CodeInterpreter;
 using AutoTest.CodeInterpreter.Wrappers;
@@ -12,33 +11,54 @@ namespace AutoTest.TestGenerator.Tests.Unit
     public class XUnitMethodGeneratorTests
     {
         private readonly XUnitMethodGenerator _sut;
-        private readonly Fixture _fixture;
 
-        public XUnitMethodGeneratorTests()
-        {
-            _sut = new XUnitMethodGenerator();
-            _fixture = new Fixture();
-        }
+        public XUnitMethodGeneratorTests() => _sut = new XUnitMethodGenerator();
 
         [Fact]
-        public void simple()
+        public void SimpleMethodWithoutParameters()
         {
             var expected = @"
-[Theory]
-[InlineData(xx)]
-public void TestMethod(int x)
+[Fact]
+public void TestMethod_WhenSomething_ShouldSomething()
 {
     // Arrange
     
     // Act
+    var actual = _sut.TestMethod();
     
     // Assert
     
 }
 ".Trim();
-            var method = GetMethodSyntaxFromExample(_simpleClassAndMethodWithoutParameters);
+            var method = GetMethodSyntaxFromExample(_simpleMethodWithoutParametersNoLogic);
 
-            var result = new XUnitMethodGenerator().GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var test = result.First().ToString();
+
+            UnitTestHelper.AssertSimilarStrings(expected, test);
+        }
+
+        [Fact]
+        public void SimpleMethodWithParameters()
+        {
+            var expected = @"
+[Theory]
+[InlineData(xx)]
+public void TestMethod_WhenSomething_ShouldSomething(int x)
+{
+    // Arrange
+    
+    // Act
+    var actual = _sut.TestMethod(x);
+    
+    // Assert
+    
+}
+".Trim();
+            var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterNoLogic);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
             var test = result.First().ToString();
 
@@ -51,21 +71,32 @@ public void TestMethod(int x)
         private static MethodWrapper GetMethodSyntaxFromExample(string exampleCode)
         {
             var analyzer = new CodeAnalyzer();
-            var solution = analyzer.AnalyzeCode(exampleCode);
+            var solution = analyzer.AnalyzeCode(_classAndNamespaceWrapperTemplate.Replace("{0}", exampleCode));
             return solution.Namespaces.First().Classes.First().Methods.First();
         }
 
-        private string _simpleClassAndMethodWithoutParameters = @"
+        private static string _classAndNamespaceWrapperTemplate = @"
 namespace TestNameSpace
 {
     public class TestClass
     {
+        {0}
+    }
+}
+".Trim();
+
+        private static string _simpleMethodWith1ParameterNoLogic = @"
         public int TestMethod(int x) 
         {
             return x;
         }
-    }
-}
+".Trim();
+
+        private static string _simpleMethodWithoutParametersNoLogic = @"
+        public int TestMethod() 
+        {
+            return 5;
+        }
 ".Trim();
     }
 }
