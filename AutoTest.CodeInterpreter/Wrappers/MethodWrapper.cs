@@ -8,20 +8,18 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public IEnumerable<IEnumerable<StatementWrapper>> ExecutionPaths { get; set; }
 
-        public Dictionary<string, string> Parameters { get; set; }
+        public Dictionary<string, Type> Parameters { get; set; }
 
         public void AnalyzeMethodDetails()
         {
-            Parameters = new Dictionary<string, string>();
+            Parameters = new Dictionary<string, Type>();
 
             var methodSyntax = GetMethodSyntax();
             // TODO test for null
 
             foreach (var parameter in methodSyntax.ParameterList.Parameters)
             {
-                var typeAsString = ((PredefinedTypeSyntax)parameter.Type).Keyword.Text;
-                var varName = parameter.Identifier.Text;
-                Parameters.Add(varName, typeAsString);
+                Parameters.Add(parameter.Identifier.Text, parameter.Type.RawKind.GetType());
             }
         }
 

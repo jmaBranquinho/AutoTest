@@ -1,63 +1,70 @@
-﻿using AutoTest.CodeGenerator.Generators;
+﻿using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.TestGenerator.Generators.Constraints;
+using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
     public abstract class UnitTestMethodGenerator : ITestMethodGenerator
     {
-        abstract protected string _parameterlessMethodAnnotation { get; }
-        abstract protected string _parameterMethodAnnotation { get; }
-        abstract protected string _parameterAnnotationTemplate { get; }
-
-        public abstract string GenerateMethod(string methodName, MethodWrapper method);
-
-        protected string GenerateMethod(string methodName, string methodBody, params (string Name, string Type, string Value)[] parameters)
+        public IEnumerable<Method> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention)
         {
-            var hasParameters = parameters.Count() > 0;
-            var annotations = new List<string> { hasParameters ? _parameterMethodAnnotation : _parameterlessMethodAnnotation };
-            // TODO: currently supporting only 1 scenario. Params only supports 1 dim array
-            // TODO: currently only supports built-in types
-            if (hasParameters)
-            {
-                annotations.AddRange(parameters.Select(p => string.Format(_parameterAnnotationTemplate, $"{p.Type} {p.Name}")));
-            }
+            Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, Method> createUnitTest = GenerateUnitTest(method);
 
-            var methodStage1 = MethodGenerator.NewMethod()
-                .WithMethodName(methodName)
-                .AddAnnotations(annotations);
-
-            var methodStage2 = parameters.Length > 0 
-                ? methodStage1.AddParameters(parameters.Select(x => (x.Name, x.Type)).ToList()) 
-                : methodStage1.WithNoParameters();
-
-            return methodStage2.AddBody(methodBody).Generate();
+            return method.ExecutionPaths.Select(path => 
+                createUnitTest(FormatMethodName(method.Name, namingConvention), GenerateParameters(method.Parameters, path), path))
+                    .ToList();
         }
 
-        private static bool IsBuiltInType(string type) => BuiltInTypes.Any(t => t.Name == type);
+        protected abstract Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, Method> GenerateUnitTest(MethodWrapper method);
 
-        private static List<Type> BuiltInTypes = new()
+        // TODO: implement the rest
+        private IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> GenerateParameters(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
         {
-            // value types
-            typeof(bool),
-            typeof(byte),
-            typeof(sbyte),
-            typeof(char),
-            typeof(decimal),
-            typeof(double),
-            typeof(float),
-            typeof(int),
-            typeof(uint),
-            typeof(nint),
-            typeof(nuint),
-            typeof(long),
-            typeof(ulong),
-            typeof(short),
-            typeof(ushort),
-            // reference types
-            typeof(object),
-            typeof(string),
-            // missing dynamic
-        };
+            var methodStatements = path.Skip(1).ToList();
+
+            var constraints = new Dictionary<string, IConstraint>();
+            PopulateParameterConstraints(constraints, parameters);
+
+            foreach (var statement in methodStatements)
+            {
+                AdjustParameterConstraints(statement, parameters);
+            }
+
+            var parameterListWithValues = GenerateParameterListWithValues(parameters, constraints);
+
+            return new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() };
+        }
+
+        private IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
+        {
+            foreach (var parameter in parameters)
+            {
+                yield return (parameter.Key, parameter.Value, constraints[parameter.Key].Generate());
+            }
+        }
+
+        // TODO: implement for other types
+        private void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                // TODO see above
+                constraints.Add(parameter.Key, new IntConstraint());
+            }
+        }
+
+        // TODO: implement
+        private void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, Type> parameters)
+        {
+            // TODO: implement
+        }
+
+        // TODO: implement
+        private static string FormatMethodName(string methodName, TestNamingConventions namingConvention)
+        {
+            return methodName;
+        }
     }
 }

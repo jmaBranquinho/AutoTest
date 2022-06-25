@@ -1,3 +1,3 @@
 ﻿using AutoTest.CodeInterpreter;
 
-var solution = new CodeAnalyzer().Analyze(@"..\..\..\Samples\Sample1.cs");
+var solution = new CodeAnalyzer().AnalyzeCodeFromFile(@"..\..\..\Samples\Sample1.cs");

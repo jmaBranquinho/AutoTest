@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter
 {
+    // TODO: fails if no namespace is provided
     public class CodeAnalyzer
     {
         private readonly SyntaxAnalyzerDictionary _dictionary;
@@ -15,9 +16,22 @@ namespace AutoTest.CodeInterpreter
             _dictionary = new SyntaxAnalyzerDictionary();
         }
 
-        public SolutionWrapper Analyze(string path)
+        public SolutionWrapper AnalyzeCode(string code) => PerformCodeAnalysis(code);
+
+        public SolutionWrapper AnalyzeCodeFromFile(string filePath)
         {
-            var root = GetCompilationUnitSyntax(path);
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("wrong path?");
+            }
+            var code = File.ReadAllText(filePath);
+
+            return PerformCodeAnalysis(code);
+        }
+
+        private SolutionWrapper PerformCodeAnalysis(string code)
+        {
+            var root = GetCompilationUnitSyntax(code);
             var namespaceStatements = root.Members.Cast<SyntaxNode>().ToList();
 
             var solutionWrapper = new SolutionWrapper
@@ -111,14 +125,8 @@ namespace AutoTest.CodeInterpreter
             return executionPaths;
         }
 
-        private CompilationUnitSyntax GetCompilationUnitSyntax(string path)
+        private CompilationUnitSyntax GetCompilationUnitSyntax(string code)
         {
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException("wrong path?");
-            }
-            var code = File.ReadAllText(path);
-
             var tree = CSharpSyntaxTree.ParseText(code);
             return tree.GetCompilationUnitRoot();
         }
