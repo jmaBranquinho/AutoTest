@@ -49,7 +49,7 @@ public void UnitTestMethod()
     var actual = _sut.TestMethod();
     
     // Assert
-    
+    Assert.Equal(Assert.Equal(expected, actual);
 }
 ".Trim();
             var method = new XUnitTest("UnitTestMethod", new List<StatementWrapper> { methodSyntax }).ToString();
@@ -73,7 +73,7 @@ public void UnitTestMethod(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    
+    Assert.Equal(Assert.Equal(expected, actual);
 }
 ".Trim();
             var parameters = new List<List<(string Name, Type Type, object Value)>>

@@ -35,7 +35,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         public override string ToString() => _method.ToString();
 
         private string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements) 
-            => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection());
+            => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection(methodStatements));
 
         // TODO: check for issues
         private string GenerateActSection(IEnumerable<StatementWrapper> methodStatements)
@@ -52,6 +52,22 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                     stringBuilder.Append(string.Join(", ", _parameters.First().Select(p => p.Name).ToList()));
                 }
                 stringBuilder.AppendLine(");");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        // TODO: implement
+        // TODO: assert property changes
+        private string GenerateAssertSection(IEnumerable<StatementWrapper> methodStatements)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("// Assert");
+            if (methodStatements is not null && methodStatements.Any())
+            {
+                stringBuilder.Append("Assert.Equal(");
+                stringBuilder.Append("Assert.Equal(expected, actual");
+                stringBuilder.Append(");");
             }
 
             return stringBuilder.ToString();
@@ -89,16 +105,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("// Arrange");
-            // TODO: implement
-
-            return stringBuilder.ToString();
-        }
-
-        // TODO: implement
-        private static string GenerateAssertSection()
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Assert");
             // TODO: implement
 
             return stringBuilder.ToString();

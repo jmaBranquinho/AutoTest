@@ -27,7 +27,7 @@ public void TestMethod_WhenSomething_ShouldSomething()
     var actual = _sut.TestMethod();
     
     // Assert
-    
+    Assert.Equal(Assert.Equal(expected, actual);
 }
 ".Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodWithoutParametersNoLogic);
@@ -53,7 +53,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    
+    Assert.Equal(Assert.Equal(expected, actual);
 }
 ".Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterNoLogic);
