@@ -5,34 +5,30 @@ using System.Text;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
-    public abstract class UnitTest
+    public abstract class UnitTest : Method
     {
         protected abstract string _parameterlessMethodAnnotation { get; }
         protected abstract string _parameterMethodAnnotation { get; }
         protected abstract string _parameterAnnotationTemplate { get; }
 
-        protected Method _method;
+        private readonly IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> _unitTestParameters;
 
-        private readonly bool _isParameterless;
-        private readonly IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> _parameters;
-
-        public UnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements)
+        public UnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) 
+            : base(name, Enumerable.Empty<string>(), Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
         {
-            _isParameterless = !parameters.Any();
-            _parameters = parameters;
+            var isParameterless = !parameters?.Any() ?? true;
+            _unitTestParameters = parameters;
 
-            var annotationList = _isParameterless
+            _annotations = isParameterless
                 ? new List<string>() { _parameterlessMethodAnnotation }
                 : FormatXUnitParameterTestAnnotations(parameters);
 
-            var parameterList = _isParameterless
+            _parameters = isParameterless
                 ? Enumerable.Empty<(string Name, Type Type)>()
                 : FormatXUnitTestMethodParameter(parameters);
 
-            _method = new Method(name, annotationList, parameterList, FormatXUnitTestBody(methodStatements));
+            _body = FormatXUnitTestBody(methodStatements);
         }
-
-        public override string ToString() => _method.ToString();
 
         private string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements) 
             => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection(methodStatements));
@@ -43,16 +39,20 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("// Act");
 
-            if (methodStatements is not null && methodStatements.Any())
+            if (methodStatements is null || !methodStatements.Any())
             {
-                var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
-                stringBuilder.Append($"var actual = _sut.{methodDeclaration.Identifier.Text}(");
-                if (!_isParameterless)
-                {
-                    stringBuilder.Append(string.Join(", ", _parameters.First().Select(p => p.Name).ToList()));
-                }
-                stringBuilder.AppendLine(");");
+                // TODO
+                throw new Exception("no method statements");
             }
+
+            var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
+            stringBuilder.Append($"var actual = _sut.{methodDeclaration.Identifier.Text}(");
+
+            if (!IsParameterless())
+            {
+                stringBuilder.Append(string.Join(", ", _unitTestParameters.First().Select(p => p.Name).ToList()));
+            }
+            stringBuilder.AppendLine(");");
 
             return stringBuilder.ToString();
         }

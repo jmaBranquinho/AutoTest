@@ -2,6 +2,8 @@
 using AutoTest.TestGenerator.Generators.Constraints;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
@@ -28,7 +30,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
             foreach (var statement in methodStatements)
             {
-                AdjustParameterConstraints(statement, parameters);
+                AdjustParameterConstraints(statement, constraints);
             }
 
             var parameterListWithValues = GenerateParameterListWithValues(parameters, constraints);
@@ -55,9 +57,63 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         }
 
         // TODO: implement
-        private void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, Type> parameters)
+        // TODO: extract
+        private void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
         {
-            // TODO: implement
+            switch (statementWrapper.SyntaxNode)
+            {
+                case IfStatementSyntax ifSyntax:
+                    if (!statementWrapper.IsElseStatement)
+                    { 
+                        var binaryExpression = (BinaryExpressionSyntax) ifSyntax.Condition;
+                        if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
+                        {
+                            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
+                            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+
+                            string variable;
+                            int value;
+                            if (constraints.ContainsKey(operator1))
+                            {
+                                variable = operator1;
+                                value = int.Parse(operator2);
+                            } 
+                            else
+                            {
+                                variable = operator2;
+                                value = int.Parse(operator1);
+                            }
+                            ((IntConstraint) constraints[variable]).SetMinValue(value);
+                        }
+                    }
+                    else
+                    {
+                        var binaryExpression = (BinaryExpressionSyntax)ifSyntax.Condition;
+                        if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
+                        {
+                            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
+                            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+
+                            string variable;
+                            int value;
+                            if (constraints.ContainsKey(operator1))
+                            {
+                                variable = operator1;
+                                value = int.Parse(operator2);
+                            }
+                            else
+                            {
+                                variable = operator2;
+                                value = int.Parse(operator1);
+                            }
+                            ((IntConstraint)constraints[variable]).SetMaxValue(value);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+                    //throw new NotImplementedException();
+            }
         }
 
         // TODO: implement

@@ -3,13 +3,15 @@ using System.Text;
 
 namespace AutoTest.CodeGenerator.Models
 {
-    // TODO
+    // TODO 
     public class Method
     {
-        private string _name;
-        private IEnumerable<string> _annotations;
-        private IEnumerable<(string Name, Type Type)> _parameters;
-        private string _body;
+        protected string _name;
+        protected IEnumerable<string> _annotations;
+        protected IEnumerable<(string Name, Type Type)> _parameters;
+        protected string _body;
+
+        protected bool IsParameterless() => !_parameters?.Any() ?? true;
 
         public Method(string name, IEnumerable<string> annotations, IEnumerable<(string Name, Type Type)> parameters, string body)
         {
@@ -39,7 +41,7 @@ namespace AutoTest.CodeGenerator.Models
             }
         }
 
-        public static string TypeToString(Type type) => BuiltInTypesStringValue.TryGetValue(type, out var value) ? value : type.ToString();
+        private static string TypeToString(Type type) => BuiltInTypesStringValue.TryGetValue(type, out var value) ? value : type.ToString();
 
         private static Dictionary<Type, string> BuiltInTypesStringValue = new()
         {

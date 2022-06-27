@@ -36,7 +36,7 @@
         {
             (int, int) desiredRange = (1, 100);
 
-            if (_minValue <= desiredRange.Item1 && desiredRange.Item1 < _maxValue 
+            if (_minValue <= desiredRange.Item1 && desiredRange.Item1 < _maxValue
                 && _minValue <= desiredRange.Item2 && desiredRange.Item2 < _maxValue)
             {
                 return (desiredRange.Item1, desiredRange.Item2);

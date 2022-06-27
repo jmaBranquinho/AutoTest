@@ -3,7 +3,10 @@ using AutoTest.CodeInterpreter;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.XUnit;
+using FluentAssertions;
+using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace AutoTest.TestGenerator.Tests.Unit
@@ -68,6 +71,50 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
             UnitTestHelper.AssertSimilarStrings(expected, test);
         }
 
+        [Fact]
+        public void SimpleMethodIfStatementType1()
+        {
+            var expectedTemplate = @"
+[Theory]
+[InlineData(xx)]
+public void TestMethod_WhenSomething_ShouldSomething(int x)
+{
+    // Arrange
+    
+    // Act
+    var actual = _sut.TestMethod(x);
+    
+    // Assert
+    Assert.Equal(Assert.Equal(expected, actual);
+}
+".Trim();
+            var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterIfStatementType1);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isBiggerThen5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = Regex.Match(test.ToString(), @"[-]*\d+").Value;
+
+                if(isBiggerThen5)
+                {
+                    isBiggerThen5 = !isBiggerThen5;
+                    int.Parse(valueUsedInTest).Should().BeGreaterThan(5);
+                    //int.Parse(valueUsedInTest).Should().BeLessThan(100);
+                } 
+                else
+                {
+                    int.Parse(valueUsedInTest).Should().BeLessThanOrEqualTo(5);
+                    //int.Parse(valueUsedInTest).Should().BeGreaterThan(0);
+                }
+
+                var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
+
+                UnitTestHelper.AssertSimilarStrings(expected, test.ToString());
+            }
+        }
+
         private static MethodWrapper GetMethodSyntaxFromExample(string exampleCode)
         {
             var analyzer = new CodeAnalyzer();
@@ -96,6 +143,38 @@ namespace TestNameSpace
         public int TestMethod() 
         {
             return 5;
+        }
+".Trim();
+
+        private static string _simpleMethodWith1ParameterIfStatementType1 = @"
+        public int TestMethod(int x) 
+        {
+            if (x > 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodWith1ParameterIfStatementType2 = @"
+        public int TestMethod(int x) 
+        {
+            if (x > 5) 
+            {
+                return x;
+            }
+            return 0;
+        }
+".Trim();
+
+        private static string _simpleMethodWith1ParameterIfStatementType3 = @"
+        public int TestMethod(int x) 
+        {
+            return x > 5 ? x : 0;
         }
 ".Trim();
     }
