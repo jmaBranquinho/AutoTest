@@ -56,7 +56,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }
         }
 
-        // TODO: implement
+        // TODO: implement .
         // TODO: extract
         private static void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
         {
@@ -64,30 +64,33 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             {
                 case IfStatementSyntax ifSyntax:
 
-                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
-                        ? (constraint, value) => constraint.SetMinValue(value + 1)
-                        : (constraint, value) => constraint.SetMaxValue(value);
-
                     var binaryExpression = (BinaryExpressionSyntax)ifSyntax.Condition;
-                    if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
-                    {
-                        var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-                        var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+                    var kind = binaryExpression.Kind();
 
-                        string variable;
-                        int value;
-                        if (constraints.ContainsKey(operator1))
-                        {
-                            variable = operator1;
-                            value = int.Parse(operator2);
-                        }
-                        else
-                        {
-                            variable = operator2;
-                            value = int.Parse(operator1);
-                        }
-                        addConstraint((IntConstraint)constraints[variable], value);
-                    }
+                    var isGreaterThanOrGreaterThanEquals = kind == SyntaxKind.GreaterThanExpression
+                        || kind == SyntaxKind.GreaterThanOrEqualExpression;
+
+                    var isLessThanOrLessThanEquals = kind == SyntaxKind.LessThanExpression
+                        || kind == SyntaxKind.LessThanOrEqualExpression;
+
+                    var isActingOnIfBranch = kind == SyntaxKind.GreaterThanExpression
+                        || kind == SyntaxKind.LessThanOrEqualExpression;
+
+                    var isIncrementing = kind == SyntaxKind.GreaterThanExpression
+                        || kind == SyntaxKind.LessThanOrEqualExpression;
+
+                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement //&& (isGreaterThanOrGreaterThanEquals || !isLessThanOrLessThanEquals)
+                        ? (constraint, value) => constraint.SetMinValue(value + ((isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)))
+                        : (constraint, value) => constraint.SetMaxValue(value + ((!isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)));
+                    
+                    var operator1 = binaryExpression.Left.GetText().ToString().Trim();
+                    var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+
+                    var isVariableInOperator1 = constraints.ContainsKey(operator1);
+                    var variable = isVariableInOperator1 ? operator1 : operator2;
+                    var value = isVariableInOperator1 ? int.Parse(operator2) : int.Parse(operator1);
+
+                    addConstraint((IntConstraint)constraints[variable], value);
                     break;
                 default:
                     break;

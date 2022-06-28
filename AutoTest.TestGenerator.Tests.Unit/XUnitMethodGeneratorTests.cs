@@ -72,7 +72,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
         }
 
         [Fact]
-        public void SimpleMethodIfStatementType1()
+        public void SimpleMethodGreaterThan()
         {
             var expectedTemplate = @"
 [Theory]
@@ -88,7 +88,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterIfStatementType1);
+            var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThan);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -107,6 +107,138 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
                 {
                     int.Parse(valueUsedInTest).Should().BeLessThanOrEqualTo(5);
                     int.Parse(valueUsedInTest).Should().BeGreaterThan(0);
+                }
+
+                var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
+
+                UnitTestHelper.AssertSimilarStrings(expected, test.ToString());
+            }
+        }
+
+        [Fact]
+        public void SimpleMethodGreaterThanEquals()
+        {
+            var expectedTemplate = @"
+[Theory]
+[InlineData(xx)]
+public void TestMethod_WhenSomething_ShouldSomething(int x)
+{
+    // Arrange
+    
+    // Act
+    var actual = _sut.TestMethod(x);
+    
+    // Assert
+    Assert.Equal(Assert.Equal(expected, actual);
+}
+".Trim();
+            var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThanEquals);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isBiggerThen5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = Regex.Match(test.ToString(), @"[-]*\d+").Value;
+
+                if (isBiggerThen5)
+                {
+                    isBiggerThen5 = !isBiggerThen5;
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(5);
+                    int.Parse(valueUsedInTest).Should().BeLessThan(100);
+                }
+                else
+                {
+                    int.Parse(valueUsedInTest).Should().BeLessThan(5);
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(0);
+                }
+
+                var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
+
+                UnitTestHelper.AssertSimilarStrings(expected, test.ToString());
+            }
+        }
+
+        [Fact]
+        public void SimpleMethodLessThan()
+        {
+            var expectedTemplate = @"
+[Theory]
+[InlineData(xx)]
+public void TestMethod_WhenSomething_ShouldSomething(int x)
+{
+    // Arrange
+    
+    // Act
+    var actual = _sut.TestMethod(x);
+    
+    // Assert
+    Assert.Equal(Assert.Equal(expected, actual);
+}
+".Trim();
+            var method = GetMethodSyntaxFromExample(_simpleMethodLessThan);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isBiggerThen5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = Regex.Match(test.ToString(), @"[-]*\d+").Value;
+
+                if (isBiggerThen5)
+                {
+                    isBiggerThen5 = !isBiggerThen5;
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(5);
+                    int.Parse(valueUsedInTest).Should().BeLessThan(100);
+                }
+                else
+                {
+                    int.Parse(valueUsedInTest).Should().BeLessThan(5);
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(0);
+                }
+
+                var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
+
+                UnitTestHelper.AssertSimilarStrings(expected, test.ToString());
+            }
+        }
+
+        [Fact]
+        public void SimpleMethodLessThanOrEqual()
+        {
+            var expectedTemplate = @"
+[Theory]
+[InlineData(xx)]
+public void TestMethod_WhenSomething_ShouldSomething(int x)
+{
+    // Arrange
+    
+    // Act
+    var actual = _sut.TestMethod(x);
+    
+    // Assert
+    Assert.Equal(Assert.Equal(expected, actual);
+}
+".Trim();
+            var method = GetMethodSyntaxFromExample(_simpleMethodLessThanEquals);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isBiggerThen5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = Regex.Match(test.ToString(), @"[-]*\d+").Value;
+
+                if (isBiggerThen5)
+                {
+                    isBiggerThen5 = !isBiggerThen5;
+                    int.Parse(valueUsedInTest).Should().BeGreaterThan(5);
+                    int.Parse(valueUsedInTest).Should().BeLessThan(100);
+                }
+                else
+                {
+                    int.Parse(valueUsedInTest).Should().BeLessThanOrEqualTo(5);
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(0);
                 }
 
                 var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
@@ -143,6 +275,62 @@ namespace TestNameSpace
         public int TestMethod() 
         {
             return 5;
+        }
+".Trim();
+
+        private static string _simpleMethodGreaterThan = @"
+        public int TestMethod(int x) 
+        {
+            if (x > 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodGreaterThanEquals = @"
+        public int TestMethod(int x) 
+        {
+            if (x >= 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodLessThan = @"
+        public int TestMethod(int x) 
+        {
+            if (x < 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodLessThanEquals = @"
+        public int TestMethod(int x) 
+        {
+            if (x <= 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
         }
 ".Trim();
 
