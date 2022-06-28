@@ -56,7 +56,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }
         }
 
-        // TODO: implement .
+        // TODO: implement
         // TODO: extract
         private static void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
         {
@@ -79,7 +79,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                     var isIncrementing = kind == SyntaxKind.GreaterThanExpression
                         || kind == SyntaxKind.LessThanOrEqualExpression;
 
-                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement //&& (isGreaterThanOrGreaterThanEquals || !isLessThanOrLessThanEquals)
+                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
                         ? (constraint, value) => constraint.SetMinValue(value + ((isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)))
                         : (constraint, value) => constraint.SetMaxValue(value + ((!isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)));
                     
