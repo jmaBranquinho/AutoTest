@@ -80,8 +80,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                         || kind == SyntaxKind.LessThanOrEqualExpression;
 
                     Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
-                        ? (constraint, value) => constraint.SetMinValue(value + ((isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)))
-                        : (constraint, value) => constraint.SetMaxValue(value + ((!isActingOnIfBranch ? 1 : 0) * (isIncrementing ? 1 : -1)));
+                        ? (constraint, value) => constraint.SetMinValue(value + (isActingOnIfBranch ? 1 : 0))
+                        : (constraint, value) => constraint.SetMaxValue(value + (!isActingOnIfBranch ? -1 : 0));
                     
                     var operator1 = binaryExpression.Left.GetText().ToString().Trim();
                     var operator2 = binaryExpression.Right.GetText().ToString().Trim();
