@@ -58,56 +58,35 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         // TODO: implement
         // TODO: extract
-        private void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
+        private static void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
         {
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
-                    if (!statementWrapper.IsElseStatement)
-                    { 
-                        var binaryExpression = (BinaryExpressionSyntax) ifSyntax.Condition;
-                        if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
-                        {
-                            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-                            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
 
-                            string variable;
-                            int value;
-                            if (constraints.ContainsKey(operator1))
-                            {
-                                variable = operator1;
-                                value = int.Parse(operator2);
-                            } 
-                            else
-                            {
-                                variable = operator2;
-                                value = int.Parse(operator1);
-                            }
-                            ((IntConstraint) constraints[variable]).SetMinValue(value);
-                        }
-                    }
-                    else
+                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
+                        ? (constraint, value) => constraint.SetMinValue(value + 1)
+                        : (constraint, value) => constraint.SetMaxValue(value);
+
+                    var binaryExpression = (BinaryExpressionSyntax)ifSyntax.Condition;
+                    if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
                     {
-                        var binaryExpression = (BinaryExpressionSyntax)ifSyntax.Condition;
-                        if (binaryExpression.Kind() == SyntaxKind.GreaterThanExpression)
-                        {
-                            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-                            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+                        var operator1 = binaryExpression.Left.GetText().ToString().Trim();
+                        var operator2 = binaryExpression.Right.GetText().ToString().Trim();
 
-                            string variable;
-                            int value;
-                            if (constraints.ContainsKey(operator1))
-                            {
-                                variable = operator1;
-                                value = int.Parse(operator2);
-                            }
-                            else
-                            {
-                                variable = operator2;
-                                value = int.Parse(operator1);
-                            }
-                            ((IntConstraint)constraints[variable]).SetMaxValue(value);
+                        string variable;
+                        int value;
+                        if (constraints.ContainsKey(operator1))
+                        {
+                            variable = operator1;
+                            value = int.Parse(operator2);
                         }
+                        else
+                        {
+                            variable = operator2;
+                            value = int.Parse(operator1);
+                        }
+                        addConstraint((IntConstraint)constraints[variable], value);
                     }
                     break;
                 default:

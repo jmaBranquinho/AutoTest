@@ -101,12 +101,12 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
                 {
                     isBiggerThen5 = !isBiggerThen5;
                     int.Parse(valueUsedInTest).Should().BeGreaterThan(5);
-                    //int.Parse(valueUsedInTest).Should().BeLessThan(100);
+                    int.Parse(valueUsedInTest).Should().BeLessThan(100);
                 } 
                 else
                 {
                     int.Parse(valueUsedInTest).Should().BeLessThanOrEqualTo(5);
-                    //int.Parse(valueUsedInTest).Should().BeGreaterThan(0);
+                    int.Parse(valueUsedInTest).Should().BeGreaterThan(0);
                 }
 
                 var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));

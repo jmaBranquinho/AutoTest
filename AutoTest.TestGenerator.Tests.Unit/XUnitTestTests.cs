@@ -15,26 +15,6 @@ namespace AutoTest.TestGenerator.Tests.Unit
     {
 
         [Fact]
-        public void OnlyName()
-        {
-            var expected = @"
-[Fact]
-public void UnitTestMethod()
-{
-    // Arrange
-    
-    // Act
-    
-    // Assert
-    
-}
-".Trim();
-            var method = new XUnitTest("UnitTestMethod", Enumerable.Empty<StatementWrapper>()).ToString();
-
-            UnitTestHelper.AssertSimilarStrings(expected, method);
-        }
-
-        [Fact]
         public void NameAndSimpleBodyWithoutParameters()
         {
             var methodSyntax = GetMethodSyntaxFromExample(_simpleClassAndMethodWithoutParameters);
