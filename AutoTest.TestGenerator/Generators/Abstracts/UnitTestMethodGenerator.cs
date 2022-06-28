@@ -64,19 +64,10 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             {
                 case IfStatementSyntax ifSyntax:
 
-                    var binaryExpression = (BinaryExpressionSyntax)ifSyntax.Condition;
+                    var binaryExpression = (BinaryExpressionSyntax) ifSyntax.Condition;
                     var kind = binaryExpression.Kind();
 
-                    var isGreaterThanOrGreaterThanEquals = kind == SyntaxKind.GreaterThanExpression
-                        || kind == SyntaxKind.GreaterThanOrEqualExpression;
-
-                    var isLessThanOrLessThanEquals = kind == SyntaxKind.LessThanExpression
-                        || kind == SyntaxKind.LessThanOrEqualExpression;
-
                     var isActingOnIfBranch = kind == SyntaxKind.GreaterThanExpression
-                        || kind == SyntaxKind.LessThanOrEqualExpression;
-
-                    var isIncrementing = kind == SyntaxKind.GreaterThanExpression
                         || kind == SyntaxKind.LessThanOrEqualExpression;
 
                     Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
@@ -90,7 +81,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                     var variable = isVariableInOperator1 ? operator1 : operator2;
                     var value = isVariableInOperator1 ? int.Parse(operator2) : int.Parse(operator1);
 
-                    addConstraint((IntConstraint)constraints[variable], value);
+                    addConstraint((IntConstraint) constraints[variable], value);
                     break;
                 default:
                     break;
