@@ -1,18 +1,23 @@
 ﻿namespace AutoTest.TestGenerator.Generators.Constraints
 {
-    public class IntConstraint : ConstraintBase
+    public class IntConstraint : NumericalConstraint<int>
     {
-        private const int _humanPreferenceMin = 0;
+        protected override int _humanPreferenceMin => 0;
 
-        private const int _humanPreferenceMax = 100;
+        protected override int _humanPreferenceMax => 100;
 
-        private int _maxValue = int.MaxValue;
+        protected new int _maxValue = int.MaxValue;
 
-        private int _minValue = int.MinValue;
+        protected new int _minValue = int.MinValue;
 
-        private List<int> _exclusions = new List<int>();
 
-        public IntConstraint SetMaxValue(int value)
+        public override NumericalConstraint<int> Excluding(params int[] values)
+        {
+            _exclusions.AddRange(values);
+            return this;
+        }
+
+        public override NumericalConstraint<int> SetMaxValue(int value)
         {
             if (value < _maxValue)
             {
@@ -22,7 +27,7 @@
             return this;
         }
 
-        public IntConstraint SetMinValue(int value)
+        public override NumericalConstraint<int> SetMinValue(int value)
         {
             if (value > _minValue)
             {
@@ -32,30 +37,16 @@
             return this;
         }
 
-        public IntConstraint Excluding(params int[] values)
-        {
-            _exclusions.AddRange(values);
-            return this;
-        }
+        protected override (int min, int max) AdjustRangeToHumanPreference()
+            => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
 
-        public override object Generate()
-        {
-            var (min, max) = AdjustRangeToHumanPreference();
-
-            var random = new Random();
-            return _exclusions.Any() 
-                ? GenerateRandomWithExclusions(min, max, random)
-                : random.Next(min, max);
-        }
-
-        private int GenerateRandomWithExclusions(int min, int max, Random random)
+        protected override int GenerateRandomWithExclusions(int min, int max, Random random)
         {
             var exclusionsWithoutDuplicates = new HashSet<int>(_exclusions);
             var range = Enumerable.Range(min, max).Where(i => !exclusionsWithoutDuplicates.Contains(i)).ToList();
             return range.ElementAt(random.Next(min, max) - exclusionsWithoutDuplicates.Count);
         }
 
-        private (int min, int max) AdjustRangeToHumanPreference() 
-            => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
+        protected override int GenerateRandomBetweenRange(int min, int max) => new Random().Next(min, max);
     }
 }

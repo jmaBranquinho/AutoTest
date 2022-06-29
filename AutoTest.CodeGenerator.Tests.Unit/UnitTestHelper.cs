@@ -16,14 +16,19 @@ namespace AutoTest.CodeGenerator.Tests.Unit
 
         public static string GetDefaultNewLineCharAndReplaceIt(this string text)
         {
-            var newLine = text.First();
-            return text.Replace(newLine.ToString(), Environment.NewLine);
+            var newLine = text.Substring(0, 2);
+            if(newLine != "\r\n")
+            {
+                return text.Replace(newLine.First().ToString(), Environment.NewLine);
+            }
+
+            return text;
         }
 
         private static string ReOrderReformatSpaces(string text) => text
             .Replace("    ", "\t")
-            .Replace($"{Environment.NewLine}\t", $"\t{{Environment.NewLine}}")
+            .Replace($"{Environment.NewLine}\t", $"\t{Environment.NewLine}")
             .Replace($"{Environment.NewLine}\t{Environment.NewLine}", $"\t{Environment.NewLine}{Environment.NewLine}")
-            .Replace("\t{Environment.NewLine}\t", "\t\t{Environment.NewLine}");
+            .Replace($"\t{Environment.NewLine}\t", $"\t\t{Environment.NewLine}");
     }
 }
