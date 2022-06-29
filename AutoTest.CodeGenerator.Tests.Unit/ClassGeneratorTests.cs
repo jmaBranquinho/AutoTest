@@ -18,7 +18,7 @@ public class UnitTestClass
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -38,7 +38,7 @@ public class UnitTestClass
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -61,7 +61,7 @@ public class UnitTestClass
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -81,7 +81,7 @@ public class UnitTestClass
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -102,7 +102,7 @@ public class UnitTestClass
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -125,7 +125,7 @@ public class UnitTestClass
         _param1 = param1;
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -151,7 +151,7 @@ public class UnitTestClass
         _param2 = param2;
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -173,7 +173,7 @@ public class UnitTestClass
     
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -195,7 +195,7 @@ public class UnitTestClass
     
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -215,7 +215,7 @@ public int Return1()
 {
     return 1;
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var expected = @"
 public class UnitTestClass
@@ -225,7 +225,7 @@ public class UnitTestClass
         return 1;
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
@@ -244,7 +244,7 @@ public int Return1()
 {
     return 1;
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var expected = @"
 public class UnitTestClass
@@ -259,7 +259,7 @@ public class UnitTestClass
         return 1;
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")

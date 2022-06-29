@@ -32,7 +32,7 @@ public void TestMethod_WhenSomething_ShouldSomething()
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodWithoutParametersNoLogic);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -58,7 +58,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterNoLogic);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -87,7 +87,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThan);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -106,7 +106,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
                 else
                 {
                     int.Parse(valueUsedInTest).Should().BeLessThanOrEqualTo(5);
-                    int.Parse(valueUsedInTest).Should().BeGreaterThan(0);
+                    int.Parse(valueUsedInTest).Should().BeGreaterThanOrEqualTo(0);
                 }
 
                 var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
@@ -131,7 +131,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThanEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -175,7 +175,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodLessThan);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -219,7 +219,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodSyntaxFromExample(_simpleMethodLessThanEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
@@ -244,6 +244,54 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
                 var expected = expectedTemplate.Replace("xx", string.Join(string.Empty, valueUsedInTest));
 
                 UnitTestHelper.AssertSimilarStrings(expected, test.ToString());
+            }
+        }
+
+        [Fact]
+        public void SimpleMethodEquals()
+        {
+            var method = GetMethodSyntaxFromExample(_simpleMethodEquals);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isEqualTo5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = int.Parse(Regex.Match(test.ToString(), @"[-]*\d+").Value);
+
+                if (isEqualTo5)
+                {
+                    isEqualTo5 = !isEqualTo5;
+                    valueUsedInTest.Should().Be(5);
+                }
+                else
+                {
+                    valueUsedInTest.Should().NotBe(5);
+                }
+            }
+        }
+
+        [Fact]
+        public void SimpleMethodNotEquals()
+        {
+            var method = GetMethodSyntaxFromExample(_simpleMethodNotEquals);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isNotEqualTo5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = int.Parse(Regex.Match(test.ToString(), @"[-]*\d+").Value);
+
+                if (isNotEqualTo5)
+                {
+                    isNotEqualTo5 = !isNotEqualTo5;
+                    valueUsedInTest.Should().NotBe(5);
+                }
+                else
+                {
+                    valueUsedInTest.Should().Be(5);
+                }
             }
         }
 
@@ -324,6 +372,34 @@ namespace TestNameSpace
         public int TestMethod(int x) 
         {
             if (x <= 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodEquals = @"
+        public int TestMethod(int x) 
+        {
+            if (x == 5)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodNotEquals = @"
+        public int TestMethod(int x) 
+        {
+            if (x != 5)
             {
                 return x;
             } 

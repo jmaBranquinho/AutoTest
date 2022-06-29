@@ -17,7 +17,7 @@ public void UnitTestMethod()
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -38,7 +38,7 @@ public void UnitTestMethod()
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -60,7 +60,7 @@ public void UnitTestMethod()
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -80,7 +80,7 @@ public void UnitTestMethod(int param1)
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -100,7 +100,7 @@ public void UnitTestMethod(int param1, SomeObj param2)
 {
     
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -119,7 +119,7 @@ public void UnitTestMethod(int param1, SomeObj param2)
 var x = 2;
 var y = 6;
 return x * y;
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var expected = @"
 public void UnitTestMethod()
 {
@@ -127,7 +127,7 @@ public void UnitTestMethod()
     var y = 6;
     return x * y;
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")

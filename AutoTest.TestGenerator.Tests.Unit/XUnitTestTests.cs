@@ -31,7 +31,7 @@ public void UnitTestMethod()
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = new XUnitTest("UnitTestMethod", new List<StatementWrapper> { methodSyntax }).ToString();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -55,7 +55,7 @@ public void UnitTestMethod(int x)
     // Assert
     Assert.Equal(Assert.Equal(expected, actual);
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
             var parameters = new List<List<(string Name, Type Type, object Value)>>
             {
                 new List<(string Name, Type Type, object Value)>
@@ -89,7 +89,7 @@ namespace TestNameSpace
         }
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
         private string _simpleClassAndMethodWithParameters = @"
 namespace TestNameSpace
@@ -102,7 +102,7 @@ namespace TestNameSpace
         }
     }
 }
-".Trim();
+".GetDefaultNewLineCharAndReplaceIt().Trim();
 
     }
 }

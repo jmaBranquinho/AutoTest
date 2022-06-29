@@ -1,4 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.TestGenerator.Generators.Analyzers;
 using AutoTest.TestGenerator.Generators.Constraints;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
@@ -63,25 +64,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
-
-                    var binaryExpression = (BinaryExpressionSyntax) ifSyntax.Condition;
-                    var kind = binaryExpression.Kind();
-
-                    var isActingOnIfBranch = kind == SyntaxKind.GreaterThanExpression
-                        || kind == SyntaxKind.LessThanOrEqualExpression;
-
-                    Action<IntConstraint, int> addConstraint = !statementWrapper.IsElseStatement
-                        ? (constraint, value) => constraint.SetMinValue(value + (isActingOnIfBranch ? 1 : 0))
-                        : (constraint, value) => constraint.SetMaxValue(value + (!isActingOnIfBranch ? -1 : 0));
-                    
-                    var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-                    var operator2 = binaryExpression.Right.GetText().ToString().Trim();
-
-                    var isVariableInOperator1 = constraints.ContainsKey(operator1);
-                    var variable = isVariableInOperator1 ? operator1 : operator2;
-                    var value = isVariableInOperator1 ? int.Parse(operator2) : int.Parse(operator1);
-
-                    addConstraint((IntConstraint) constraints[variable], value);
+                    IntegerOperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
                 default:
                     break;
