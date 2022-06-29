@@ -12,6 +12,10 @@
 
         protected List<T> _exclusions = new();
 
+        public abstract T ParseStringToType(string text);
+
+        public abstract T SumWithType(T value, int valueToSum);
+
         public abstract NumericalConstraint<T> SetMaxValue(T value);
 
         public abstract NumericalConstraint<T> SetMinValue(T value);

@@ -64,7 +64,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
-                    NumericOperationAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
+                    NumericOperationAnalyzer<int>.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
                 default:
                     break;

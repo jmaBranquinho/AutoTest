@@ -10,6 +10,9 @@
 
         protected new int _minValue = int.MinValue;
 
+        public override int ParseStringToType(string text) => int.Parse(text);
+
+        public override int SumWithType(int value, int valueToSum) => value + valueToSum;
 
         public override NumericalConstraint<int> Excluding(params int[] values)
         {
