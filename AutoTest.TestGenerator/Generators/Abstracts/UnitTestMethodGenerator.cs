@@ -48,7 +48,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         }
 
         // TODO: implement for other types
-        private void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
+        private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
         {
             foreach (var parameter in parameters)
             {
@@ -64,7 +64,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
-                    NumericOperationAnalyzer<int>.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
+                    NumericOperationAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
                 default:
                     break;

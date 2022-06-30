@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.TestGenerator.Generators.Analyzers
 {
-    public class NumericOperationAnalyzer<T> : IOperationsAnalyzer
+    public class NumericOperationAnalyzer : IOperationsAnalyzer
     {
         public static IEnumerable<SyntaxKind> SupportedOperations
             => new List<SyntaxKind>()
@@ -19,55 +19,65 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
         {
             var kind = binaryExpression.Kind();
 
+            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
+            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+
+            var isVariableInOperator1 = constraints.ContainsKey(operator1);
+            var variable = isVariableInOperator1 ? operator1 : operator2;
+
+            var (type, value) = ConvertAndGetVariableType(isVariableInOperator1 ? operator2 : operator1);
+
             if (LessThanOrGreaterThanOperations.Contains(kind))
             {
-                ProcessLessThanOrGreaterThanOperations(constraints, binaryExpression, kind, IsElseStatement);
+                ProcessLessThanOrGreaterThanOperations(type, variable, value, constraints, binaryExpression, kind, IsElseStatement);
                 return;
             }
             else if (EqualityOperations.Contains(kind))
             {
-                ProcessEqualityOperations(constraints, binaryExpression, kind, IsElseStatement);
+                ProcessEqualityOperations(type, variable, value, constraints, binaryExpression, kind, IsElseStatement);
                 return;
             }
 
             throw new NotImplementedException();
         }
 
-        private static void ProcessEqualityOperations(Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, SyntaxKind kind, bool isElseStatement)
+        // TODO: implement
+        private static (Type, object) ConvertAndGetVariableType(string variable)
         {
+            // TODO: implement
+            return (typeof(int), int.Parse(variable));
+        }
+
+        private static void ProcessEqualityOperations<T>(T type, string variableName, T value, Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, SyntaxKind kind, bool isElseStatement)
+        {
+            var numericalConstraint = IdentifyOperands(type, variableName, constraints, binaryExpression);
+
             Action<NumericalConstraint<T>, T> addConstraint = ((kind == SyntaxKind.EqualsExpression && !isElseStatement) || (kind == SyntaxKind.NotEqualsExpression && isElseStatement))
                 ? (constraint, value) => { constraint.SetMinValue(value); constraint.SetMaxValue(constraint.SumWithType(value, 1)); }
                 : (constraint, value) => constraint.Excluding(value);
 
-            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
-
-            var isVariableInOperator1 = constraints.ContainsKey(operator1);
-            var variable = isVariableInOperator1 ? operator1 : operator2;
-
-            var numericalConstraint = (NumericalConstraint<T>)constraints[variable];
-            var value = isVariableInOperator1 ? numericalConstraint.ParseStringToType(operator2) : numericalConstraint.ParseStringToType(operator1);
-
-            addConstraint((NumericalConstraint<T>)constraints[variable], value);
+            addConstraint(numericalConstraint, value);
         }
 
-        private static void ProcessLessThanOrGreaterThanOperations(Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, SyntaxKind kind, bool isElseStatement)
+        private static void ProcessLessThanOrGreaterThanOperations<T>(T type, string variableName, T value, Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, SyntaxKind kind, bool isElseStatement)
         {
+            var numericalConstraint = IdentifyOperands(type, variableName, constraints, binaryExpression);
+
             var isActingOnIfBranch = kind == SyntaxKind.GreaterThanExpression
                 || kind == SyntaxKind.LessThanOrEqualExpression;
 
-            Action<IntConstraint, int> addConstraint = !isElseStatement
+            Action<NumericalConstraint<T>, T> addConstraint = !isElseStatement
                 ? (constraint, value) => constraint.SetMinValue(constraint.SumWithType(value, (isActingOnIfBranch ? 1 : 0)))
                 : (constraint, value) => constraint.SetMaxValue(constraint.SumWithType(value, (!isActingOnIfBranch ? -1 : 0)));
 
-            var operator1 = binaryExpression.Left.GetText().ToString().Trim();
-            var operator2 = binaryExpression.Right.GetText().ToString().Trim();
+            addConstraint(numericalConstraint, value);
+        }
 
-            var isVariableInOperator1 = constraints.ContainsKey(operator1);
-            var variable = isVariableInOperator1 ? operator1 : operator2;
-            var value = isVariableInOperator1 ? int.Parse(operator2) : int.Parse(operator1);
-
-            addConstraint((IntConstraint)constraints[variable], value);
+        private static NumericalConstraint<T> IdentifyOperands<T>(T _, string variableName, Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression)
+        {
+            var numericalConstraint = (NumericalConstraint<T>)constraints[variableName];
+            return numericalConstraint;
+            //return (numericalConstraint, numericalConstraint.ParseStringToType(valueAsString));
         }
 
         private static IEnumerable<SyntaxKind> LessThanOrGreaterThanOperations
