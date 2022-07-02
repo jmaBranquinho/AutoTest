@@ -51,7 +51,20 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             addConstraint(constraint, NumericOperationAnalyzer<T>.ConvertToType(@operator));
         }
 
-        private static T ConvertToType(string value) => (T)Convert.ChangeType(value, typeof(T));
+        private static T ConvertToType(string value)
+        {
+            if(typeof(T) == typeof(int))
+            {
+                return (T)(object)int.Parse(value);
+            }
+            if (typeof(T) == typeof(double))
+            {
+                var clearedString = value.Replace("d", string.Empty);//doubles can be declared with a suffix d like 5d
+                return (T)(object)double.Parse(clearedString);
+            }
+
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
 
         private static IEnumerable<SyntaxKind> LessThanOrGreaterThanOperations
             => new List<SyntaxKind>()

@@ -19,7 +19,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
             foreach (var parameter in methodSyntax.ParameterList.Parameters)
             {
-                Parameters.Add(parameter.Identifier.Text, parameter.Type.RawKind.GetType());
+                Parameters.Add(parameter.Identifier.Text, GetTypeFromString(((PredefinedTypeSyntax) parameter.Type).Keyword.ValueText));
             }
         }
 
@@ -45,6 +45,16 @@ namespace AutoTest.CodeInterpreter.Wrappers
             }
 
             return null;
+        }
+
+        private static Type GetTypeFromString(string type)
+        {
+            return type switch
+            {
+                "int" => typeof(int),
+                "double" => typeof(double),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

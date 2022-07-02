@@ -43,11 +43,11 @@
         protected override (int min, int max) AdjustRangeToHumanPreference()
             => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
 
-        protected override int GenerateRandomWithExclusions(int min, int max, Random random)
+        protected override int GenerateRandomWithExclusions(int min, int max)
         {
             var exclusionsWithoutDuplicates = new HashSet<int>(_exclusions);
             var range = Enumerable.Range(min, max).Where(i => !exclusionsWithoutDuplicates.Contains(i)).ToList();
-            return range.ElementAt(random.Next(min, max) - exclusionsWithoutDuplicates.Count);
+            return range.ElementAt(new Random().Next(min, max) - exclusionsWithoutDuplicates.Count);
         }
 
         protected override int GenerateRandomBetweenRange(int min, int max) => new Random().Next(min, max);

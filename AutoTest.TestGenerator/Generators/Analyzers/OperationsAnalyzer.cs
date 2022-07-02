@@ -7,11 +7,17 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 {
     public static class OperationsAnalyzer
     {
+        // TODO this could be a dictionary
         public static IConstraint GetConstraintFromType(Type type)
         {
             if (type == typeof(int))
             {
                 return new IntConstraint();
+            }
+
+            if (type == typeof(double))
+            {
+                return new DoubleConstraint();
             }
 
             throw new NotImplementedException();//TODO

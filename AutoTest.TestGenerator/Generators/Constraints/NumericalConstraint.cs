@@ -27,10 +27,8 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         public object Generate()
         {
             var (min, max) = AdjustRangeToHumanPreference();
-
-            var random = new Random();
             return _exclusions.Any()
-                ? GenerateRandomWithExclusions(min, max, random)
+                ? GenerateRandomWithExclusions(min, max)
                 : GenerateRandomBetweenRange(min, max);
         }
 
@@ -38,7 +36,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected abstract (T min, T max) AdjustRangeToHumanPreference();
 
-        protected abstract T GenerateRandomWithExclusions(T min, T max, Random random);
+        protected abstract T GenerateRandomWithExclusions(T min, T max);
 
         protected abstract T GenerateRandomBetweenRange(T min, T max);
     }
