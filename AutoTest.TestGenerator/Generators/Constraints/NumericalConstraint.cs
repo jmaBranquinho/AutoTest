@@ -1,6 +1,8 @@
-﻿namespace AutoTest.TestGenerator.Generators.Constraints
+﻿using AutoTest.TestGenerator.Generators.Interfaces;
+
+namespace AutoTest.TestGenerator.Generators.Constraints
 {
-    public abstract class NumericalConstraint<T> : ConstraintBase
+    public abstract class NumericalConstraint<T> : INumericalConstraint<T>
     {
         protected abstract T _humanPreferenceMin { get; }
 
@@ -16,13 +18,13 @@
 
         public abstract T SumWithType(T value, int valueToSum);
 
-        public abstract NumericalConstraint<T> SetMaxValue(T value);
+        public abstract INumericalConstraint<T> SetMaxValue(T value);
 
-        public abstract NumericalConstraint<T> SetMinValue(T value);
+        public abstract INumericalConstraint<T> SetMinValue(T value);
 
-        public abstract NumericalConstraint<T> Excluding(params T[] values);
+        public abstract INumericalConstraint<T> Excluding(params T[] values);
 
-        public override object Generate()
+        public object Generate()
         {
             var (min, max) = AdjustRangeToHumanPreference();
 
@@ -31,6 +33,8 @@
                 ? GenerateRandomWithExclusions(min, max, random)
                 : GenerateRandomBetweenRange(min, max);
         }
+
+        public Type GetVariableType() => typeof(T);
 
         protected abstract (T min, T max) AdjustRangeToHumanPreference();
 

@@ -11,5 +11,6 @@ namespace AutoTest.TestGenerator.Generators.Constraints
     public abstract class ConstraintBase : IConstraint
     {
         public abstract object Generate();
+        public abstract Type GetVariableType();
     }
 }
