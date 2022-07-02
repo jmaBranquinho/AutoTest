@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AutoTest.TestGenerator.Generators.Enums;
+using System.Diagnostics;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
@@ -14,7 +15,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public override double ParseStringToType(string text) => double.Parse(text);
 
-        public override double SumWithType(double value, int valueToSum) => value + valueToSum;
+        public override double SumWithType(double value, SumModifications modifier) => value + ResolveSumModifier(modifier);
 
         public override NumericalConstraint<double> Excluding(params double[] values)
         {
@@ -62,5 +63,13 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         protected override double GenerateRandomBetweenRange(double min, double max) => new Random().NextDouble() * (max - min) + min;
+
+        private static double ResolveSumModifier(SumModifications modifier) 
+            => modifier switch
+            {
+                SumModifications.IncrementUnit => double.Epsilon,
+                SumModifications.DecrementUnit => -double.Epsilon,
+                _ => 0,
+            };
     }
 }

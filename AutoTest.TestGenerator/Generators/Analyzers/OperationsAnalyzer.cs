@@ -20,6 +20,11 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 return new DoubleConstraint();
             }
 
+            if (type == typeof(decimal))
+            {
+                return new DecimalConstraint();
+            }
+
             throw new NotImplementedException();//TODO
         }
 

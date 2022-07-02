@@ -1,10 +1,12 @@
-﻿namespace AutoTest.TestGenerator.Generators.Interfaces
+﻿using AutoTest.TestGenerator.Generators.Enums;
+
+namespace AutoTest.TestGenerator.Generators.Interfaces
 {
     public interface INumericalConstraint<T> : IConstraint
     {
         public T ParseStringToType(string text);
 
-        public T SumWithType(T value, int valueToSum);
+        public T SumWithType(T value, SumModifications modifier = SumModifications.NoModification);
 
         public INumericalConstraint<T> SetMaxValue(T value);
 

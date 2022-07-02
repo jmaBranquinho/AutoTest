@@ -1,4 +1,5 @@
-﻿using AutoTest.TestGenerator.Generators.Interfaces;
+﻿using AutoTest.TestGenerator.Generators.Enums;
+using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
@@ -16,7 +17,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public abstract T ParseStringToType(string text);
 
-        public abstract T SumWithType(T value, int valueToSum);
+        public abstract T SumWithType(T value, SumModifications modifier = SumModifications.NoModification);
 
         public abstract INumericalConstraint<T> SetMaxValue(T value);
 

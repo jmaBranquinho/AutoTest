@@ -319,6 +319,30 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
             }
         }
 
+        [Fact]
+        public void SimpleMethodEqualsUsingDecimal()
+        {
+            var method = GetMethodSyntaxFromExample(_simpleMethodEqualsWithDecimal);
+
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+
+            var isEqualTo5 = true;
+            foreach (var test in result)
+            {
+                var valueUsedInTest = double.Parse(Regex.Match(test.ToString(), @"[-]*\d+").Value);
+
+                if (isEqualTo5)
+                {
+                    isEqualTo5 = !isEqualTo5;
+                    valueUsedInTest.Should().Be(5);
+                }
+                else
+                {
+                    valueUsedInTest.Should().NotBe(5);
+                }
+            }
+        }
+
         private static MethodWrapper GetMethodSyntaxFromExample(string exampleCode)
         {
             var analyzer = new CodeAnalyzer();
@@ -438,6 +462,20 @@ namespace TestNameSpace
         public double TestMethod(double x) 
         {
             if (x == 5d)
+            {
+                return x;
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+".Trim();
+
+        private static string _simpleMethodEqualsWithDecimal = @"
+        public decimal TestMethod(decimal x) 
+        {
+            if (x == 5m)
             {
                 return x;
             } 

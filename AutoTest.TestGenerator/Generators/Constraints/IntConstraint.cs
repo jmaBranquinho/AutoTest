@@ -1,4 +1,6 @@
-﻿namespace AutoTest.TestGenerator.Generators.Constraints
+﻿using AutoTest.TestGenerator.Generators.Enums;
+
+namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class IntConstraint : NumericalConstraint<int>
     {
@@ -12,7 +14,7 @@
 
         public override int ParseStringToType(string text) => int.Parse(text);
 
-        public override int SumWithType(int value, int valueToSum) => value + valueToSum;
+        public override int SumWithType(int value, SumModifications modifier) => value + ResolveSumModifier(modifier);
 
         public override NumericalConstraint<int> Excluding(params int[] values)
         {
@@ -51,5 +53,13 @@
         }
 
         protected override int GenerateRandomBetweenRange(int min, int max) => new Random().Next(min, max);
+
+        private static int ResolveSumModifier(SumModifications modifier)
+            => modifier switch
+            {
+                SumModifications.IncrementUnit => 1,
+                SumModifications.DecrementUnit => -1,
+                _ => 0,
+            };
     }
 }

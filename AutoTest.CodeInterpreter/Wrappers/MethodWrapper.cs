@@ -53,6 +53,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
             {
                 "int" => typeof(int),
                 "double" => typeof(double),
+                "decimal" => typeof(decimal),
                 _ => throw new NotImplementedException(),
             };
         }
