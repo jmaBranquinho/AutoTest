@@ -8,46 +8,44 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 {
     public class NumericOperationAnalyzer<T> : INumericalAnalyzer where T : IConvertible
     {
-        public static IEnumerable<SyntaxKind> SupportedOperations
-            => new List<SyntaxKind>()
-            .Concat(LessThanOrGreaterThanOperations)
-            .Concat(EqualityOperations);
+        public static IEnumerable<SyntaxKind> SupportedOperations => AnalyzerHelper.EqualityOperations;
 
         public static bool IsSupported(SyntaxKind kind) => SupportedOperations.Contains(kind);
 
-        public void AdjustConstraint(IConstraint constraint, SyntaxKind kind, BinaryExpressionSyntax binaryExpression, bool isElseStatement, IEnumerable<string> operators)
-        {
-            if (LessThanOrGreaterThanOperations.Contains(kind))
-            {
-                NumericOperationAnalyzer<T>.ProcessLessThanOrGreaterThanOperations((NumericalConstraint<T>) constraint, kind, isElseStatement, operators.FirstOrDefault());
-            }
-            else if (EqualityOperations.Contains(kind))
-            {
-                NumericOperationAnalyzer<T>.ProcessEqualityOperations((NumericalConstraint<T>)constraint, kind, isElseStatement, operators.FirstOrDefault());
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public void AdjustConstraint(IConstraint constraint, SyntaxKind kind, BinaryExpressionSyntax binaryExpression, bool isElseStatement, IEnumerable<string> operators) 
+            => NumericOperationAnalyzer<T>.ProcessEqualityOperations2((NumericalConstraint<T>)constraint, kind, isElseStatement, operators.FirstOrDefault());
 
-        private static void ProcessLessThanOrGreaterThanOperations(NumericalConstraint<T> constraint, SyntaxKind kind, bool isElseStatement, string? @operator)
+        private static void ProcessEqualityOperations2(NumericalConstraint<T> constraint, SyntaxKind kind, bool isElseStatement, string? @operator)
         {
-            var isActingOnIfBranch = kind == SyntaxKind.GreaterThanExpression
+            var isReversedEqualityOperation = (kind == SyntaxKind.NotEqualsExpression && isElseStatement);
+
+            var requiresModification = kind == SyntaxKind.GreaterThanExpression
                 || kind == SyntaxKind.LessThanOrEqualExpression;
 
-            Action<NumericalConstraint<T>, T> addConstraint = !isElseStatement
-                ? (constraint, value) => constraint.SetMinValue(constraint.SumWithType(value, isActingOnIfBranch ? SumModifications.IncrementUnit : SumModifications.NoModification))
-                : (constraint, value) => constraint.SetMaxValue(constraint.SumWithType(value, !isActingOnIfBranch ? SumModifications.DecrementUnit : SumModifications.NoModification));
+            var isEqualOrNonEqualOperation = kind == SyntaxKind.EqualsExpression
+                || kind == SyntaxKind.NotEqualsExpression;
 
-            addConstraint(constraint, NumericOperationAnalyzer<T>.ConvertToType(@operator));
-        }
 
-        private static void ProcessEqualityOperations(NumericalConstraint<T> constraint, SyntaxKind kind, bool isElseStatement, string? @operator)
-        {
-            Action<NumericalConstraint<T>, T> addConstraint = ((kind == SyntaxKind.EqualsExpression && !isElseStatement) || (kind == SyntaxKind.NotEqualsExpression && isElseStatement))
-                ? (constraint, value) => { constraint.SetMinValue(value); constraint.SetMaxValue(constraint.SumWithType(value, SumModifications.IncrementUnit)); }
-                : (constraint, value) => constraint.Excluding(value);
+            Action<NumericalConstraint<T>, T> addConstraint = (!isElseStatement && kind != SyntaxKind.NotEqualsExpression) || isReversedEqualityOperation
+                ? (constraint, value) =>
+                {
+                    constraint.SetMinValue(constraint.SumWithType(value, requiresModification ? SumModifications.IncrementUnit : SumModifications.NoModification));
+                    if(isEqualOrNonEqualOperation)
+                    {
+                        constraint.SetMaxValue(constraint.SumWithType(value, SumModifications.IncrementUnit));
+                    }
+                }
+                : (constraint, value) =>
+                {
+                    if(!isEqualOrNonEqualOperation)
+                    {
+                        constraint.SetMaxValue(constraint.SumWithType(value, !requiresModification ? SumModifications.DecrementUnit : SumModifications.NoModification));
+                    } 
+                    else
+                    {
+                        constraint.Excluding(value);
+                    }
+                };
 
             addConstraint(constraint, NumericOperationAnalyzer<T>.ConvertToType(@operator));
         }
@@ -69,21 +67,5 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 
             return (T)Convert.ChangeType(value, typeof(T));
         }
-
-        private static IEnumerable<SyntaxKind> LessThanOrGreaterThanOperations
-            => new List<SyntaxKind>()
-            {
-                SyntaxKind.GreaterThanExpression,
-                SyntaxKind.GreaterThanOrEqualExpression,
-                SyntaxKind.LessThanExpression,
-                SyntaxKind.LessThanOrEqualExpression
-            };
-
-        private static IEnumerable<SyntaxKind> EqualityOperations
-            => new List<SyntaxKind>()
-            {
-                SyntaxKind.EqualsExpression,
-                SyntaxKind.NotEqualsExpression
-            };
     }
 }

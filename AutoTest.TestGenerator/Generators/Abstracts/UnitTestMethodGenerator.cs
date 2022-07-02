@@ -37,7 +37,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             return new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() };
         }
 
-        private IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
+        private static IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
         {
             foreach (var parameter in parameters)
             {
@@ -50,7 +50,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         {
             foreach (var parameter in parameters)
             {
-                constraints.Add(parameter.Key, OperationsAnalyzer.GetConstraintFromType(parameter.Value));
+                constraints.Add(parameter.Key, AnalyzerHelper.GetConstraintFromType(parameter.Value));
             }
         }
 
@@ -62,11 +62,9 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             {
                 case IfStatementSyntax ifSyntax:
                     OperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
-                    //NumericOperationAnalyzer<int>.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
                 default:
-                    break;
-                    //throw new NotImplementedException();
+                    throw new NotImplementedException();
             }
         }
 

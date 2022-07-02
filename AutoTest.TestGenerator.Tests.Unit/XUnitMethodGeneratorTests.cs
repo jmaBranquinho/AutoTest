@@ -65,7 +65,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
 
             var test = result.First().ToString();
 
-            var valueUsedInTest = test.Substring(22).Take(2);
+            var valueUsedInTest = Regex.Match(test.ToString(), @"[-]*\d+").Value;
             expected = expected.Replace("xx", string.Join(string.Empty, valueUsedInTest));
 
             UnitTestHelper.AssertSimilarStrings(expected, test);

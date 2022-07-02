@@ -1,5 +1,4 @@
-﻿using AutoTest.TestGenerator.Generators.Constraints;
-using AutoTest.TestGenerator.Generators.Interfaces;
+﻿using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -7,27 +6,6 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 {
     public static class OperationsAnalyzer
     {
-        // TODO this could be a dictionary
-        public static IConstraint GetConstraintFromType(Type type)
-        {
-            if (type == typeof(int))
-            {
-                return new IntConstraint();
-            }
-
-            if (type == typeof(double))
-            {
-                return new DoubleConstraint();
-            }
-
-            if (type == typeof(decimal))
-            {
-                return new DecimalConstraint();
-            }
-
-            throw new NotImplementedException();//TODO
-        }
-
         public static void AdjustConstraints(Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, bool IsElseStatement)
         {
             var operators = GetOperators(binaryExpression);

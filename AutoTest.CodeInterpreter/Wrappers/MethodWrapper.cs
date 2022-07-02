@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using AutoTest.Core;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.Wrappers
 {
@@ -19,7 +20,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
             foreach (var parameter in methodSyntax.ParameterList.Parameters)
             {
-                Parameters.Add(parameter.Identifier.Text, GetTypeFromString(((PredefinedTypeSyntax) parameter.Type).Keyword.ValueText));
+                Parameters.Add(parameter.Identifier.Text, PrimitiveTypeConvertionHelper.GetTypeFromString(((PredefinedTypeSyntax) parameter.Type).Keyword.ValueText));
             }
         }
 
@@ -44,18 +45,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
                 }
             }
 
-            return null;
-        }
-
-        private static Type GetTypeFromString(string type)
-        {
-            return type switch
-            {
-                "int" => typeof(int),
-                "double" => typeof(double),
-                "decimal" => typeof(decimal),
-                _ => throw new NotImplementedException(),
-            };
+            throw new NotImplementedException();//TODO
         }
     }
 }
