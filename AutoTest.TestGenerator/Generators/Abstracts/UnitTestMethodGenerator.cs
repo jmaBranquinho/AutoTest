@@ -64,7 +64,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                     OperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
                 default:
-                    throw new NotImplementedException();
+                    break;
             }
         }
 

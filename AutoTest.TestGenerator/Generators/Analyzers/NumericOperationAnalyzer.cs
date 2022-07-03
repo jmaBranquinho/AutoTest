@@ -25,7 +25,6 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             var isEqualOrNonEqualOperation = kind == SyntaxKind.EqualsExpression
                 || kind == SyntaxKind.NotEqualsExpression;
 
-
             Action<NumericalConstraint<T>, T> addConstraint = (!isElseStatement && kind != SyntaxKind.NotEqualsExpression) || isReversedEqualityOperation
                 ? (constraint, value) =>
                 {
