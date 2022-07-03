@@ -126,45 +126,54 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         private string GenerateRandomString()
         {
-            var allowedChars = new List<char>();
+
             if (!_stringBuildingRules.Any())
             {
                 _stringBuildingRules.Add(CharacterGroups.All);
             }
-            foreach (var rule in _stringBuildingRules)
-            {
-                switch (rule)
-                {
-                    case CharacterGroups.UpperCaseLetters:
-                        allowedChars.AddRange(GenerateUpperCaseLetters());
-                        break;
-                    case CharacterGroups.LowerCaseLetters:
-                        allowedChars.AddRange(GenerateLowerCaseLetters());
-                        break;
-                    case CharacterGroups.Numbers:
-                        allowedChars.AddRange(GenerateNumbers());
-                        break;
-                    case CharacterGroups.SpecialCharacters:
-                        allowedChars.AddRange(GenerateSpecialCharacters());
-                        break;
-                    case CharacterGroups.Spaces:
-                        allowedChars.Add(' ');
-                        break;
-                    default:
-                        break;
-                }
-            }
-            allowedChars = allowedChars.Except(_excludedCharacters).ToList();
 
-            var size = CalculateStringSize();
+            var allowedChars = GenerateAllowedCharacterList();
+
+            var stringSize = CalculateStringSize();
 
             var random = new Random();
             var builder = new StringBuilder();
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < stringSize; i++)
             {
-                builder.Append(allowedChars.ElementAt(random.Next(0, allowedChars.Count + 1)));
+                builder.Append(allowedChars.ElementAt(random.Next(0, allowedChars.Count() + 1)));
             }
             return builder.ToString();
         }
+
+        private IEnumerable<char> GenerateAllowedCharacterList()
+        {
+            var allowedChars = new List<char>();
+            foreach (var rule in _stringBuildingRules)
+            {
+                if (HasKey(rule, CharacterGroups.UpperCaseLetters))
+                {
+                    allowedChars.AddRange(GenerateUpperCaseLetters());
+                }
+                if (HasKey(rule, CharacterGroups.LowerCaseLetters))
+                {
+                    allowedChars.AddRange(GenerateLowerCaseLetters());
+                }
+                if (HasKey(rule, CharacterGroups.Numbers))
+                {
+                    allowedChars.AddRange(GenerateNumbers());
+                }
+                if (HasKey(rule, CharacterGroups.SpecialCharacters))
+                {
+                    allowedChars.AddRange(GenerateSpecialCharacters());
+                }
+                if (HasKey(rule, CharacterGroups.Spaces))
+                {
+                    allowedChars.Add(' ');
+                }
+            }
+            return allowedChars.Except(_excludedCharacters).ToList();
+        }
+
+        private static bool HasKey(CharacterGroups value, CharacterGroups flag) => (value & flag) != 0;
     }
 }

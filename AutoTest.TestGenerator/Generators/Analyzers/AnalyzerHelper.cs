@@ -12,6 +12,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 { typeof(int), () => new IntConstraint() },
                 { typeof(double), () => new DoubleConstraint() },
                 { typeof(decimal), () => new DecimalConstraint() },
+                { typeof(string), () => new StringConstraint() },
             };
 
         public static IConstraint GetConstraintFromType(Type type) => TypeToConstraintDictionary[type]();

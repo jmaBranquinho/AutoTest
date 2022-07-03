@@ -8,6 +8,7 @@
                 "int" => typeof(int),
                 "double" => typeof(double),
                 "decimal" => typeof(decimal),
+                "string" => typeof(string),
                 _ => throw new NotImplementedException(),
             };
 

@@ -13,9 +13,6 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
         public static bool IsSupported(SyntaxKind kind) => SupportedOperations.Contains(kind);
 
         public void AdjustConstraint(IConstraint constraint, SyntaxKind kind, BinaryExpressionSyntax binaryExpression, bool isElseStatement, IEnumerable<string> operators) 
-            => NumericOperationAnalyzer<T>.ProcessEqualityOperations2((NumericalConstraint<T>)constraint, kind, isElseStatement, operators.FirstOrDefault());
-
-        private static void ProcessEqualityOperations2(NumericalConstraint<T> constraint, SyntaxKind kind, bool isElseStatement, string? @operator)
         {
             var isReversedEqualityOperation = (kind == SyntaxKind.NotEqualsExpression && isElseStatement);
 
@@ -46,7 +43,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                     }
                 };
 
-            addConstraint(constraint, NumericOperationAnalyzer<T>.ConvertToType(@operator));
+            addConstraint((NumericalConstraint<T>)constraint, NumericOperationAnalyzer<T>.ConvertToType(operators.FirstOrDefault()));
         }
 
         private static T ConvertToType(string value)

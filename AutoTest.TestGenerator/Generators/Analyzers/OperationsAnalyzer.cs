@@ -42,7 +42,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
         // TODO migrate IsSupported so no dummy type needs to be passed
         private static bool IsNumericOperation(SyntaxKind kind, Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type) && NumericOperationAnalyzer<int>.IsSupported(kind);
 
-        private static bool IsTextOperation(SyntaxKind _, Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type);
+        private static bool IsTextOperation(SyntaxKind _, Type type) => type == typeof(string) || type == typeof(char);
 
         private static (Type type, IConstraint? constraint, string variable) GetOperationTypeAndConstraint(Dictionary<string, IConstraint> constraints, IEnumerable<string> operators)
         {
