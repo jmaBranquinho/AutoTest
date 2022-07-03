@@ -1,6 +1,6 @@
 ﻿using AutoTest.TestGenerator.Generators.Abstracts;
 
-namespace AutoTest.TestGenerator.Generators.XUnit
+namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit
 {
     public class XUnitClassGenerator : UnitTestClassGenerator
     {

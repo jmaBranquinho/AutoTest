@@ -1,9 +1,8 @@
 ﻿using AutoTest.CodeInterpreter.Wrappers;
-using AutoTest.TestGenerator.Generators.Abstracts;
 
-namespace AutoTest.TestGenerator.Generators.XUnit.Models
+namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models
 {
-    public class XUnitTest : UnitTest
+    public class XUnitTest : Abstracts.UnitTest
     {
         protected override string _parameterlessMethodAnnotation => "[Fact]";
         protected override string _parameterMethodAnnotation => "[Theory]";

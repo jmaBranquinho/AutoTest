@@ -1,6 +1,6 @@
 using AutoTest.CodeInterpreter;
 using AutoTest.CodeInterpreter.Wrappers;
-using AutoTest.TestGenerator.Generators.XUnit;
+using AutoTest.TestGenerator.Generators.UnitTest.XUnit;
 using System.Linq;
 
 namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit

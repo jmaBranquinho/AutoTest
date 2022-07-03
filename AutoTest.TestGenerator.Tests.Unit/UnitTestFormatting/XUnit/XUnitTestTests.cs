@@ -1,6 +1,6 @@
 ﻿using AutoTest.CodeGenerator.Tests.Unit;
 using AutoTest.CodeInterpreter.Wrappers;
-using AutoTest.TestGenerator.Generators.XUnit.Models;
+using AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

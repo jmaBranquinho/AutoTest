@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Generators\NUnit\" />
+    <Folder Include="Generators\UnitTest\NUnit\" />
   </ItemGroup>
 
   <ItemGroup>
