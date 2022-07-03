@@ -1,18 +1,20 @@
-﻿using AutoTest.CodeGenerator.Helpers;
+﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Helpers;
 using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
-    // TODO: add alternative to change accessability, static, abstract, etc.
-    // TODO: add alternatives for when usings, methods, etc. are not needed (e.g. WithNoAnnotations())
     public class ClassGenerator :
             IClassNameSelectionStage,
+            IClassModifiersSelectionStage,
             IClassUsingsSelectionStage,
+            IClassPropertiesSelectionStage,
             IClassAnnotationSelectionStage,
             IClassMethodsSelectionStage,
             IClassGenerateSelectionStage
     {
         private string _className;
+        private List<ClassModifiers> _modifiers;
         private List<string> _usings;
         private List<string> _annotations;
         private List<(string Name, string Type, bool IsInjected)> _parameters;
@@ -20,6 +22,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         private ClassGenerator()
         {
+            _modifiers = new();
             _usings = new();
             _annotations = new();
             _parameters = new();
@@ -28,53 +31,55 @@ namespace AutoTest.CodeGenerator.Generators
 
         public static IClassNameSelectionStage NewClass() => new ClassGenerator();
 
-        public IClassUsingsSelectionStage WithClassName(string name)
+        public IClassModifiersSelectionStage WithClassName(string name)
         {
             _className = name;
             return this;
         }
 
-        public IClassUsingsSelectionStage WithUsing(string @using)
+        public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers)
         {
-            _usings.Add(@using);
+            _modifiers.AddRange(modifiers);
             return this;
         }
 
-        public IClassAnnotationSelectionStage WithUsings(IEnumerable<string> usings)
+        public IClassAnnotationSelectionStage WithNoUsings() => this;
+
+        public IClassAnnotationSelectionStage WithUsings(params string[] usings)
         {
-            _usings.AddRange(@usings);
+            _usings.AddRange(usings);
             return this;
         }
 
-        public IClassAnnotationSelectionStage WithAnnotation(string annotation)
-        {
-            _annotations.Add(annotation);
-            return this;
-        }
+        public IClassPropertiesSelectionStage WithNoAnnotations() => this;
 
-        public IClassPropertiesSelectionStage WithAnnotations(IEnumerable<string> annotations)
+        public IClassPropertiesSelectionStage WithAnnotations(params string[] annotations)
         {
             _annotations.AddRange(annotations);
             return this;
         }
 
-        public IClassPropertiesSelectionStage WithParameter(string parameter, string type)
+        public IClassMethodsSelectionStage WithNoParameters() => this;
+
+        public IClassMethodsSelectionStage WithParameters(params (string parameter, string type)[] parameters)
         {
-            _parameters.Add((parameter, type, false));
+            _parameters.AddRange(parameters.Select(p => (p.parameter, p.type, false)));
             return this;
         }
 
-        public IClassPropertiesSelectionStage WithDIParameter(string parameter, string type)
+        public IClassMethodsSelectionStage WithDIParameters(params (string parameter, string type)[] parameters)
         {
-            _parameters.Add((parameter, type, true));
+            _parameters.AddRange(parameters.Select(p => (p.parameter, p.type, true)));
             return this;
         }
 
-        public IClassMethodsSelectionStage WithMethod(string method)
+        public IClassGenerateSelectionStage WithMethods(params string[] methods)
         {
-            _methods.Add(method);
+            _methods.AddRange(methods);
             return this;
         }
+
+        public IClassGenerateSelectionStage WithNoMethods() => this;
 
         public string Generate()
         {
@@ -92,7 +97,7 @@ namespace AutoTest.CodeGenerator.Generators
                 .Append(_usings is not null && _usings.Count > 0 ? Environment.NewLine.Repeat(2) : string.Empty)
                 .AppendJoin(Environment.NewLine, _annotations)
                 .Append(_annotations is not null && _annotations.Count > 0 ? Environment.NewLine : string.Empty)
-                .Append($"public class {_className}");
+                .Append($"{AddClassModifiers()} class {_className}");
 
             var parameters = AddParameters();
 
@@ -108,6 +113,43 @@ namespace AutoTest.CodeGenerator.Generators
             {
                 yield return $"private {parameter.Type} {parameter.Name.FormatAsPrivateField()};";
             }
+        }
+
+        private string AddClassModifiers()
+        {
+            var modifierList = new List<string>();
+            foreach (var modifier in _modifiers)
+            {
+                if(modifier.HasFlag(ClassModifiers.Public))
+                {
+                    modifierList.Add("public");
+                }
+                else if (modifier.HasFlag(ClassModifiers.Protected))
+                {
+                    modifierList.Add("protected");
+                }
+                else if (modifier.HasFlag(ClassModifiers.Internal))
+                {
+                    modifierList.Add("internal");
+                }
+                else if (modifier.HasFlag(ClassModifiers.Private))
+                {
+                    modifierList.Add("private");
+                }
+                if (modifier.HasFlag(ClassModifiers.Static))
+                {
+                    modifierList.Add("static");
+                }
+                if (modifier.HasFlag(ClassModifiers.Abstract))
+                {
+                    modifierList.Add("abstract");
+                }
+                if (modifier.HasFlag(ClassModifiers.Partial))
+                {
+                    modifierList.Add("partial");
+                }
+            }
+            return string.Join(" ", modifierList);
         }
 
         private string AddCtor()
@@ -136,37 +178,46 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IClassNameSelectionStage
     {
-        public IClassUsingsSelectionStage WithClassName(string name);
+        public IClassModifiersSelectionStage WithClassName(string name);
     }
 
-    public interface IClassUsingsSelectionStage : IClassAnnotationSelectionStage
+    public interface IClassModifiersSelectionStage
     {
-        public IClassUsingsSelectionStage WithUsing(string @using);
+        public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers);
+    }
 
-        public IClassAnnotationSelectionStage WithUsings(IEnumerable<string> usings);
+    public interface IClassUsingsSelectionStage
+    {
+        public IClassAnnotationSelectionStage WithNoUsings();
+
+        public IClassAnnotationSelectionStage WithUsings(params string[] usings);
+    }
+
+    public interface IClassAnnotationSelectionStage
+    {
+        public IClassPropertiesSelectionStage WithNoAnnotations();
+
+        public IClassPropertiesSelectionStage WithAnnotations(params string[] annotations);
+    }
+
+    public interface IClassPropertiesSelectionStage
+    {
+        public IClassMethodsSelectionStage WithNoParameters();
+
+        public IClassMethodsSelectionStage WithParameters(params (string parameter, string type)[] parameters);
+
+        public IClassMethodsSelectionStage WithDIParameters(params (string parameter, string type)[] parameters);
+    }
+
+    public interface IClassMethodsSelectionStage
+    {
+        public IClassGenerateSelectionStage WithNoMethods();
+
+        public IClassGenerateSelectionStage WithMethods(params string[] method);
     }
 
     public interface IClassGenerateSelectionStage
     {
         public string Generate();
-    }
-
-    public interface IClassMethodsSelectionStage : IClassGenerateSelectionStage
-    {
-        public IClassMethodsSelectionStage WithMethod(string method);
-    }
-
-    public interface IClassPropertiesSelectionStage : IClassMethodsSelectionStage
-    {
-        public IClassPropertiesSelectionStage WithParameter(string parameter, string type);
-
-        public IClassPropertiesSelectionStage WithDIParameter(string parameter, string type);
-    }
-
-    public interface IClassAnnotationSelectionStage : IClassPropertiesSelectionStage
-    {
-        public IClassAnnotationSelectionStage WithAnnotation(string annotation);
-
-        public IClassPropertiesSelectionStage WithAnnotations(IEnumerable<string> annotations);
     }
 }

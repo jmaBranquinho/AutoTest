@@ -1,4 +1,5 @@
-﻿using AutoTest.CodeGenerator.Generators;
+﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Generators;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
@@ -12,11 +13,11 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         {
             return ClassGenerator.NewClass()
                 .WithClassName(_className)
-                .WithUsings(Enumerable.Empty<string>())
-                .WithAnnotation(_classAnnotation)
-                //.WithDIParameter()
-                //.WithParameter()
-                //.WithMethod()
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithAnnotations(_classAnnotation)
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
         }
     }

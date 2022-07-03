@@ -1,3 +1,4 @@
+using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
 using FluentAssertions;
 using System.Collections.Generic;
@@ -22,7 +23,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -42,8 +47,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithUsing("using System;")
-                .WithAnnotations(Enumerable.Empty<string>())
+                .WithModifiers(ClassModifiers.Public)
+                .WithUsings("using System;")
+                .WithNoAnnotations()
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -65,8 +73,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithUsings(new List<string> { "using System;", "using System.Linq;", "using Xunit;" } )
-                .WithAnnotations(Enumerable.Empty<string>())
+                .WithModifiers(ClassModifiers.Public)
+                .WithUsings("using System;", "using System.Linq;", "using Xunit;")
+                .WithNoAnnotations()
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -85,7 +96,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotation("[SomeAnnotation]")
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithAnnotations("[SomeAnnotation]")
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -106,7 +121,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(new List<string> { "[SomeAnnotation1]", "[SomeAnnotation2]", "[SomeAnnotation3]" })
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithAnnotations("[SomeAnnotation1]", "[SomeAnnotation2]", "[SomeAnnotation3]")
+                .WithNoParameters()
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -129,8 +148,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithDIParameter("param1", "int")
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithDIParameters(("param1", "int"))
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -155,9 +177,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithDIParameter("param1", "int")
-                .WithDIParameter("param2", "SomeObj")
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithDIParameters(("param1", "int"), ("param2", "SomeObj"))
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -177,8 +201,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithParameter("param1", "int")
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithParameters(("param1", "int"))
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -199,9 +226,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithParameter("param1", "int")
-                .WithParameter("param2", "SomeObj")
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithParameters(("param1", "int"), ("param2", "SomeObj"))
+                .WithNoMethods()
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -229,8 +258,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithMethod(method)
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithNoParameters()
+                .WithMethods(method)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
@@ -263,9 +295,11 @@ public class UnitTestClass
 
             var @class = ClassGenerator.NewClass()
                 .WithClassName("UnitTestClass")
-                .WithAnnotations(Enumerable.Empty<string>())
-                .WithMethod(method)
-                .WithMethod(method)
+                .WithModifiers(ClassModifiers.Public)
+                .WithNoUsings()
+                .WithNoAnnotations()
+                .WithNoParameters()
+                .WithMethods(method, method)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, @class);
