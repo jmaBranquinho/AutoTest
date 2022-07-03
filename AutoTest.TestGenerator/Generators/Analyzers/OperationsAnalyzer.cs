@@ -1,4 +1,5 @@
-﻿using AutoTest.TestGenerator.Generators.Interfaces;
+﻿using AutoTest.Core;
+using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -18,22 +19,30 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 
         private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression,IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators)
         {
-            if (IsNumericOperation(kind))
+            IOperationsAnalyzer analyzer;
+            if (IsNumericOperation(kind, type))
             {
                 var NumericalConstraintAnalyzerType = typeof(NumericOperationAnalyzer<>).MakeGenericType(type);
-                var analyzer = (INumericalAnalyzer) Activator.CreateInstance(NumericalConstraintAnalyzerType);
-                analyzer.AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
-                return;
+                analyzer = (INumericalAnalyzer) Activator.CreateInstance(NumericalConstraintAnalyzerType);
+            }
+            else if(IsTextOperation(kind, type))
+            {
+                analyzer = new TextOperationAnalyzer();
+            }
+            else
+            {
+                throw new NotImplementedException();//TODO
             }
 
-            throw new NotImplementedException();//TODO
+            analyzer.AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
+
+            
         }
 
         // TODO migrate IsSupported so no dummy type needs to be passed
-        private static bool IsNumericOperation(SyntaxKind kind)
-        {
-            return NumericOperationAnalyzer<int>.IsSupported(kind);
-        }
+        private static bool IsNumericOperation(SyntaxKind kind, Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type) && NumericOperationAnalyzer<int>.IsSupported(kind);
+
+        private static bool IsTextOperation(SyntaxKind _, Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type);
 
         private static (Type type, IConstraint? constraint, string variable) GetOperationTypeAndConstraint(Dictionary<string, IConstraint> constraints, IEnumerable<string> operators)
         {
