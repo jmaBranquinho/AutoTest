@@ -1,4 +1,6 @@
-﻿using AutoTest.CodeGenerator.Helpers;
+﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Helpers;
+using AutoTest.Core;
 using System.Text;
 
 namespace AutoTest.CodeGenerator.Models
@@ -8,17 +10,23 @@ namespace AutoTest.CodeGenerator.Models
     {
         protected string _name;
         protected IEnumerable<string> _annotations;
-        protected IEnumerable<(string Name, Type Type)> _parameters;
+        protected IEnumerable<MethodModifiers> _modifiers;
+        protected string _returnType;
+        protected IEnumerable<string> _parameters;
         protected string _body;
 
         protected bool IsParameterless() => !_parameters?.Any() ?? true;
 
-        public Method(string name, IEnumerable<string> annotations, IEnumerable<(string Name, Type Type)> parameters, string body)
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<(string Name, Type Type)> parameters, string body)
         {
-            _name = name;
-            _annotations = annotations;
+            InitializeLists(name, annotations, modifiers, returnType, body);
+            _parameters = FormatParameters(parameters);
+        }
+
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<string> parameters, string body)
+        {
+            InitializeLists(name, annotations, modifiers, returnType, body);
             _parameters = parameters;
-            _body = body;
         }
 
         public override string ToString()
@@ -26,27 +34,28 @@ namespace AutoTest.CodeGenerator.Models
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(Environment.NewLine, _annotations);
             stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            stringBuilder.Append($"public void {_name}(");
-            stringBuilder.AppendJoin(", ", FormatParameters(_parameters));
-            stringBuilder.Append(")");
+            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(string.Join(", ", _parameters), Symbols.Parentheses));
 
             return stringBuilder.ToString().AddNewContext(_body);
         }
 
-        private static IEnumerable<string> FormatParameters(IEnumerable<(string Name, Type Type)> parameters)
+        protected static IEnumerable<string> FormatParameters(IEnumerable<(string Name, Type Type)> parameters)
         {
             foreach (var parameter in parameters)
             {
-                yield return $"{TypeToString(parameter.Type)} {parameter.Name.FormatAsVariable()}";
+                yield return $"{PrimitiveTypeConvertionHelper.GetStringFromType(parameter.Type)} {parameter.Name.FormatAsVariable()}";
             }
         }
 
-        private static string TypeToString(Type type) => BuiltInTypesStringValue.TryGetValue(type, out var value) ? value : type.ToString();
+        private string AddMethodModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
 
-        private static Dictionary<Type, string> BuiltInTypesStringValue = new()
+        private void InitializeLists(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, string body)
         {
-            { typeof(int), "int" },
-            // TODO complete
-        };
+            _name = name;
+            _annotations = annotations;
+            _modifiers = modifiers;
+            _returnType = returnType;
+            _body = body;
+        }
     }
 }

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AutoTest.Core\AutoTest.Core.csproj" />
+  </ItemGroup>
+
 </Project>

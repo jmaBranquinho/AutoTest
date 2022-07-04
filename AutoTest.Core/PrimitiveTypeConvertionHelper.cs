@@ -12,6 +12,13 @@
                 _ => throw new NotImplementedException(),
             };
 
+        // TODO use dictionary for both methods and complete
+        public static string GetStringFromType(Type type)
+        {
+            if(typeof(int) == type) { return "int"; }
+            return type.ToString();
+        }
+
         // TODO complete list
         public static IEnumerable<Type> NumericalTypes
             => new[]

@@ -1,5 +1,6 @@
 ﻿using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Helpers;
+using AutoTest.CodeGenerator.Models;
 using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
@@ -66,14 +67,13 @@ namespace AutoTest.CodeGenerator.Generators
 
         public string Generate()
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendJoin(Environment.NewLine, _annotations);
-            stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}(");
-            stringBuilder.AppendJoin(", ", AddParameters());
-            stringBuilder.Append(')');
+            return new Method(_name, _annotations, _modifiers, _returnType, AddParameters(), _body).ToString();
+            //var stringBuilder = new StringBuilder();
+            //stringBuilder.AppendJoin(Environment.NewLine, _annotations);
+            //stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
+            //stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(string.Join(", ", AddParameters()), Symbols.Parentheses));
 
-            return stringBuilder.ToString().AddNewContext(_body);
+            //return stringBuilder.ToString().AddNewContext(_body);
         }
 
         private IEnumerable<string> AddParameters()

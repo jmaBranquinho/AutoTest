@@ -1,4 +1,5 @@
-﻿using AutoTest.CodeGenerator.Models;
+﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Wrappers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
@@ -14,7 +15,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private readonly IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> _unitTestParameters;
 
         public UnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) 
-            : base(name, Enumerable.Empty<string>(), Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
+            : base(name, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
         {
             var isParameterless = !parameters?.Any() ?? true;
             _unitTestParameters = parameters;
@@ -24,7 +25,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 : FormatXUnitParameterTestAnnotations(parameters);
 
             _parameters = isParameterless
-                ? Enumerable.Empty<(string Name, Type Type)>()
+                ? Enumerable.Empty<string>()
                 : FormatXUnitTestMethodParameter(parameters);
 
             _body = FormatXUnitTestBody(methodStatements);
@@ -110,15 +111,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             return stringBuilder.ToString();
         }
 
-        private static IEnumerable<(string Name, Type Type)> FormatXUnitTestMethodParameter(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList)
-        {
-            if (parametersList is null || !parametersList.Any())
-            {
-                return Enumerable.Empty<(string Name, Type Type)>();
-            }
-
-            return parametersList.First().Select(p => (p.Name, p.Type));
-        }
+        private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList) 
+            => FormatParameters(parametersList.First().Select(p => (p.Name, p.Type)).ToList());
 
         private static bool IsBuiltInType(Type type) => BuiltInTypes.Any(t => t == type);
 
