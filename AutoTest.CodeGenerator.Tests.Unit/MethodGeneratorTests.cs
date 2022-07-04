@@ -1,6 +1,5 @@
+using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
-using FluentAssertions;
-using System.Collections.Generic;
 using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit
@@ -22,8 +21,32 @@ public void UnitTestMethod()
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
                 .WithNoParameters()
-                .AddBody(string.Empty)
+                .WithBody(string.Empty)
+                .Generate();
+
+            UnitTestHelper.AssertSimilarStrings(expected, method);
+        }
+
+        [Fact]
+        public void NameAndSeveralModifiers()
+        {
+            var expected = @"
+public static void UnitTestMethod()
+{
+    
+}
+".GetDefaultNewLineCharAndReplaceIt().Trim();
+
+            var method = MethodGenerator.NewMethod()
+                .WithMethodName("UnitTestMethod")
+                .WithNoAnnotations()
+                .WithModifiers(MethodModifiers.Public, MethodModifiers.Static)
+                .WithReturnType(null)
+                .WithNoParameters()
+                .WithBody(string.Empty)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -42,9 +65,11 @@ public void UnitTestMethod()
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
-                .AddAnnotations(new List<string> { "[SomeAnnotation]" })
+                .WithAnnotations("[SomeAnnotation]")
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
                 .WithNoParameters()
-                .AddBody(string.Empty)
+                .WithBody(string.Empty)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -64,9 +89,11 @@ public void UnitTestMethod()
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
-                .AddAnnotations(new List<string> { "[SomeAnnotation1]", "[SomeAnnotation2]" })
+                .WithAnnotations("[SomeAnnotation1]", "[SomeAnnotation2]")
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
                 .WithNoParameters()
-                .AddBody(string.Empty)
+                .WithBody(string.Empty)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -85,8 +112,10 @@ public void UnitTestMethod(int param1)
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .AddParameters(new List<(string, string)> { ("param1", "int") })
-                .AddBody(string.Empty)
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
+                .WithParameters(("param1", "int"))
+                .WithBody(string.Empty)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -105,8 +134,10 @@ public void UnitTestMethod(int param1, SomeObj param2)
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .AddParameters(new List<(string, string)> { ("param1", "int"), ("param2", "SomeObj") })
-                .AddBody(string.Empty)
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
+                .WithParameters(("param1", "int"), ("param2", "SomeObj"))
+                .WithBody(string.Empty)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);
@@ -132,8 +163,10 @@ public void UnitTestMethod()
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
+                .WithModifiers(MethodModifiers.Public)
+                .WithReturnType(null)
                 .WithNoParameters()
-                .AddBody(methodBody)
+                .WithBody(methodBody)
                 .Generate();
 
             UnitTestHelper.AssertSimilarStrings(expected, method);

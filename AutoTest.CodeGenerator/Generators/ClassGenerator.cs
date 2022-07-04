@@ -14,20 +14,13 @@ namespace AutoTest.CodeGenerator.Generators
             IClassGenerateSelectionStage
     {
         private string _className;
-        private List<ClassModifiers> _modifiers;
-        private List<string> _usings;
-        private List<string> _annotations;
-        private List<(string Name, string Type, bool IsInjected)> _parameters;
-        private List<string> _methods;
+        private List<ClassModifiers> _modifiers = new();
+        private List<string> _usings = new();
+        private List<string> _annotations = new();
+        private List<(string Name, string Type, bool IsInjected)> _parameters = new();
+        private List<string> _methods = new();
 
-        private ClassGenerator()
-        {
-            _modifiers = new();
-            _usings = new();
-            _annotations = new();
-            _parameters = new();
-            _methods = new();
-        }
+        private ClassGenerator() { }
 
         public static IClassNameSelectionStage NewClass() => new ClassGenerator();
 
@@ -115,42 +108,7 @@ namespace AutoTest.CodeGenerator.Generators
             }
         }
 
-        private string AddClassModifiers()
-        {
-            var modifierList = new List<string>();
-            foreach (var modifier in _modifiers)
-            {
-                if(modifier.HasFlag(ClassModifiers.Public))
-                {
-                    modifierList.Add("public");
-                }
-                else if (modifier.HasFlag(ClassModifiers.Protected))
-                {
-                    modifierList.Add("protected");
-                }
-                else if (modifier.HasFlag(ClassModifiers.Internal))
-                {
-                    modifierList.Add("internal");
-                }
-                else if (modifier.HasFlag(ClassModifiers.Private))
-                {
-                    modifierList.Add("private");
-                }
-                if (modifier.HasFlag(ClassModifiers.Static))
-                {
-                    modifierList.Add("static");
-                }
-                if (modifier.HasFlag(ClassModifiers.Abstract))
-                {
-                    modifierList.Add("abstract");
-                }
-                if (modifier.HasFlag(ClassModifiers.Partial))
-                {
-                    modifierList.Add("partial");
-                }
-            }
-            return string.Join(" ", modifierList);
-        }
+        private string AddClassModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
 
         private string AddCtor()
         {
@@ -172,7 +130,6 @@ namespace AutoTest.CodeGenerator.Generators
                 .AddNewContext(string.Join(Environment.NewLine, body));
         }
 
-        // TODO: missing some more scenarios
         private bool IsCtorRequired() => _parameters.Any(p => p.IsInjected);
     }
 

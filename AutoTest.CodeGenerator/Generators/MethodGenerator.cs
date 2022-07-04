@@ -1,27 +1,26 @@
-﻿using AutoTest.CodeGenerator.Helpers;
+﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Helpers;
 using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
-    // TODO: add alternative to change accessability, static, abstract, etc.
-    // TODO: add alternative to change return type
     public class MethodGenerator :
             IMethodNameSelectionStage,
             IMethodAnnotationSelectionStage,
+            IMethodModifiersSelectionStage,
+            IMethodReturnTypeSelectionStage,
             IMethodParametersSelectionStage,
             IMethodBodySelectionStage,
             IMethodGenerationSelectionStage
     {
         private string _name;
-        private List<string> _annotations;
-        private List<(string Name, string Type)> _parameters;
+        private List<string> _annotations = new();
+        private List<MethodModifiers> _modifiers = new();
+        private string _returnType;
+        private List<(string Name, string Type)> _parameters = new();
         private string _body;
 
-        private MethodGenerator()
-        {
-            _annotations = new();
-            _parameters = new();
-        }
+        private MethodGenerator() { }
 
         public static IMethodNameSelectionStage NewMethod() => new MethodGenerator();
 
@@ -31,29 +30,35 @@ namespace AutoTest.CodeGenerator.Generators
             return this;
         }
 
-        public IMethodParametersSelectionStage WithNoAnnotations()
+        public IMethodModifiersSelectionStage WithNoAnnotations() => this;
+
+        public IMethodModifiersSelectionStage WithAnnotations(params string[] annotations)
         {
+            _annotations.AddRange(annotations);
             return this;
         }
 
-        public IMethodParametersSelectionStage AddAnnotations(List<string> annotations)
+        public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers)
         {
-            _annotations = annotations;
+            _modifiers.AddRange(modifiers);
             return this;
         }
 
-        public IMethodBodySelectionStage WithNoParameters()
+        public IMethodParametersSelectionStage WithReturnType(Type? returnType)
         {
+            _returnType = returnType?.ToString() ?? "void";
             return this;
         }
 
-        public IMethodBodySelectionStage AddParameters(List<(string Name, string Type)> parameters)
+        public IMethodBodySelectionStage WithNoParameters() => this;
+
+        public IMethodBodySelectionStage WithParameters(params (string Name, string Type)[] parameters)
         {
-            _parameters = parameters;
+            _parameters.AddRange(parameters);
             return this;
         }
 
-        public IMethodGenerationSelectionStage AddBody(string body)
+        public IMethodGenerationSelectionStage WithBody(string body)
         {
             _body = body;
             return this;
@@ -64,9 +69,9 @@ namespace AutoTest.CodeGenerator.Generators
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(Environment.NewLine, _annotations);
             stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            stringBuilder.Append($"public void {_name}(");
+            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}(");
             stringBuilder.AppendJoin(", ", AddParameters());
-            stringBuilder.Append(")");
+            stringBuilder.Append(')');
 
             return stringBuilder.ToString().AddNewContext(_body);
         }
@@ -78,6 +83,8 @@ namespace AutoTest.CodeGenerator.Generators
                 yield return $"{parameter.Type} {parameter.Name.FormatAsVariable()}";
             }
         }
+
+        private string AddMethodModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
     }
 
     public interface IMethodNameSelectionStage
@@ -87,21 +94,31 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IMethodAnnotationSelectionStage
     {
-        public IMethodParametersSelectionStage WithNoAnnotations();
+        public IMethodModifiersSelectionStage WithNoAnnotations();
 
-        public IMethodParametersSelectionStage AddAnnotations(List<string> annotations);
+        public IMethodModifiersSelectionStage WithAnnotations(params string[] annotations);
+    }
+
+    public interface IMethodModifiersSelectionStage
+    {
+        public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers);
+    }
+
+    public interface IMethodReturnTypeSelectionStage
+    {
+        public IMethodParametersSelectionStage WithReturnType(Type? returnType);
     }
 
     public interface IMethodParametersSelectionStage
     {
-        public IMethodBodySelectionStage AddParameters(List<(string Name, string Type)> parameters);
+        public IMethodBodySelectionStage WithParameters(params (string Name, string Type)[] parameters);
 
         public IMethodBodySelectionStage WithNoParameters();
     }
 
     public interface IMethodBodySelectionStage
     {
-        public IMethodGenerationSelectionStage AddBody(string body);
+        public IMethodGenerationSelectionStage WithBody(string body);
     }
 
     public interface IMethodGenerationSelectionStage

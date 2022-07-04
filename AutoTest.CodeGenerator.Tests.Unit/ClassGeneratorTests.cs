@@ -1,8 +1,5 @@
 using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
-using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit
