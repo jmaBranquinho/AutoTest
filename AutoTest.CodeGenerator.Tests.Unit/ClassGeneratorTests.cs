@@ -4,12 +4,10 @@ using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit
 {
-    // TODO: refactor these tests. They were done in a rush to ensure refactoring does not break anything
-    // Plus they will help to show how to use this library
     public class ClassGeneratorTests
     {
         [Fact]
-        public void OnlyName()
+        public void ClassGenerator_GivenOnlyName_ShouldGenerateEmptyClass()
         {
             var expected = @"
 public class UnitTestClass
@@ -31,7 +29,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void SingleUsing()
+        public void ClassGenerator_GivenSingleUsing_ShouldGenerateClassWithUsing()
         {
             var expected = @"
 using System;
@@ -55,7 +53,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void MultipleUsings()
+        public void ClassGenerator_GivenMultipleUsings_ShouldGenerateClassWithUsings()
         {
             var expected = @"
 using System;
@@ -81,7 +79,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void SingleAnnotation()
+        public void ClassGenerator_GivenSingleAnnotation_ShouldGenerateClassWithAnnotation()
         {
             var expected = @"
 [SomeAnnotation]
@@ -104,7 +102,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void MultipleAnnotations()
+        public void ClassGenerator_GivenMultipleAnnotations_ShouldGenerateClassWithAnnotations()
         {
             var expected = @"
 [SomeAnnotation1]
@@ -129,7 +127,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void SingleDependencyInjectionParameter()
+        public void ClassGenerator_GivenSingleDependencyInjectionParameter_ShouldGenerateClassWithDependencyInjectionParameter()
         {
             var expected = @"
 public class UnitTestClass
@@ -156,7 +154,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void MultipleDependencyInjectionParameter()
+        public void ClassGenerator_GivenMultipleDependencyInjectionParameters_ShouldGenerateClassWithDependencyInjectionParameters()
         {
             var expected = @"
 public class UnitTestClass
@@ -185,7 +183,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void SingleParameter()
+        public void ClassGenerator_GivenSingleParameter_ShouldGenerateClassWithParameter()
         {
             var expected = @"
 public class UnitTestClass
@@ -209,7 +207,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void MultipleParameter()
+        public void ClassGenerator_GivenMultipleParameters_ShouldGenerateClassWithParameters()
         {
             var expected = @"
 public class UnitTestClass
@@ -234,7 +232,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void SingleMethod()
+        public void ClassGenerator_GivenSingleMethod_ShouldGenerateClassWithMethod()
         {
             var method = @"
 public int Return1()
@@ -266,7 +264,7 @@ public class UnitTestClass
         }
 
         [Fact]
-        public void MultipleMethod()
+        public void ClassGenerator_GivenMultipleMethods_ShouldGenerateClassWithMethods()
         {
             var method = @"
 public int Return1()
