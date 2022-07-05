@@ -1,6 +1,5 @@
 ﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Helpers;
-using System.Text;
+using AutoTest.CodeGenerator.Models;
 
 namespace AutoTest.CodeGenerator.Generators
 {
@@ -74,63 +73,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IClassGenerateSelectionStage WithNoMethods() => this;
 
-        public string Generate()
-        {
-            var stringBuilder = new StringBuilder();
-
-            var body = new List<string>();
-            if (IsCtorRequired())
-            {
-                body.Add(AddCtor());
-            }
-            body.AddRange(_methods);
-
-            stringBuilder
-                .AppendJoin(Environment.NewLine, _usings)
-                .Append(_usings is not null && _usings.Count > 0 ? Environment.NewLine.Repeat(2) : string.Empty)
-                .AppendJoin(Environment.NewLine, _annotations)
-                .Append(_annotations is not null && _annotations.Count > 0 ? Environment.NewLine : string.Empty)
-                .Append($"{AddClassModifiers()} class {_className}");
-
-            var parameters = AddParameters();
-
-            return stringBuilder.ToString()
-                .AddNewContext(string.Join(Environment.NewLine, parameters) +
-                    (parameters.Any() ? Environment.NewLine.Repeat(2) : string.Empty) +
-                    string.Join(Environment.NewLine.Repeat(2), body));
-        }
-
-        private IEnumerable<string> AddParameters()
-        {
-            foreach (var parameter in _parameters)
-            {
-                yield return $"private {parameter.Type} {parameter.Name.FormatAsPrivateField()};";
-            }
-        }
-
-        private string AddClassModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
-
-        private string AddCtor()
-        {
-            var dIVars = _parameters
-                .Where(p => p.IsInjected)
-                .ToList();
-
-            var body = dIVars
-                .Select(p => $"{p.Name.FormatAsPrivateField()} = {p.Name.FormatAsVariable()};")
-                .ToList();
-
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"public {_className}(");
-            stringBuilder.AppendJoin(", ", dIVars.Select(p => $"{p.Type} {p.Name}"));
-            stringBuilder.Append(')');
-
-            return stringBuilder
-                .ToString()
-                .AddNewContext(string.Join(Environment.NewLine, body));
-        }
-
-        private bool IsCtorRequired() => _parameters.Any(p => p.IsInjected);
+        public string Generate() => new Class(_className, _usings, _annotations, _modifiers, _parameters, _methods).ToString();
     }
 
     public interface IClassNameSelectionStage
