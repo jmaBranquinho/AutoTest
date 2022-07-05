@@ -16,7 +16,6 @@ namespace AutoTest.CodeInterpreter.Wrappers
             Parameters = new Dictionary<string, Type>();
 
             var methodSyntax = GetMethodSyntax();
-            // TODO test for null
 
             foreach (var parameter in methodSyntax.ParameterList.Parameters)
             {
@@ -45,7 +44,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
                 }
             }
 
-            throw new NotImplementedException();//TODO
+            throw new Exception("Empty execution path");//TODO
         }
     }
 }

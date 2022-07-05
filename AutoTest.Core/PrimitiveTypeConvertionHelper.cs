@@ -26,6 +26,8 @@
                 typeof(int),
                 typeof(double),
                 typeof(decimal),
+                typeof(float),
+                typeof(long),
             };
 
         // TODO complete list
@@ -35,5 +37,26 @@
                 typeof(string),
                 typeof(char),
             };
+
+        // TODO
+        public static IEnumerable<Type> PrimitiveTypes 
+            => new[]
+            {
+                // value types
+                typeof(bool),
+                typeof(byte),
+                typeof(sbyte),
+                typeof(uint),
+                typeof(nint),
+                typeof(nuint),
+                typeof(ulong),
+                typeof(short),
+                typeof(ushort),
+                // reference types
+                typeof(object),
+                // missing dynamic
+            }
+            .Concat(NumericalTypes)
+            .Concat(TextTypes);
     }
 }

@@ -17,15 +17,11 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers
 
             var analyzers = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(ISyntaxAnalyzer).IsAssignableFrom(p))
+                .Where(p => typeof(ISyntaxAnalyzer).IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract)
                 .ToList();
 
             foreach (var analyzer in analyzers)
             {
-                // TODO check nulls
-
-                if (analyzer.IsInterface || analyzer.IsAbstract) continue;
-
                 var instance = (ISyntaxAnalyzer)Activator.CreateInstance(analyzer);
                 if (instance.ReferredType is not null)
                 {

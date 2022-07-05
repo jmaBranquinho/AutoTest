@@ -4,9 +4,9 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.MsTesting.Models
 {
     public class MsUnitTest : Abstracts.UnitTest
     {
-        protected override string _parameterlessMethodAnnotation => "[TestMethod]";
-        protected override string _parameterMethodAnnotation => "[TestMethod]";
-        protected override string _parameterAnnotationTemplate => "[DataRow({0})]";
+        protected override string ParameterlessMethodAnnotation => "[TestMethod]";
+        protected override string ParameterMethodAnnotation => "[TestMethod]";
+        protected override string ParameterAnnotationTemplate => "[DataRow({0})]";
 
         public MsUnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) : base(name, parameters, methodStatements)
         { }

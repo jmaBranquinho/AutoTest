@@ -22,6 +22,8 @@ namespace AutoTest.CodeGenerator.Helpers
             return stringBuilder.ToString();
         }
 
+        public static string EndStatement(this string text, bool hasLineBreak = false) => $"{text};{(hasLineBreak ? Environment.NewLine : string.Empty)}";
+
         public static IEnumerable<string> AddIdentation(this IEnumerable<string> text, int identationLevel = 1) => text.Select(t => t.AddIdentation(identationLevel));
 
         public static string AddIdentation(this string text, int identationLevel = 1)

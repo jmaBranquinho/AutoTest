@@ -5,7 +5,6 @@ using System.Text;
 
 namespace AutoTest.CodeGenerator.Models
 {
-    // TODO 
     public class Method
     {
         protected string _name;

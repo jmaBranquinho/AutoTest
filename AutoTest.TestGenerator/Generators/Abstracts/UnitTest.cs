@@ -1,6 +1,8 @@
 ﻿using AutoTest.CodeGenerator.Enums;
+using AutoTest.CodeGenerator.Helpers;
 using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.Core;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 
@@ -8,9 +10,9 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 {
     public abstract class UnitTest : Method
     {
-        protected abstract string _parameterlessMethodAnnotation { get; }
-        protected abstract string _parameterMethodAnnotation { get; }
-        protected abstract string _parameterAnnotationTemplate { get; }
+        protected abstract string ParameterlessMethodAnnotation { get; }
+        protected abstract string ParameterMethodAnnotation { get; }
+        protected abstract string ParameterAnnotationTemplate { get; }
 
         private readonly IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> _unitTestParameters;
 
@@ -18,15 +20,15 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             : base(name, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
         {
             var isParameterless = !parameters?.Any() ?? true;
-            _unitTestParameters = parameters;
+            _unitTestParameters = parameters ?? new List<List<(string Name, Type Type, object Value)>>();
 
             _annotations = isParameterless
-                ? new List<string>() { _parameterlessMethodAnnotation }
-                : FormatXUnitParameterTestAnnotations(parameters);
+                ? new List<string>() { ParameterlessMethodAnnotation }
+                : FormatXUnitParameterTestAnnotations(_unitTestParameters);
 
             _parameters = isParameterless
                 ? Enumerable.Empty<string>()
-                : FormatXUnitTestMethodParameter(parameters);
+                : FormatXUnitTestMethodParameter(_unitTestParameters);
 
             _body = FormatXUnitTestBody(methodStatements);
         }
@@ -34,7 +36,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements) 
             => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection(methodStatements));
 
-        // TODO: check for issues
         private string GenerateActSection(IEnumerable<StatementWrapper> methodStatements)
         {
             var stringBuilder = new StringBuilder();
@@ -42,18 +43,17 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
             if (methodStatements is null || !methodStatements.Any())
             {
-                // TODO
-                throw new Exception("no method statements");
+                throw new Exception("no method statements"); // TODO
             }
 
             var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
-            stringBuilder.Append($"var actual = _sut.{methodDeclaration.Identifier.Text}(");
-
-            if (!IsParameterless())
-            {
-                stringBuilder.Append(string.Join(", ", _unitTestParameters.First().Select(p => p.Name).ToList()));
-            }
-            stringBuilder.AppendLine(");");
+            stringBuilder
+                .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
+                    .AddNewContext(
+                        !IsParameterless() 
+                        ? string.Join(", ", _unitTestParameters.First().Select(p => p.Name).ToList()) 
+                        : string.Empty, Symbols.Parentheses)
+                    .EndStatement(hasLineBreak: true));
 
             return stringBuilder.ToString();
         }
@@ -79,11 +79,11 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         {
             if (parametersList is null || !parametersList.Any())
             {
-                return new List<string>() { _parameterlessMethodAnnotation };
+                return new List<string>() { ParameterlessMethodAnnotation };
             }
 
             var annotations = new List<string>();
-            annotations.Add(_parameterMethodAnnotation);
+            annotations.Add(ParameterMethodAnnotation);
 
             var isNotUsingBuiltInTypes = parametersList.Any(x1 => x1.Any(x2 => !IsBuiltInType(x2.Type)));
 
@@ -95,7 +95,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
             foreach (var parametersForMethod in parametersList)
             {
-                annotations.Add(string.Format(_parameterAnnotationTemplate, string.Join(", ", parametersForMethod.Select(p => p.Value))));
+                annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Select(p => p.Value))));
             }
 
             return annotations;
@@ -114,31 +114,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList) 
             => FormatParameters(parametersList.First().Select(p => (p.Name, p.Type)).ToList());
 
-        private static bool IsBuiltInType(Type type) => BuiltInTypes.Any(t => t == type);
-
-        // TODO: implement
-        private static List<Type> BuiltInTypes = new()
-        {
-            // value types
-            typeof(bool),
-            typeof(byte),
-            typeof(sbyte),
-            typeof(char),
-            typeof(decimal),
-            typeof(double),
-            typeof(float),
-            typeof(int),
-            typeof(uint),
-            typeof(nint),
-            typeof(nuint),
-            typeof(long),
-            typeof(ulong),
-            typeof(short),
-            typeof(ushort),
-            // reference types
-            typeof(object),
-            typeof(string),
-            // missing dynamic
-        };
+        private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
     }
 }

@@ -4,12 +4,10 @@ using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit
 {
-    // TODO: refactor these tests. They were done in a rush to ensure refactoring does not break anything
-    // Plus they will help to show how to use this library
     public class MethodGeneratorTests
     {
         [Fact]
-        public void OnlyName()
+        public void MethodGenerator_GivenOnlyName_ShouldGenerateEmptyMethod()
         {
             var expected = @"
 public void UnitTestMethod()
@@ -31,7 +29,7 @@ public void UnitTestMethod()
         }
 
         [Fact]
-        public void NameAndSeveralModifiers()
+        public void MethodGenerator_GivenModifiers_ShouldGenerateMethodWithModifiers()
         {
             var expected = @"
 public static void UnitTestMethod()
@@ -53,7 +51,7 @@ public static void UnitTestMethod()
         }
 
         [Fact]
-        public void SingleAnnotation()
+        public void MethodGenerator_GivenSingleAnnotation_ShouldGenerateMethodWithAnnotation()
         {
             var expected = @"
 [SomeAnnotation]
@@ -76,7 +74,7 @@ public void UnitTestMethod()
         }
 
         [Fact]
-        public void MultipleAnnotations()
+        public void MethodGenerator_GivenSeveralAnnotations_ShouldGenerateMethodWithAnnotations()
         {
             var expected = @"
 [SomeAnnotation1]
@@ -100,7 +98,7 @@ public void UnitTestMethod()
         }
 
         [Fact]
-        public void SingleParameter()
+        public void MethodGenerator_GivenSingleParameter_ShouldGenerateMethodWithParameter()
         {
             var expected = @"
 public void UnitTestMethod(int param1)
@@ -122,7 +120,7 @@ public void UnitTestMethod(int param1)
         }
 
         [Fact]
-        public void MultipleParameters()
+        public void MethodGenerator_GivenMultipleParameter_ShouldGenerateMethodWithParameters()
         {
             var expected = @"
 public void UnitTestMethod(int param1, SomeObj param2)
@@ -144,7 +142,7 @@ public void UnitTestMethod(int param1, SomeObj param2)
         }
 
         [Fact]
-        public void WithBody()
+        public void MethodGenerator_GivenBody_ShouldGenerateMethodWithBody()
         {
             var methodBody = @"
 var x = 2;

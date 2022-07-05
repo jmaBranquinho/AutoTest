@@ -4,9 +4,9 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models
 {
     public class XUnitTest : Abstracts.UnitTest
     {
-        protected override string _parameterlessMethodAnnotation => "[Fact]";
-        protected override string _parameterMethodAnnotation => "[Theory]";
-        protected override string _parameterAnnotationTemplate => "[InlineData({0})]";
+        protected override string ParameterlessMethodAnnotation => "[Fact]";
+        protected override string ParameterMethodAnnotation => "[Theory]";
+        protected override string ParameterAnnotationTemplate => "[InlineData({0})]";
 
         public XUnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) : base(name, parameters, methodStatements)
         { }
