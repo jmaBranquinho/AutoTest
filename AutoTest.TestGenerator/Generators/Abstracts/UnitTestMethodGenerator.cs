@@ -20,7 +20,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         protected abstract Func<string, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>>, IEnumerable<StatementWrapper>, UnitTest> GenerateUnitTest(MethodWrapper method);
 
         // TODO: implement the rest
-        private IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> GenerateParameters(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
+        private static IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> GenerateParameters(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
         {
             var methodStatements = path.Skip(1).ToList();
 
@@ -45,7 +45,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }
         }
 
-        // TODO: implement for other types
         private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
         {
             foreach (var parameter in parameters)
