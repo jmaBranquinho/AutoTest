@@ -1,5 +1,8 @@
 using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
+using AutoTest.CodeGenerator.Models;
+using FluentAssertions;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit
@@ -9,34 +12,31 @@ namespace AutoTest.CodeGenerator.Tests.Unit
         [Fact]
         public void MethodGenerator_GivenOnlyName_ShouldGenerateEmptyMethod()
         {
-            var expected = @"
-public void UnitTestMethod()
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithNoParameters()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public void MethodGenerator_GivenModifiers_ShouldGenerateMethodWithModifiers()
         {
-            var expected = @"
-public static void UnitTestMethod()
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Modifiers = new List<MethodModifiers> { MethodModifiers.Public, MethodModifiers.Static }
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
@@ -47,98 +47,91 @@ public static void UnitTestMethod()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public void MethodGenerator_GivenSingleAnnotation_ShouldGenerateMethodWithAnnotation()
         {
-            var expected = @"
-[SomeAnnotation]
-public void UnitTestMethod()
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Annotations = new List<string> { "[SomeAnnotation]" }
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithAnnotations("[SomeAnnotation]")
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithNoParameters()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public void MethodGenerator_GivenSeveralAnnotations_ShouldGenerateMethodWithAnnotations()
         {
-            var expected = @"
-[SomeAnnotation1]
-[SomeAnnotation2]
-public void UnitTestMethod()
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Annotations = new List<string> { "[SomeAnnotation]", "[SomeAnnotation2]" }
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithAnnotations("[SomeAnnotation1]", "[SomeAnnotation2]")
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithNoParameters()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public void MethodGenerator_GivenSingleParameter_ShouldGenerateMethodWithParameter()
         {
-            var expected = @"
-public void UnitTestMethod(int param1)
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Parameters = new List<(string, string)> { ("param1", "int") }
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithParameters(("param1", "int"))
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public void MethodGenerator_GivenMultipleParameter_ShouldGenerateMethodWithParameters()
         {
-            var expected = @"
-public void UnitTestMethod(int param1, SomeObj param2)
-{
-    
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Parameters = new List<(string, string)> { ("param1", "int"), ("param2", "SomeObj") }
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithParameters(("param1", "int"), ("param2", "SomeObj"))
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -149,25 +142,22 @@ var x = 2;
 var y = 6;
 return x * y;
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var expected = @"
-public void UnitTestMethod()
-{
-    var x = 2;
-    var y = 6;
-    return x * y;
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
+            var expected = new Method
+            {
+                Name = "UnitTestMethod",
+                Body = methodBody
+            };
 
             var method = MethodGenerator.NewMethod()
                 .WithMethodName("UnitTestMethod")
                 .WithNoAnnotations()
-                .WithModifiers(MethodModifiers.Public)
+                .WithNoModifiers()
                 .WithReturnType(null)
                 .WithNoParameters()
                 .WithBody(methodBody)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            method.Should().BeEquivalentTo(expected);
         }
 
     }

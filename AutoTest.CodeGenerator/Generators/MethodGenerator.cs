@@ -1,7 +1,5 @@
 ﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Helpers;
 using AutoTest.CodeGenerator.Models;
-using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
@@ -14,7 +12,7 @@ namespace AutoTest.CodeGenerator.Generators
             IMethodBodySelectionStage,
             IMethodGenerationSelectionStage
     {
-        private string _name;
+        private string _methodName;
         private List<string> _annotations = new();
         private List<MethodModifiers> _modifiers = new();
         private string _returnType;
@@ -27,7 +25,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IMethodAnnotationSelectionStage WithMethodName(string name)
         {
-            _name = name;
+            _methodName = name;
             return this;
         }
 
@@ -38,6 +36,8 @@ namespace AutoTest.CodeGenerator.Generators
             _annotations.AddRange(annotations);
             return this;
         }
+
+        public IMethodReturnTypeSelectionStage WithNoModifiers() => this;
 
         public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers)
         {
@@ -65,26 +65,28 @@ namespace AutoTest.CodeGenerator.Generators
             return this;
         }
 
-        public string Generate()
+        public Method Generate()
         {
-            return new Method(_name, _annotations, _modifiers, _returnType, AddParameters(), _body).ToString();
-            //var stringBuilder = new StringBuilder();
-            //stringBuilder.AppendJoin(Environment.NewLine, _annotations);
-            //stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            //stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(string.Join(", ", AddParameters()), Symbols.Parentheses));
+            ValidateMethod();
 
-            //return stringBuilder.ToString().AddNewContext(_body);
+            return new()
+            {
+                Name = _methodName,
+                Annotations = _annotations,
+                Modifiers = _modifiers,
+                ReturnType = _returnType,
+                Parameters = _parameters,
+                Body = _body,
+            };
         }
 
-        private IEnumerable<string> AddParameters()
+        private void ValidateMethod()
         {
-            foreach (var parameter in _parameters)
+            if (string.IsNullOrWhiteSpace(_methodName))
             {
-                yield return $"{parameter.Type} {parameter.Name.FormatAsVariable()}";
+                throw new ArgumentNullException(nameof(_methodName));
             }
         }
-
-        private string AddMethodModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
     }
 
     public interface IMethodNameSelectionStage
@@ -101,6 +103,8 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IMethodModifiersSelectionStage
     {
+        public IMethodReturnTypeSelectionStage WithNoModifiers();
+
         public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers);
     }
 
@@ -123,6 +127,6 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IMethodGenerationSelectionStage
     {
-        public string Generate();
+        public Method Generate();
     }
 }

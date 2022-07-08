@@ -17,7 +17,7 @@ namespace AutoTest.CodeGenerator.Generators
         private List<string> _usings = new();
         private List<string> _annotations = new();
         private List<(string Name, string Type, bool IsInjected)> _parameters = new();
-        private List<string> _methods = new();
+        private List<Method> _methods = new();
 
         private ClassGenerator() { }
 
@@ -28,6 +28,8 @@ namespace AutoTest.CodeGenerator.Generators
             _className = name;
             return this;
         }
+
+        public IClassUsingsSelectionStage WithNoModifiers() => this;
 
         public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers)
         {
@@ -65,7 +67,7 @@ namespace AutoTest.CodeGenerator.Generators
             return this;
         }
 
-        public IClassGenerateSelectionStage WithMethods(params string[] methods)
+        public IClassGenerateSelectionStage WithMethods(params Method[] methods)
         {
             _methods.AddRange(methods);
             return this;
@@ -73,51 +75,75 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IClassGenerateSelectionStage WithNoMethods() => this;
 
-        public string Generate() => new Class(_className, _usings, _annotations, _modifiers, _parameters, _methods).ToString();
+        public Class GenerateClass()
+        {
+            ValidateClass();
+
+            return new()
+            {
+                Name = _className,
+                Imports = _usings,
+                Annotations = _annotations,
+                Modifiers = _modifiers,
+                Parameters = _parameters,
+                Methods = _methods,
+            };
+        }
+
+        // TODO refactor with fluent validation
+        private void ValidateClass()
+        {
+            if(string.IsNullOrWhiteSpace(_className))
+            {
+                throw new ArgumentNullException(nameof(_className));
+            }
+        }
     }
 
     public interface IClassNameSelectionStage
     {
-        public IClassModifiersSelectionStage WithClassName(string name);
+        IClassModifiersSelectionStage WithClassName(string name);
     }
 
     public interface IClassModifiersSelectionStage
     {
-        public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers);
+        IClassUsingsSelectionStage WithNoModifiers();
+
+        IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers);
     }
 
     public interface IClassUsingsSelectionStage
     {
-        public IClassAnnotationSelectionStage WithNoUsings();
+        IClassAnnotationSelectionStage WithNoUsings();
 
-        public IClassAnnotationSelectionStage WithUsings(params string[] usings);
+        IClassAnnotationSelectionStage WithUsings(params string[] usings);
     }
 
     public interface IClassAnnotationSelectionStage
     {
-        public IClassPropertiesSelectionStage WithNoAnnotations();
+        IClassPropertiesSelectionStage WithNoAnnotations();
 
-        public IClassPropertiesSelectionStage WithAnnotations(params string[] annotations);
+        IClassPropertiesSelectionStage WithAnnotations(params string[] annotations);
     }
 
     public interface IClassPropertiesSelectionStage
     {
-        public IClassMethodsSelectionStage WithNoParameters();
+        IClassMethodsSelectionStage WithNoParameters();
 
-        public IClassMethodsSelectionStage WithParameters(params (string parameter, string type)[] parameters);
+        IClassMethodsSelectionStage WithParameters(params (string parameter, string type)[] parameters);
 
-        public IClassMethodsSelectionStage WithDIParameters(params (string parameter, string type)[] parameters);
+        IClassMethodsSelectionStage WithDIParameters(params (string parameter, string type)[] parameters);
     }
 
     public interface IClassMethodsSelectionStage
     {
-        public IClassGenerateSelectionStage WithNoMethods();
+        IClassGenerateSelectionStage WithNoMethods();
 
-        public IClassGenerateSelectionStage WithMethods(params string[] method);
+        IClassGenerateSelectionStage WithMethods(params Method[] method);
     }
 
     public interface IClassGenerateSelectionStage
     {
-        public string Generate();
+        Class GenerateClass();
     }
 }

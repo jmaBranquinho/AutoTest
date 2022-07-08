@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoTest.CodeGenerator.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoTest.TestGenerator.Tests.Unit", "AutoTest.TestGenerator.Tests.Unit\AutoTest.TestGenerator.Tests.Unit.csproj", "{E2B02870-A484-4F42-8548-F6B41EE7064C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTest.Core", "AutoTest.Core\AutoTest.Core.csproj", "{066152D6-2967-4340-8549-23D9D2DF049C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoTest.Core", "AutoTest.Core\AutoTest.Core.csproj", "{066152D6-2967-4340-8549-23D9D2DF049C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTest.CodeGenerator.Tests.Integration", "AutoTest.CodeGenerator.Tests.Integration\AutoTest.CodeGenerator.Tests.Integration.csproj", "{3A5DBF93-C290-4CF4-AA38-93240D704D67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{066152D6-2967-4340-8549-23D9D2DF049C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{066152D6-2967-4340-8549-23D9D2DF049C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{066152D6-2967-4340-8549-23D9D2DF049C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A5DBF93-C290-4CF4-AA38-93240D704D67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5DBF93-C290-4CF4-AA38-93240D704D67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A5DBF93-C290-4CF4-AA38-93240D704D67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A5DBF93-C290-4CF4-AA38-93240D704D67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8714FB13-17B3-4E2A-9BB5-17377D7EC6E7} = {F7CAD496-6AA0-4BAB-B096-7A8E85BA30FD}
 		{E2B02870-A484-4F42-8548-F6B41EE7064C} = {F7CAD496-6AA0-4BAB-B096-7A8E85BA30FD}
+		{3A5DBF93-C290-4CF4-AA38-93240D704D67} = {F7CAD496-6AA0-4BAB-B096-7A8E85BA30FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15C5B186-E30E-407C-B1B2-2E05CDF6B066}

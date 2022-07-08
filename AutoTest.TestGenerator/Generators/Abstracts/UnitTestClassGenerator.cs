@@ -1,5 +1,6 @@
 ﻿using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
+using AutoTest.CodeGenerator.Models;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
@@ -9,7 +10,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         protected string _className;
 
-        public string Generate()
+        public Class Generate()
         {
             return ClassGenerator.NewClass()
                 .WithClassName(_className)
@@ -18,7 +19,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 .WithAnnotations(_classAnnotation)
                 .WithNoParameters()
                 .WithNoMethods()
-                .Generate();
+                .GenerateClass();
         }
     }
 }
