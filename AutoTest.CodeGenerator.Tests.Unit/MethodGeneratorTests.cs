@@ -25,7 +25,7 @@ public void UnitTestMethod()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -47,7 +47,7 @@ public static void UnitTestMethod()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -70,7 +70,7 @@ public void UnitTestMethod()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -94,7 +94,7 @@ public void UnitTestMethod()
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -116,7 +116,7 @@ public void UnitTestMethod(int param1)
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -138,7 +138,7 @@ public void UnitTestMethod(int param1, SomeObj param2)
                 .WithBody(string.Empty)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
         [Fact]
@@ -167,7 +167,7 @@ public void UnitTestMethod()
                 .WithBody(methodBody)
                 .Generate();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
+            UnitTestHelper.AssertSimilarStrings(expected, method.ToString());
         }
 
     }

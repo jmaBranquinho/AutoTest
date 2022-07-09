@@ -14,7 +14,7 @@ namespace AutoTest.CodeGenerator.Generators
             IMethodBodySelectionStage,
             IMethodGenerationSelectionStage
     {
-        private string _name;
+        private string _methodName;
         private List<string> _annotations = new();
         private List<MethodModifiers> _modifiers = new();
         private string _returnType;
@@ -27,7 +27,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IMethodAnnotationSelectionStage WithMethodName(string name)
         {
-            _name = name;
+            _methodName = name;
             return this;
         }
 
@@ -38,6 +38,8 @@ namespace AutoTest.CodeGenerator.Generators
             _annotations.AddRange(annotations);
             return this;
         }
+
+        public IMethodReturnTypeSelectionStage WithNoModifiers() => this;
 
         public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers)
         {
@@ -65,16 +67,7 @@ namespace AutoTest.CodeGenerator.Generators
             return this;
         }
 
-        public string Generate()
-        {
-            return new Method(_name, _annotations, _modifiers, _returnType, AddParameters(), _body).ToString();
-            //var stringBuilder = new StringBuilder();
-            //stringBuilder.AppendJoin(Environment.NewLine, _annotations);
-            //stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            //stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(string.Join(", ", AddParameters()), Symbols.Parentheses));
-
-            //return stringBuilder.ToString().AddNewContext(_body);
-        }
+        public Method Generate() => new(_methodName, _annotations, _modifiers, _returnType, AddParameters(), _body);
 
         private IEnumerable<string> AddParameters()
         {
@@ -101,6 +94,8 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IMethodModifiersSelectionStage
     {
+        public IMethodReturnTypeSelectionStage WithNoModifiers();
+
         public IMethodReturnTypeSelectionStage WithModifiers(params MethodModifiers[] modifiers);
     }
 
@@ -123,6 +118,6 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IMethodGenerationSelectionStage
     {
-        public string Generate();
+        public Method Generate();
     }
 }

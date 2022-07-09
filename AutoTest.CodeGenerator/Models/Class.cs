@@ -6,34 +6,30 @@ namespace AutoTest.CodeGenerator.Models
 {
     public class Class
     {
-        private string _className;
-        private IEnumerable<string> _usings;
-        private IEnumerable<string> _annotations;
-        private IEnumerable<ClassModifiers> _modifiers;
-        private IEnumerable<(string Name, string Type, bool IsInjected)> _parameters;
-        private IEnumerable<string> _methods;
-        private IEnumerable<Method> _nonGeneratedMethods;
+        public string ClassName { get; set; }
+        public IEnumerable<string> Imports { get; set; }
+        public string Namespace { get; set; }
+        public IEnumerable<string> Annotations { get; set; }
+        public IEnumerable<ClassModifiers> Modifiers { get; set; }
+        public IEnumerable<(string Name, string Type, bool IsInjected)> Parameters { get; set; }
+        public IEnumerable<Method> Methods { get; set; }
 
-        public Class(string classname, IEnumerable<string> usings, IEnumerable<string> annotations, IEnumerable<ClassModifiers> modifiers, IEnumerable<(string Name, string Type, bool IsInjected)> parameters, IEnumerable<string> methods)
+        public Class(
+            string classname, 
+            string @namespace, 
+            IEnumerable<string> usings, 
+            IEnumerable<string> annotations, 
+            IEnumerable<ClassModifiers> modifiers, 
+            IEnumerable<(string Name, string Type, bool IsInjected)> parameters, 
+            IEnumerable<Method> methods)
         {
-            _className = classname;
-            _usings = usings ?? new List<string>();
-            _annotations = annotations ?? new List<string>();
-            _modifiers = modifiers ?? new List<ClassModifiers>();
-            _parameters = parameters ?? new List<(string Name, string Type, bool IsInjected)>();
-            _methods = methods ?? new List<string> ();
-            _nonGeneratedMethods = new List<Method>();
-        }
-
-        public Class(string classname, IEnumerable<string> usings, IEnumerable<string> annotations, IEnumerable<ClassModifiers> modifiers, IEnumerable<(string Name, string Type, bool IsInjected)> parameters, IEnumerable<Method> methods)
-        {
-            _className = classname;
-            _usings = usings ?? new List<string>();
-            _annotations = annotations ?? new List<string>();
-            _modifiers = modifiers ?? new List<ClassModifiers>();
-            _parameters = parameters ?? new List<(string Name, string Type, bool IsInjected)>();
-            _nonGeneratedMethods = methods ?? new List<Method>();
-            _methods = new List<string>();
+            ClassName = classname;
+            Imports = usings ?? new List<string>();
+            Namespace = @namespace;
+            Annotations = annotations ?? new List<string>();
+            Modifiers = modifiers ?? new List<ClassModifiers>();
+            Parameters = parameters ?? new List<(string Name, string Type, bool IsInjected)>();
+            Methods = methods ?? new List<Method>();
         }
 
         public override string ToString()
@@ -46,14 +42,14 @@ namespace AutoTest.CodeGenerator.Models
                 body.Add(AddCtor());
             }
 
-            body.AddRange(_methods.Concat(_nonGeneratedMethods.Select(m => m.ToString())));
+            body.AddRange(Methods.Select(m => m.ToString()));
 
             stringBuilder
-                .AppendJoin(Environment.NewLine, _usings)
-                .Append(_usings is not null && _usings.Any() ? Environment.NewLine.Repeat(2) : string.Empty)
-                .AppendJoin(Environment.NewLine, _annotations)
-                .Append(_annotations is not null && _annotations.Any() ? Environment.NewLine : string.Empty)
-                .Append($"{AddClassModifiers()} class {_className}");
+                .AppendJoin(Environment.NewLine, Imports)
+                .Append(Imports is not null && Imports.Any() ? Environment.NewLine.Repeat(2) : string.Empty)
+                .AppendJoin(Environment.NewLine, Annotations)
+                .Append(Annotations is not null && Annotations.Any() ? Environment.NewLine : string.Empty)
+                .Append($"{AddClassModifiers()} class {ClassName}");
 
             var parameters = AddParameters();
 
@@ -63,19 +59,43 @@ namespace AutoTest.CodeGenerator.Models
                     string.Join(Environment.NewLine.Repeat(2), body));
         }
 
+        public void ToFile(string path)
+        {
+            var attributes = File.GetAttributes(path);
+            if(attributes.HasFlag(FileAttributes.Directory))
+            {
+                if(Directory.Exists(path))
+                {
+                    path += $"\\{ClassName}.cs";
+                }
+                else
+                {
+                    throw new Exception("Directory does not exist!");// TODO
+                }
+            } 
+            else
+            {
+                if (!File.Exists(path))
+                {
+                    File.Create(path);
+                }
+            }
+            File.WriteAllText(path, ToString());
+        }
+
         private IEnumerable<string> AddParameters()
         {
-            foreach (var parameter in _parameters)
+            foreach (var parameter in Parameters)
             {
                 yield return $"private {parameter.Type} {parameter.Name.FormatAsPrivateField()};";
             }
         }
 
-        private string AddClassModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
+        private string AddClassModifiers() => string.Join(" ", Modifiers.Select(m => m.ToString().ToLowerInvariant()));
 
         private string AddCtor()
         {
-            var dIVars = _parameters
+            var dIVars = Parameters
                 .Where(p => p.IsInjected)
                 .ToList();
 
@@ -84,13 +104,13 @@ namespace AutoTest.CodeGenerator.Models
                 .ToList();
 
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"public {_className}".AddNewContext(string.Join(", ", dIVars.Select(p => $"{p.Type} {p.Name}")), Symbols.Parentheses));
+            stringBuilder.Append($"public {ClassName}".AddNewContext(string.Join(", ", dIVars.Select(p => $"{p.Type} {p.Name}")), Symbols.Parentheses));
 
             return stringBuilder
                 .ToString()
                 .AddNewContext(string.Join(Environment.NewLine, body));
         }
 
-        private bool IsCtorRequired() => _parameters.Any(p => p.IsInjected);
+        private bool IsCtorRequired() => Parameters.Any(p => p.IsInjected);
     }
 }

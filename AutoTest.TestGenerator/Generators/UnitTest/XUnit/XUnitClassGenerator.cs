@@ -4,7 +4,7 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit
 {
     public class XUnitClassGenerator : UnitTestClassGenerator
     {
-        protected override string _classAnnotation => string.Empty;
+        protected override string ClassAnnotation => string.Empty;
 
         public XUnitClassGenerator(string className)
         {

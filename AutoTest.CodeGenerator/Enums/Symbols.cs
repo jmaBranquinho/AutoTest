@@ -13,6 +13,6 @@
         /// <summary>
         /// Curly Brackets
         /// </summary>
-        Braces
+        Braces,
     }
 }

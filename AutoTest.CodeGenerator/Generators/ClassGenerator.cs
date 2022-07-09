@@ -3,6 +3,7 @@ using AutoTest.CodeGenerator.Models;
 
 namespace AutoTest.CodeGenerator.Generators
 {
+    // TODO add support for namespace
     public class ClassGenerator :
             IClassNameSelectionStage,
             IClassModifiersSelectionStage,
@@ -17,7 +18,7 @@ namespace AutoTest.CodeGenerator.Generators
         private List<string> _usings = new();
         private List<string> _annotations = new();
         private List<(string Name, string Type, bool IsInjected)> _parameters = new();
-        private List<string> _methods = new();
+        private List<Method> _methods = new();
 
         private ClassGenerator() { }
 
@@ -28,6 +29,8 @@ namespace AutoTest.CodeGenerator.Generators
             _className = name;
             return this;
         }
+
+        public IClassUsingsSelectionStage WithNoModifiers() => this;
 
         public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers)
         {
@@ -65,7 +68,7 @@ namespace AutoTest.CodeGenerator.Generators
             return this;
         }
 
-        public IClassGenerateSelectionStage WithMethods(params string[] methods)
+        public IClassGenerateSelectionStage WithMethods(params Method[] methods)
         {
             _methods.AddRange(methods);
             return this;
@@ -73,7 +76,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IClassGenerateSelectionStage WithNoMethods() => this;
 
-        public string Generate() => new Class(_className, _usings, _annotations, _modifiers, _parameters, _methods).ToString();
+        public Class Generate() => new(_className, @namespace: string.Empty, _usings, _annotations, _modifiers, _parameters, _methods);
     }
 
     public interface IClassNameSelectionStage
@@ -83,6 +86,8 @@ namespace AutoTest.CodeGenerator.Generators
 
     public interface IClassModifiersSelectionStage
     {
+        public IClassUsingsSelectionStage WithNoModifiers();
+
         public IClassUsingsSelectionStage WithModifiers(params ClassModifiers[] modifiers);
     }
 
@@ -113,11 +118,11 @@ namespace AutoTest.CodeGenerator.Generators
     {
         public IClassGenerateSelectionStage WithNoMethods();
 
-        public IClassGenerateSelectionStage WithMethods(params string[] method);
+        public IClassGenerateSelectionStage WithMethods(params Method[] method);
     }
 
     public interface IClassGenerateSelectionStage
     {
-        public string Generate();
+        public Class Generate();
     }
 }
