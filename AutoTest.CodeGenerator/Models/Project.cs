@@ -13,6 +13,7 @@ namespace AutoTest.CodeGenerator.Models
         {
             ProjectName = projectName;
             Namespaces = namespaces ?? new List<Namespace>();
+            References = new List<string>();
         }
 
         public void Generate(string path)

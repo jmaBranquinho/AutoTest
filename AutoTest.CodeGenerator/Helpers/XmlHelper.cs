@@ -8,7 +8,7 @@
             {
                 return $"{tag.ToTag(isClosingStatement: false, isContentless: true, parameters)}";
             }
-            return $"{tag.ToTag(isClosingStatement: false, isContentless: false, parameters)}{content.AddIdentation()}{tag.ToTag(isClosingStatement: true, isContentless: false, parameters)}";
+            return $"{tag.ToTag(isClosingStatement: false, isContentless: false, parameters)}{Environment.NewLine}{content.AddIdentation()}{Environment.NewLine}{tag.ToTag(isClosingStatement: true, isContentless: false)}";
         }
 
         private static string ToTag(this string tag, bool isClosingStatement = false, bool isContentless = false, params (string Name, string Value)[] parameters)
