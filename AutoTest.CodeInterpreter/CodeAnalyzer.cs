@@ -60,26 +60,26 @@ namespace AutoTest.CodeInterpreter
                     };
                     namespaceWrapper.Classes.Add(classWrapper);
 
-                    var methods = classStatement.DescendantNodes().OfType<MethodDeclarationSyntax>();
+                    var methods = classStatement.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
 
-                    var publicMethods = methods.Where(m => m.Modifiers.Any(mod => mod.Text == "public")).ToList();
+                    //var publicMethods = methods.Where(m => m.Modifiers.Any(mod => mod.Text == "public")).ToList();
 
-                    foreach (var methodStatement in publicMethods)
+                    foreach (var methodStatement in methods)
                     {
                         var methodWrapper = new MethodWrapper
                         {
                             Name = methodStatement.Identifier.ValueText,
-                            ExecutionPaths = TryHandleStatement(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
+                            ExecutionPaths = HandleStatements(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
                         };
                         methodWrapper.AnalyzeMethodDetails();
                         classWrapper.Methods.Add(methodWrapper);
                     }
                 }
             }
-            return solutionWrapper;
+            return solutionWrapper.Consolidate();
         }
 
-        private List<CodeExecution> TryHandleStatement(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
+        private List<CodeExecution> HandleStatements(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
         {
             bool hasPathReachedEnd = statements == null ||
                 !statements.Any() || statements.First() == null ||
@@ -96,7 +96,7 @@ namespace AutoTest.CodeInterpreter
             {
                 var statement = statements.First();
                 var analyzer = _dictionary.GetAnalyzerFromDictionary(statement.GetType());
-                return analyzer.Analyze(statement, currentExecutionPaths, TryHandleStatement);
+                return analyzer.Analyze(statement, currentExecutionPaths, HandleStatements);
             }
 
             var executionPaths = new List<CodeExecution>
@@ -114,7 +114,7 @@ namespace AutoTest.CodeInterpreter
                 {
                     var list = new List<SyntaxNode>();
                     list.Add(statement);
-                    var analyzisResults = TryHandleStatement(list, executionPath);
+                    var analyzisResults = HandleStatements(list, executionPath);
                     results.AddRange(analyzisResults.Where(path => path.IsFinished).ToList());
                     nextExecutionPaths.AddRange(analyzisResults);
                 }
@@ -125,7 +125,7 @@ namespace AutoTest.CodeInterpreter
             return executionPaths;
         }
 
-        private CompilationUnitSyntax GetCompilationUnitSyntax(string code)
+        private static CompilationUnitSyntax GetCompilationUnitSyntax(string code)
         {
             var tree = CSharpSyntaxTree.ParseText(code);
             return tree.GetCompilationUnitRoot();

@@ -1,4 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Interfaces;
+using AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers;
 using AutoTest.CodeInterpreter.Wrappers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,14 +20,14 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
                     executionPath.IsFinished = true;
                     var clone = executionPath.Clone();
 
-                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression });
-                    clone.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression });
+                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
+                    clone.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
 
                     return new List<CodeExecution>() { executionPath, clone };
                 }
                 else
                 {
-                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement });
+                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
                     executionPath.IsFinished = true;
                     return new List<CodeExecution>() { executionPath };
                 }

@@ -5,5 +5,13 @@
         public string Name { get; set; }
 
         public List<MethodWrapper> Methods { get; set; }
+
+        public void Consolidate(SolutionWrapper solution)
+        {
+            foreach (var method in Methods)
+            {
+                method.Consolidate(solution);
+            }
+        }
     }
 }

@@ -23,17 +23,33 @@ namespace AutoTest.CodeInterpreter.Wrappers
             }
         }
 
+        public void Consolidate(SolutionWrapper solution)
+        {
+            foreach (var path in ExecutionPaths)
+            {
+                foreach (var statement in path)
+                {
+                    if(statement.HasReference)
+                    {
+                        // TODO: 
+
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+        }
+
         private MethodDeclarationSyntax GetMethodSyntax()
         {
             if (ExecutionPaths is not null)
             {
+                if(ExecutionPaths.Any(x => x is null || !x.Any()))
+                {
+                    ExecutionPaths = ExecutionPaths.Where(x => x is not null && x.Any()).ToList();
+                }
+
                 foreach (var path in ExecutionPaths)
                 {
-                    if (path is null)
-                    {
-                        continue;
-                    }
-
                     foreach (var statement in path)
                     {
                         if (statement.SyntaxNode.GetType() == typeof(MethodDeclarationSyntax))
