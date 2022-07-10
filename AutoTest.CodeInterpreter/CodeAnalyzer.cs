@@ -46,6 +46,7 @@ namespace AutoTest.CodeInterpreter
                 {
                     Name = ((NamespaceDeclarationSyntax)namespaceStatement).Name.ToFullString(),
                     Classes = new List<ClassWrapper>(),
+                    Solution = solutionWrapper,
                 };
                 solutionWrapper.Namespaces.Add(namespaceWrapper);
 
@@ -57,6 +58,7 @@ namespace AutoTest.CodeInterpreter
                     {
                         Name = ((ClassDeclarationSyntax)classStatement).Identifier.ValueText,
                         Methods = new List<MethodWrapper>(),
+                        Namespace = namespaceWrapper,
                     };
                     namespaceWrapper.Classes.Add(classWrapper);
 
@@ -70,6 +72,7 @@ namespace AutoTest.CodeInterpreter
                         {
                             Name = methodStatement.Identifier.ValueText,
                             ExecutionPaths = HandleStatements(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
+                            Class = classWrapper,
                         };
                         methodWrapper.AnalyzeMethodDetails();
                         classWrapper.Methods.Add(methodWrapper);

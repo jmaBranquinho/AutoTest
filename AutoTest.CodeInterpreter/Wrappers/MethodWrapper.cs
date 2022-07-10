@@ -11,6 +11,10 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public Dictionary<string, Type> Parameters { get; set; }
 
+        public ClassWrapper Class { get; set; }
+
+        private List<string> _references = new();
+
         public void AnalyzeMethodDetails()
         {
             Parameters = new Dictionary<string, Type>();
@@ -23,6 +27,10 @@ namespace AutoTest.CodeInterpreter.Wrappers
             }
         }
 
+        public bool IsConsolidationRequired() => _references.Any();//ExecutionPaths.Any(ep => ep.Any(p => p.HasReference));
+
+        public IEnumerable<string> GetReferences() => _references;
+
         public void Consolidate(SolutionWrapper solution)
         {
             foreach (var path in ExecutionPaths)
@@ -31,9 +39,19 @@ namespace AutoTest.CodeInterpreter.Wrappers
                 {
                     if(statement.HasReference)
                     {
-                        // TODO: 
+                        _references.Add(statement.Reference.MethodCalled);
 
-                        throw new NotImplementedException();
+
+
+                        // TODO: 
+                        // use reference to get method(s) called
+                        // add method(s) execution path to current path, clone and add new paths if needed
+
+                        //var possibleReferences = solution.Namespaces.SelectMany(n => n.Classes.SelectMany(c => c.Methods.Where(m => m.Name == statement.Reference.MethodCalled))).ToList();
+                        //var referencedMethod = possibleReferences.FirstOrDefault();
+
+
+                        //throw new NotImplementedException();
                     }
                 }
             }
