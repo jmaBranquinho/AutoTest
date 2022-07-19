@@ -1,4 +1,5 @@
-﻿using AutoTest.Core;
+﻿using AutoTest.CodeInterpreter.Consolidation;
+using AutoTest.Core;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.Wrappers
@@ -31,7 +32,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public IEnumerable<string> GetReferences() => _references;
 
-        public void Consolidate(SolutionWrapper solution)
+        public void Consolidate(SolutionWrapper solution, ConsolidationService consolidationService)
         {
             foreach (var path in ExecutionPaths)
             {
@@ -40,7 +41,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
                     if(statement.HasReference)
                     {
                         _references.Add(statement.Reference.MethodCalled);
-
+                        
 
 
                         // TODO: 
@@ -55,6 +56,8 @@ namespace AutoTest.CodeInterpreter.Wrappers
                     }
                 }
             }
+
+            consolidationService.RegisterMethod(this);
         }
 
         private MethodDeclarationSyntax GetMethodSyntax()

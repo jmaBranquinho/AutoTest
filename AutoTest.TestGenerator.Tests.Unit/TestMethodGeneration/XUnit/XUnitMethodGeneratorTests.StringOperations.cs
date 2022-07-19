@@ -9,7 +9,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void SimpleMethodEqualsUsingString()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodEqualsWithString);
+            var method = GetMethodFromExample(_simpleMethodEqualsWithString);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -31,7 +31,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void SimpleMethodNotEqualsUsingString()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodNotEqualsWithString);
+            var method = GetMethodFromExample(_simpleMethodNotEqualsWithString);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 

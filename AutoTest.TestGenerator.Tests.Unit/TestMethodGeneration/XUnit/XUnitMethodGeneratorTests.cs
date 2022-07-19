@@ -1,6 +1,7 @@
 using AutoTest.CodeInterpreter;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.UnitTest.XUnit;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
@@ -11,11 +12,13 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
 
         public XUnitMethodGeneratorTests() => _sut = new XUnitMethodGenerator();
 
-        private static MethodWrapper GetMethodSyntaxFromExample(string exampleCode)
+        private static MethodWrapper GetMethodFromExample(string exampleCode) => GetMethodsFromExample(exampleCode).First();
+
+        private static IEnumerable<MethodWrapper> GetMethodsFromExample(string exampleCode)
         {
             var analyzer = new CodeAnalyzer();
             var solution = analyzer.AnalyzeCode(_classAndNamespaceWrapperTemplate.Replace("{0}", exampleCode));
-            return solution.Namespaces.First().Classes.First().Methods.First();
+            return solution.Namespaces.First().Classes.First().Methods;
         }
 
         private static string _classAndNamespaceWrapperTemplate = @"

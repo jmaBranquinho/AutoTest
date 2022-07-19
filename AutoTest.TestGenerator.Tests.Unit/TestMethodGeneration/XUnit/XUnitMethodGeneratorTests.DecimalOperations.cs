@@ -10,7 +10,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void SimpleMethodEqualsUsingDecimal()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodEqualsWithDecimal);
+            var method = GetMethodFromExample(_simpleMethodEqualsWithDecimal);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 

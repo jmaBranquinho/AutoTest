@@ -1,4 +1,6 @@
-﻿namespace AutoTest.CodeInterpreter.Wrappers
+﻿using AutoTest.CodeInterpreter.Consolidation;
+
+namespace AutoTest.CodeInterpreter.Wrappers
 {
     public class NamespaceWrapper
     {
@@ -8,12 +10,14 @@
 
         public SolutionWrapper Solution { get; set; }
 
-        public void Consolidate(SolutionWrapper solution)
+        public void Consolidate(SolutionWrapper solution, ConsolidationService consolidationService)
         {
             foreach (var @class in Classes)
             {
-                @class.Consolidate(solution);
+                @class.Consolidate(solution, consolidationService);
             }
+
+            consolidationService.Consolidate();
         }
     }
 }

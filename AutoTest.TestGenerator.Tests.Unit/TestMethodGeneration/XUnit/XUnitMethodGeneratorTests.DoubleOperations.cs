@@ -10,7 +10,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void SimpleMethodEqualsUsingDouble()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodEqualsWithDouble);
+            var method = GetMethodFromExample(_simpleMethodEqualsWithDouble);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 

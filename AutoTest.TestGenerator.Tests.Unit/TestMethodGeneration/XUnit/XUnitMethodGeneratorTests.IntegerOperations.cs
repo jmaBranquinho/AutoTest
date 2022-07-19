@@ -25,7 +25,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThan);
+            var method = GetMethodFromExample(_simpleMethodGreaterThan);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -69,7 +69,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodGreaterThanEquals);
+            var method = GetMethodFromExample(_simpleMethodGreaterThanEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -113,7 +113,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodLessThan);
+            var method = GetMethodFromExample(_simpleMethodLessThan);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -157,7 +157,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodLessThanEquals);
+            var method = GetMethodFromExample(_simpleMethodLessThanEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -187,7 +187,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
         [Fact]
         public void SimpleMethodEquals()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodEquals);
+            var method = GetMethodFromExample(_simpleMethodEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -211,7 +211,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
         [Fact]
         public void SimpleMethodNotEquals()
         {
-            var method = GetMethodSyntaxFromExample(_simpleMethodNotEquals);
+            var method = GetMethodFromExample(_simpleMethodNotEquals);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 

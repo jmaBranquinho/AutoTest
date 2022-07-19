@@ -24,7 +24,7 @@ public void TestMethod_WhenSomething_ShouldSomething()
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodWithoutParametersNoLogic);
+            var method = GetMethodFromExample(_simpleMethodWithoutParametersNoLogic);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 
@@ -50,7 +50,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = GetMethodSyntaxFromExample(_simpleMethodWith1ParameterNoLogic);
+            var method = GetMethodFromExample(_simpleMethodWith1ParameterNoLogic);
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
 

@@ -17,7 +17,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.UnitTestFormatting.XUnit
         [Fact]
         public void NameAndSimpleBodyWithoutParameters()
         {
-            var methodSyntax = GetMethodSyntaxFromExample(_simpleClassAndMethodWithoutParameters);
+            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithoutParameters);
 
             var expected = @"
 [Fact]
@@ -40,7 +40,7 @@ public void UnitTestMethod()
         [Fact]
         public void NameAndSimpleBodyWithParameters()
         {
-            var methodSyntax = GetMethodSyntaxFromExample(_simpleClassAndMethodWithParameters);
+            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithParameters);
 
             var expected = @"
 [Theory]
@@ -69,7 +69,7 @@ public void UnitTestMethod(int x)
         }
 
 
-        private static StatementWrapper GetMethodSyntaxFromExample(string exampleCode)
+        private static StatementWrapper GetMethodFromExample(string exampleCode)
         {
             var tree = CSharpSyntaxTree.ParseText(exampleCode);
             var root = tree.GetCompilationUnitRoot();

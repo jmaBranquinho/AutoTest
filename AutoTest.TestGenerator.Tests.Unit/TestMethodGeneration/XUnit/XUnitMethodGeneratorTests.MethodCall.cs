@@ -1,4 +1,6 @@
 ﻿using AutoTest.TestGenerator.Generators.Enums;
+using FluentAssertions;
+using System.Linq;
 using Xunit;
 
 namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
@@ -8,11 +10,13 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void MethodCall()
         {
-            var method = GetMethodSyntaxFromExample(_methodCallingMethodEquals5);
+            var method = GetMethodsFromExample(_methodCallingMethodEquals5).Skip(1).First();
 
-            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult)
+                .Select(test => test.ToString());
 
-            ;
+            result.Count(test => test.Contains("[InlineData(5)]")).Should().Be(1);
+            result.Count(test => !test.Contains("[InlineData(5)]")).Should().Be(1);
         }
 
         private static readonly string _methodCallingMethodEquals5 = @"
