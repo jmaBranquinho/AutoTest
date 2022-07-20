@@ -22,10 +22,10 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
             var methodSyntax = GetMethodSyntax();
 
-            foreach (var parameter in methodSyntax.ParameterList.Parameters)
-            {
-                Parameters.Add(parameter.Identifier.Text, PrimitiveTypeConvertionHelper.GetTypeFromString(((PredefinedTypeSyntax) parameter.Type).Keyword.ValueText));
-            }
+            methodSyntax.ParameterList.Parameters
+                .ToList()
+                .ForEach(parameter => Parameters
+                    .Add(parameter.Identifier.Text, PrimitiveTypeConvertionHelper.GetTypeFromString(((PredefinedTypeSyntax)parameter.Type).Keyword.ValueText)));
         }
 
         public bool IsConsolidationRequired() => _references.Any();
@@ -34,38 +34,30 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public void Consolidate(SolutionWrapper solution, ConsolidationService consolidationService)
         {
-            foreach (var path in ExecutionPaths)
-            {
-                foreach (var statement in path)
-                {
-                    if(statement.HasReference)
-                    {
-                        _references.Add(statement.Reference.MethodCalled);
-                    }
-                }
-            }
+            _references.AddRange(
+                ExecutionPaths
+                .SelectMany(path => path
+                    .Where(statement => statement.HasReference)
+                    .Select(statement => statement.Reference.MethodCalled)));
 
             consolidationService.RegisterMethod(this);
         }
 
         private MethodDeclarationSyntax GetMethodSyntax()
         {
-            if (ExecutionPaths is not null)
+            if (ExecutionPaths is not null && ExecutionPaths.Any())
             {
-                if(ExecutionPaths.Any(x => x is null || !x.Any()))
-                {
-                    ExecutionPaths = ExecutionPaths.Where(x => x is not null && x.Any()).ToList();
-                }
+                ExecutionPaths = ExecutionPaths.Where(x => x is not null && x.Any()).ToList();
 
-                foreach (var path in ExecutionPaths)
+                var methodDeclarationSyntax = ExecutionPaths
+                    .SelectMany(path => path
+                        .Where(statement => statement.SyntaxNode.GetType() == typeof(MethodDeclarationSyntax))
+                        .Select(statement => statement))
+                    .FirstOrDefault();
+
+                if (methodDeclarationSyntax is not null)
                 {
-                    foreach (var statement in path)
-                    {
-                        if (statement.SyntaxNode.GetType() == typeof(MethodDeclarationSyntax))
-                        {
-                            return (MethodDeclarationSyntax)statement.SyntaxNode;
-                        }
-                    }
+                    return (MethodDeclarationSyntax)methodDeclarationSyntax.SyntaxNode;
                 }
             }
 
