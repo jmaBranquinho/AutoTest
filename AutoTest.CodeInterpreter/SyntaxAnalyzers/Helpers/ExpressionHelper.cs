@@ -8,7 +8,8 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers
         {
             var skippableTypes = new List<Type>
             {
-                typeof(LiteralExpressionSyntax)
+                typeof(LiteralExpressionSyntax),
+                typeof(IdentifierNameSyntax),
             };
 
             if(skippableTypes.Contains(expression.GetType())) 
