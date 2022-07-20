@@ -28,7 +28,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
             }
         }
 
-        public bool IsConsolidationRequired() => _references.Any();//ExecutionPaths.Any(ep => ep.Any(p => p.HasReference));
+        public bool IsConsolidationRequired() => _references.Any();
 
         public IEnumerable<string> GetReferences() => _references;
 
@@ -41,18 +41,6 @@ namespace AutoTest.CodeInterpreter.Wrappers
                     if(statement.HasReference)
                     {
                         _references.Add(statement.Reference.MethodCalled);
-                        
-
-
-                        // TODO: 
-                        // use reference to get method(s) called
-                        // add method(s) execution path to current path, clone and add new paths if needed
-
-                        //var possibleReferences = solution.Namespaces.SelectMany(n => n.Classes.SelectMany(c => c.Methods.Where(m => m.Name == statement.Reference.MethodCalled))).ToList();
-                        //var referencedMethod = possibleReferences.FirstOrDefault();
-
-
-                        //throw new NotImplementedException();
                     }
                 }
             }

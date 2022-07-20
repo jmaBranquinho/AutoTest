@@ -43,13 +43,12 @@ namespace AutoTest.CodeInterpreter.Consolidation
             foreach (var path in method.ExecutionPaths)
             {
                 var currentPaths = new List<List<StatementWrapper>>();
-                currentPaths.Add(new List<StatementWrapper>());//?
+                currentPaths.Add(new List<StatementWrapper>());
 
                 foreach (var statement in path)
                 {
                     if (statement.HasReference)
                     {
-                        // replace statement by method statements
                         var methodCalled = GetMethodCalled(consolidatedMethods, statement);
                         ReplaceStatementByMethodStatements(currentPaths, methodCalled.ExecutionPaths);
                     }
@@ -71,7 +70,6 @@ namespace AutoTest.CodeInterpreter.Consolidation
             return methodCalled;
         }
 
-        // TODO: I think this logic is not correct
         private static void ReplaceStatementByMethodStatements(List<List<StatementWrapper>> currentPaths, IEnumerable<IEnumerable<StatementWrapper>> pathsToAdd)
         {
             var newPaths = new List<List<StatementWrapper>>();
