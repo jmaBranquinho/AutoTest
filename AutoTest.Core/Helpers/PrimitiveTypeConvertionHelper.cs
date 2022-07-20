@@ -1,8 +1,8 @@
-﻿namespace AutoTest.Core
+﻿namespace AutoTest.Core.Helpers
 {
     public static class PrimitiveTypeConvertionHelper
     {
-        public static Type GetTypeFromString(string type) 
+        public static Type GetTypeFromString(string type)
             => type switch
             {
                 "int" => typeof(int),
@@ -15,7 +15,7 @@
         // TODO use dictionary for both methods and complete
         public static string GetStringFromType(Type type)
         {
-            if(typeof(int) == type) { return "int"; }
+            if (typeof(int) == type) { return "int"; }
             return type.ToString();
         }
 
@@ -39,7 +39,7 @@
             };
 
         // TODO
-        public static IEnumerable<Type> PrimitiveTypes 
+        public static IEnumerable<Type> PrimitiveTypes
             => new[]
             {
                 // value types

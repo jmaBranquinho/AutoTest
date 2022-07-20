@@ -1,5 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Consolidation;
-using AutoTest.Core;
+using AutoTest.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.Wrappers

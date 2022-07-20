@@ -1,4 +1,4 @@
-﻿using AutoTest.Core;
+﻿using AutoTest.Core.Helpers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

@@ -2,7 +2,7 @@
 using AutoTest.CodeGenerator.Helpers;
 using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Wrappers;
-using AutoTest.Core;
+using AutoTest.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 

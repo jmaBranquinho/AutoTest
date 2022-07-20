@@ -70,42 +70,23 @@ namespace AutoTest.CodeInterpreter.Consolidation
             return methodCalled;
         }
 
+        // TODO: add try catch and throw meaningful exception
         private static void ReplaceStatementByMethodStatements(List<List<StatementWrapper>> currentPaths, IEnumerable<IEnumerable<StatementWrapper>> pathsToAdd)
         {
             var newPaths = new List<List<StatementWrapper>>();
 
-            foreach (var path in currentPaths)
+            currentPaths.ForEach(path =>
             {
-                if(!pathsToAdd.Any())
+                path.AddRange(pathsToAdd.First());
+                if (pathsToAdd.Count() > 1)
                 {
-                    throw new NotImplementedException();
+                    newPaths.AddRange(pathsToAdd.Skip(1).Select(pathToAdd => new List<StatementWrapper>(path).Union(pathToAdd).ToList()));
                 }
-                else if(pathsToAdd.Count() == 1)
-                {
-                    path.AddRange(pathsToAdd.First());
-                }
-                else
-                {
-                    foreach (var pathToAdd in pathsToAdd.Skip(1).ToList())
-                    {
-                        var cloneOfPath = new List<StatementWrapper>(path);
-                        cloneOfPath.AddRange(pathToAdd);
-                        newPaths.Add(cloneOfPath);
-                    }
-
-                    path.AddRange(pathsToAdd.First());
-                }
-            }
+            });
 
             currentPaths.AddRange(newPaths);
         }
 
-        private static void AddToAll(List<List<StatementWrapper>> listOfLists, StatementWrapper statement)
-        {
-            foreach (var list in listOfLists)
-            {
-                list.Add(statement);
-            }
-        }
+        private static void AddToAll(List<List<StatementWrapper>> listOfLists, StatementWrapper statement) => listOfLists.ForEach(list => list.Add(statement));
     }
 }
