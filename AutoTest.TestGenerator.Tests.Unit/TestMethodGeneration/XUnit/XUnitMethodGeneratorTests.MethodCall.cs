@@ -36,7 +36,7 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         [Fact]
         public void MethodCallDepth5WithComplexity()
         {
-            var method = GetMethodsFromExample(_methodCallingMethodEquals5Depth5WithComplexity).Skip(1).First();
+            var method = GetMethodsFromExample(_methodCallingMethodEquals5Depth5WithComplexity).Skip(4).First();
 
             var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult)
                 .Select(test => test.ToString());
