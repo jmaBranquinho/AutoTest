@@ -5,9 +5,9 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public abstract class NumericalConstraint<T> : INumericalConstraint<T>
     {
-        protected abstract T _humanPreferenceMin { get; }
+        protected abstract T HumanPreferenceMin { get; }
 
-        protected abstract T _humanPreferenceMax { get; }
+        protected abstract T HumanPreferenceMax { get; }
 
         protected T _maxValue;
 

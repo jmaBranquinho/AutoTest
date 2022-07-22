@@ -4,9 +4,9 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class IntConstraint : NumericalConstraint<int>
     {
-        protected override int _humanPreferenceMin => 0;
+        protected override int HumanPreferenceMin => 0;
 
-        protected override int _humanPreferenceMax => 100;
+        protected override int HumanPreferenceMax => 100;
 
         protected new int _maxValue = int.MaxValue;
 
@@ -35,7 +35,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         protected override (int min, int max) AdjustRangeToHumanPreference()
-            => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
+            => ((HumanPreferenceMin >= _minValue ? HumanPreferenceMin : _minValue), HumanPreferenceMax < _maxValue ? HumanPreferenceMax : _maxValue);
 
         protected override int GenerateRandomWithExclusions(int min, int max)
         {
@@ -54,7 +54,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         private List<int> HandleElseStatements(HashSet<int> exclusionsWithoutDuplicates)
         {
-            return Enumerable.Range(_humanPreferenceMin, _humanPreferenceMax).Where(i => !exclusionsWithoutDuplicates.Contains(i)).ToList();
+            return Enumerable.Range(HumanPreferenceMin, HumanPreferenceMax).Where(i => !exclusionsWithoutDuplicates.Contains(i)).ToList();
             // TODO: handle if range is still 0, need to keep increasing the range - never use max/min int, takes too much memory
         }
 

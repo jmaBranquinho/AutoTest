@@ -5,9 +5,9 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class DoubleConstraint : NumericalConstraint<double>
     {
-        protected override double _humanPreferenceMin => 0;
+        protected override double HumanPreferenceMin => 0;
 
-        protected override double _humanPreferenceMax => 100;
+        protected override double HumanPreferenceMax => 100;
 
         protected new double _maxValue = double.MaxValue;
 
@@ -44,7 +44,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         protected override (double min, double max) AdjustRangeToHumanPreference()
-            => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
+            => ((HumanPreferenceMin >= _minValue ? HumanPreferenceMin : _minValue), HumanPreferenceMax < _maxValue ? HumanPreferenceMax : _maxValue);
 
         protected override double GenerateRandomWithExclusions(double min, double max)
         {

@@ -5,9 +5,9 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class DecimalConstraint : NumericalConstraint<decimal>
     {
-        protected override decimal _humanPreferenceMin => 0;
+        protected override decimal HumanPreferenceMin => 0;
 
-        protected override decimal _humanPreferenceMax => 100;
+        protected override decimal HumanPreferenceMax => 100;
 
         protected new decimal _maxValue = decimal.MaxValue;
 
@@ -44,7 +44,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         protected override (decimal min, decimal max) AdjustRangeToHumanPreference()
-            => ((_humanPreferenceMin >= _minValue ? _humanPreferenceMin : _minValue), _humanPreferenceMax < _maxValue ? _humanPreferenceMax : _maxValue);
+            => ((HumanPreferenceMin >= _minValue ? HumanPreferenceMin : _minValue), HumanPreferenceMax < _maxValue ? HumanPreferenceMax : _maxValue);
 
         protected override decimal GenerateRandomWithExclusions(decimal min, decimal max)
         {
