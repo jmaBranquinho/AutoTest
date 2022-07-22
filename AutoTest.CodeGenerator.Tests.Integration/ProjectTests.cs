@@ -25,7 +25,7 @@ namespace AutoTest.CodeGenerator.Tests.Integration
         [Fact]
         public void GenerateNewProjectFile()
         {
-            var project = new Project("Project123", null);
+            var project = new Project("Project123", namespaces: null);
             project.Generate(_path);
         }
     }

@@ -18,25 +18,16 @@ namespace AutoTest.CodeGenerator.Models
 
         public void Generate(string path)
         {
-            var attributes = File.GetAttributes(path);
-            if (attributes.HasFlag(FileAttributes.Directory))
+            if (Directory.Exists(path))
             {
-                if (Directory.Exists(path))
-                {
-                    path += $"\\{ProjectName}.csproj";
-                }
-                else
-                {
-                    throw new Exception("Directory does not exist!");// TODO
-                }
+                path += $"\\{ProjectName}.csproj";
             }
-            else
+
+            if (!File.Exists(path))
             {
-                if (!File.Exists(path))
-                {
-                    File.Create(path);
-                }
+                File.Create(path);
             }
+
             File.WriteAllText(path, GenerateProjectXml());
         }
 
