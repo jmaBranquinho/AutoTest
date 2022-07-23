@@ -1,4 +1,7 @@
 ﻿using AutoTest.CodeInterpreter.Wrappers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.Consolidation
 {
@@ -24,7 +27,8 @@ namespace AutoTest.CodeInterpreter.Consolidation
                 foreach (var (method, isConsolidated) in nonConsolidatedMethod)
                 {
                     var hasReferencesConsolidated = method.GetReferences().All(m1 => consolidatedMethods.Any(m2 => m2.Method.Name == m1));
-                    if (hasReferencesConsolidated)
+                    var hasLoops = method.ExecutionPaths.Any(p => p.Any(s => s.IsLoopStatement));
+                    if (hasReferencesConsolidated || hasLoops)
                     {
                         // TODO: look out for circular dependencies
                         ExtractDependenciesIntoExecutionPaths(consolidatedMethods, method);
@@ -47,7 +51,11 @@ namespace AutoTest.CodeInterpreter.Consolidation
 
                 foreach (var statement in path)
                 {
-                    if (statement.HasReference)
+                    if (statement.IsLoopStatement)
+                    {
+                        ExtractLoopLogicIntoExecutionPaths(currentPaths, statement);
+                    }
+                    else if (statement.HasReference)
                     {
                         var methodCalled = GetMethodCalled(consolidatedMethods, statement);
                         ReplaceStatementByMethodStatements(currentPaths, methodCalled.ExecutionPaths);
@@ -60,6 +68,51 @@ namespace AutoTest.CodeInterpreter.Consolidation
                 redesignedPaths.AddRange(currentPaths);
             }
             method.ExecutionPaths = redesignedPaths;
+        }
+
+        private static void ExtractLoopLogicIntoExecutionPaths(List<List<StatementWrapper>> paths, StatementWrapper statement)
+        {
+            //TODO: only working for FOR loops
+            if(statement.SyntaxNode is ForStatementSyntax)
+            {
+                var forSyntax = ((ForStatementSyntax)statement.SyntaxNode);
+                (_, var loops) = HandleForLoopLogic(forSyntax);
+                //TODO replace var if used in logic
+                //TODO check if there are sub-loops, ifs, etc.
+
+                var forLoopBody = (BlockSyntax)forSyntax.Statement;
+                foreach (var path in paths)
+                {
+                    Enumerable.Range(0, loops).ToList()
+                        .ForEach(_ => path.AddRange(
+                            forLoopBody.Statements.Select(s => new StatementWrapper { SyntaxNode = s })));
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        // TODO: check if it refering to the same var
+        private static (string? loopVariable, int numberOfIterations) HandleForLoopLogic(ForStatementSyntax forSyntax)
+        {
+            var body = forSyntax.Statement;
+            var condition = (BinaryExpressionSyntax)forSyntax.Condition;
+
+            var initializers = forSyntax.Declaration.Variables[0];//TODO this can be empty
+            var loopVariable = initializers.Identifier.Value;//TODO check if this one matches the others
+            var incrementors = forSyntax.Incrementors;//TODO this can be empty
+
+            //TODO: we're assuming ints - needs to be more generic
+            var initialLoopValue = (int)((LiteralExpressionSyntax)initializers.Initializer.Value).Token.Value;
+            var operatorKind = condition.Kind();
+            var isDecrementRequired = operatorKind == SyntaxKind.LessThanExpression || operatorKind == SyntaxKind.GreaterThanExpression;
+            var finalLoopValue = (int)((LiteralExpressionSyntax)condition.Right).Token.Value + (isDecrementRequired ? -1 : 0);
+            var incrementorKind = incrementors[0].Kind();
+            var increments = incrementorKind == SyntaxKind.PostIncrementExpression ? 1 : incrementorKind == SyntaxKind.PostDecrementExpression ? -1 : throw new NotImplementedException(); ;
+            var numberOfIterations = (finalLoopValue - initialLoopValue) / increments;
+            return (loopVariable.ToString(), numberOfIterations);
         }
 
         // TODO: see bellow

@@ -28,7 +28,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
                     .Add(parameter.Identifier.Text, PrimitiveTypeConvertionHelper.GetTypeFromString(((PredefinedTypeSyntax)parameter.Type).Keyword.ValueText)));
         }
 
-        public bool IsConsolidationRequired() => _references.Any();
+        public bool IsConsolidationRequired() => _references.Any() || ExecutionPaths.Any(p => p.Any(s => s.IsLoopStatement));
 
         public IEnumerable<string> GetReferences() => _references;
 

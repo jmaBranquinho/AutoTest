@@ -63,6 +63,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 case IfStatementSyntax ifSyntax:
                     OperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
+                case ForStatementSyntax:
+                    throw new Exception("this should have been handled before - something's wrong");// TODO
                 default:
                     break;
             }

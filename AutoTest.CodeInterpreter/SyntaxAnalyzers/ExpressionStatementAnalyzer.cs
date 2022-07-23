@@ -5,17 +5,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
 {
-    public class ForStatementAnalyzer : ISyntaxAnalyzer
+    public class ExpressionStatementAnalyzer : ISyntaxAnalyzer
     {
-        public Type? ReferredType => typeof(ForStatementSyntax);
+        public Type? ReferredType => typeof(ExpressionStatementSyntax);
 
         public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, List<CodeExecution>>, List<CodeExecution>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
-                var forStatementChild = ((ForStatementSyntax)statement).Statement;
-
-                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = statement, IsLoopStatement = true });
-                return recursiveFunction(new List<SyntaxNode>(), executionPath);
+                var expressionStatement = (ExpressionStatementSyntax)statement;
+                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = expressionStatement });
+                return new List<CodeExecution>() { executionPath };
             };
     }
 }

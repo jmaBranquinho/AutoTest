@@ -9,6 +9,8 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public bool IsElseStatement { get; set; }
 
+        public bool IsLoopStatement { get; set; }
+
         public (string MethodCalled, IEnumerable<ArgumentSyntax> Arguments) Reference { get; set; }
 
         public bool HasReference => !string.IsNullOrWhiteSpace(Reference.MethodCalled);
