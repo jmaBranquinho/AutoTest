@@ -3,8 +3,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.CodeInterpreter.Consolidation
+namespace AutoTest.CodeInterpreter.Services
 {
+    /// <summary>
+    /// Simplifies and decomposes loops, method calls and dependencies into syntax statements ready to be processed
+    /// </summary>
     public class ConsolidationService
     {
         private HashSet<(MethodWrapper Method, bool IsConsolidated)> _methods = new();
@@ -73,20 +76,19 @@ namespace AutoTest.CodeInterpreter.Consolidation
         private static void ExtractLoopLogicIntoExecutionPaths(List<List<StatementWrapper>> paths, StatementWrapper statement)
         {
             //TODO: only working for FOR loops
-            if(statement.SyntaxNode is ForStatementSyntax)
+            if (statement.SyntaxNode is ForStatementSyntax)
             {
-                var forSyntax = ((ForStatementSyntax)statement.SyntaxNode);
+                var forSyntax = (ForStatementSyntax)statement.SyntaxNode;
                 (_, var loops) = HandleForLoopLogic(forSyntax);
                 //TODO replace var if used in logic
                 //TODO check if there are sub-loops, ifs, etc.
 
                 var forLoopBody = (BlockSyntax)forSyntax.Statement;
-                foreach (var path in paths)
-                {
+
+                paths.ForEach(path =>
                     Enumerable.Range(0, loops).ToList()
                         .ForEach(_ => path.AddRange(
-                            forLoopBody.Statements.Select(s => new StatementWrapper { SyntaxNode = s })));
-                }
+                            forLoopBody.Statements.Select(s => new StatementWrapper { SyntaxNode = s }))));
             }
             else
             {
@@ -97,7 +99,6 @@ namespace AutoTest.CodeInterpreter.Consolidation
         // TODO: check if it refering to the same var
         private static (string? loopVariable, int numberOfIterations) HandleForLoopLogic(ForStatementSyntax forSyntax)
         {
-            var body = forSyntax.Statement;
             var condition = (BinaryExpressionSyntax)forSyntax.Condition;
 
             var initializers = forSyntax.Declaration.Variables[0];//TODO this can be empty

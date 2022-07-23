@@ -1,4 +1,4 @@
-﻿using AutoTest.CodeInterpreter.Consolidation;
+﻿using AutoTest.CodeInterpreter.Services;
 using AutoTest.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

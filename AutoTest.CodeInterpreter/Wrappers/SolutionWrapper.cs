@@ -1,4 +1,4 @@
-﻿using AutoTest.CodeInterpreter.Consolidation;
+﻿using AutoTest.CodeInterpreter.Services;
 
 namespace AutoTest.CodeInterpreter.Wrappers
 {

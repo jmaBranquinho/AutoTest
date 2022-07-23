@@ -12,6 +12,7 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
         public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, List<CodeExecution>>, List<CodeExecution>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
+                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = statement });
                 return recursiveFunction(new List<SyntaxNode> { }, executionPath);
             };
     }

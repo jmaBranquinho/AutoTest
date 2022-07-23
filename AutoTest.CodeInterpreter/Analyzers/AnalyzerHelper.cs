@@ -2,7 +2,7 @@
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace AutoTest.TestGenerator.Generators.Analyzers
+namespace AutoTest.CodeInterpreter.Analyzers
 {
     public static class AnalyzerHelper
     {

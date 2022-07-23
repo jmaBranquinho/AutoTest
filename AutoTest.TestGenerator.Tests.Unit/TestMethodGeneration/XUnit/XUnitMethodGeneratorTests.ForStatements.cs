@@ -1,5 +1,4 @@
-﻿using AutoTest.TestGenerator.Generators.Enums;
-using FluentAssertions;
+﻿using FluentAssertions;
 using System.Linq;
 using Xunit;
 
@@ -12,13 +11,13 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
         {
             var method = GetMethodFromExample(_simpleFor);
 
-            var result = _sut.GenerateUnitTests(method, TestNamingConventions.MethodName_WhenCondition_ShouldResult);
+            var result = _sut.GenerateUnitTests(method);
 
             var countIncrement4Times = 4;
             var returnStatement = 1;
-            var varDeclarationSkipped = 0;
+            var varDeclaration = 1;
             var methodStatement = 1;
-            var pathSize = methodStatement + varDeclarationSkipped + countIncrement4Times + returnStatement;
+            var pathSize = methodStatement + varDeclaration + countIncrement4Times + returnStatement;
             method.ExecutionPaths.Count().Should().Be(1);  
             method.ExecutionPaths.First().Count().Should().Be(pathSize);
         }

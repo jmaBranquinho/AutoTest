@@ -1,4 +1,5 @@
-﻿using AutoTest.TestGenerator.Generators.Constraints;
+﻿using AutoTest.CodeInterpreter.Analyzers;
+using AutoTest.TestGenerator.Generators.Constraints;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
