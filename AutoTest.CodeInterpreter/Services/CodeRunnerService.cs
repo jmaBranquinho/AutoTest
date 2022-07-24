@@ -1,8 +1,11 @@
 ﻿using AutoTest.CodeInterpreter.Analyzers;
+using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Models;
+using AutoTest.CodeInterpreter.ValueTrackers;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Analyzers;
 using AutoTest.TestGenerator.Generators.Interfaces;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.CodeInterpreter.Services
@@ -14,41 +17,93 @@ namespace AutoTest.CodeInterpreter.Services
     {
         public static IEnumerable<CodeRunExecution> RunMethod(MethodWrapper method) 
             => method.ExecutionPaths.Select(path =>
-                new CodeRunExecution
                 {
-                    Method = method,
-                    Path = path,
-                    Parameters = GenerateParameters(method.Parameters, path),
+                    var parameters = IterateMethodStatements(method.Parameters, path);
+
+                    return new CodeRunExecution
+                    {
+                        Method = method,
+                        Path = path,
+                        Parameters = parameters,
+                    };
                 });
 
-        private static IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> GenerateParameters(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
+        private static IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> IterateMethodStatements(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
         {
             var methodStatements = path.Skip(1).ToList();
 
-            var constraints = new Dictionary<string, IConstraint>();
-            PopulateParameterConstraints(constraints, parameters);
+            var parameterConstraints = new Dictionary<string, IConstraint>();
+            var variableConstraints = new Dictionary<string, IValueTracker>();
+            PopulateParameterConstraints(parameterConstraints, parameters);
 
-            methodStatements
-                .ForEach(statement => AdjustParameterConstraints(statement, constraints));
+            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, parameterConstraints, variableConstraints));
 
-            var parameterListWithValues = GenerateParameterListWithValues(parameters, constraints);
+            var parameterListWithValues = GenerateParameterListWithValues(parameters, parameterConstraints);
 
             return new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() };
         }
 
         // TODO: implement
         // TODO: extract
-        private static void AdjustParameterConstraints(StatementWrapper statementWrapper, Dictionary<string, IConstraint> constraints)
+        private static void AdjustParameterConstraints(
+            StatementWrapper statementWrapper, 
+            Dictionary<string, IConstraint> constraints, 
+            Dictionary<string, IValueTracker> variableConstraints)
         {
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
                     OperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
+                case ExpressionStatementSyntax:
+                case LocalDeclarationStatementSyntax:
+                    if (statementWrapper.SyntaxNode is LocalDeclarationStatementSyntax localDeclarationStatementSyntax)
+                    {
+                        var variableDeclaration = localDeclarationStatementSyntax
+                            .Declaration
+                            .Variables.First();
+                        var variableName = variableDeclaration.Identifier.ValueText;
+                        var variableValue = ((LiteralExpressionSyntax)variableDeclaration.Initializer.Value).Token.Value;
+                        variableConstraints.Add(variableName, new UndeterminedNumericValueTracker(new UnderterminedNumericValue { InitialValue = variableValue}));
+                    }
+                    else if (statementWrapper.SyntaxNode is ExpressionStatementSyntax expressionStatementSyntax)
+                    {
+                        var expression = expressionStatementSyntax.Expression;
+                        var expressionKind = expression.Kind();
+
+                        var isNumericExpressionKind = expressionKind == SyntaxKind.PostIncrementExpression 
+                            || expressionKind == SyntaxKind.PostDecrementExpression;
+                        if (isNumericExpressionKind)
+                        {
+                            var operation = (UndeterminedNumericValueTracker tracker) =>
+                            {
+                                switch (expressionKind)
+                                {
+                                    case SyntaxKind.PostIncrementExpression:
+                                        tracker.Increment();
+                                        break;
+                                    case SyntaxKind.PostDecrementExpression:
+                                        tracker.Decrement();
+                                        break;
+                                    default: throw new NotImplementedException();
+                                }
+                            };
+                            var variableName = ((IdentifierNameSyntax)((PostfixUnaryExpressionSyntax)expression).Operand).Identifier.ValueText;
+                            operation((UndeterminedNumericValueTracker)variableConstraints[variableName]);
+                        }
+                    }
+                    break;
+                case ReturnStatementSyntax:
+                    var returnStatementExpression = ((ReturnStatementSyntax)statementWrapper.SyntaxNode).Expression;
+                    var returnedValue = ((IdentifierNameSyntax)returnStatementExpression).Identifier.ValueText;
+                    // TODO
+                    break;
+                case MethodDeclarationSyntax:
+                    break;
                 case ForStatementSyntax:
                     throw new Exception("this should have been handled before - something's wrong");// TODO
                 default:
-                    break;
+                    throw new NotImplementedException();
             }
         }
 
