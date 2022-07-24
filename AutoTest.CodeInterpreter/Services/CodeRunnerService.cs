@@ -3,6 +3,7 @@ using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.ValueTrackers;
 using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.Core.Helpers;
 using AutoTest.TestGenerator.Generators.Analyzers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,37 +17,43 @@ namespace AutoTest.CodeInterpreter.Services
     public class CodeRunnerService
     {
         public static IEnumerable<CodeRunExecution> RunMethod(MethodWrapper method) 
-            => method.ExecutionPaths.Select(path =>
-                {
-                    var parameters = IterateMethodStatements(method.Parameters, path);
+            => method.ExecutionPaths.Select(path 
+                => IterateMethodStatements(method, path));
 
-                    return new CodeRunExecution
-                    {
-                        Method = method,
-                        Path = path,
-                        Parameters = parameters,
-                    };
-                });
-
-        private static IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> IterateMethodStatements(Dictionary<string, Type> parameters, IEnumerable<StatementWrapper> path)
+        private static CodeRunExecution IterateMethodStatements(MethodWrapper method, IEnumerable<StatementWrapper> path)
         {
             var methodStatements = path.Skip(1).ToList();
 
             var parameterConstraints = new Dictionary<string, IConstraint>();
             var variableConstraints = new Dictionary<string, IValueTracker>();
-            PopulateParameterConstraints(parameterConstraints, parameters);
+            PopulateParameterConstraints(parameterConstraints, method.Parameters);
+            var returnInfo = GetMethodReturnType(path.First());
 
-            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, parameterConstraints, variableConstraints));
+            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnInfo, parameterConstraints, variableConstraints));
 
-            var parameterListWithValues = GenerateParameterListWithValues(parameters, parameterConstraints);
+            var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, parameterConstraints);
 
-            return new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() };
+            return new CodeRunExecution
+            {
+                Method = method,
+                Path = path,
+                Parameters = new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() },
+            };
+        }
+
+        private static (string name, Type type, object? value) GetMethodReturnType(StatementWrapper statementWrapper)
+        {
+            var methodDeclarationSyntax = (MethodDeclarationSyntax)statementWrapper.SyntaxNode;
+            var variableName = methodDeclarationSyntax.Identifier.ValueText;
+            var returnTypeAsString = ((PredefinedTypeSyntax)methodDeclarationSyntax.ReturnType).Keyword.ValueText;
+            return (variableName, PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString), null);
         }
 
         // TODO: implement
         // TODO: extract
         private static void AdjustParameterConstraints(
-            StatementWrapper statementWrapper, 
+            StatementWrapper statementWrapper,
+            (string name, Type type, object? value) returnInfo,
             Dictionary<string, IConstraint> constraints, 
             Dictionary<string, IValueTracker> variableConstraints)
         {
@@ -94,9 +101,7 @@ namespace AutoTest.CodeInterpreter.Services
                     }
                     break;
                 case ReturnStatementSyntax:
-                    var returnStatementExpression = ((ReturnStatementSyntax)statementWrapper.SyntaxNode).Expression;
-                    var returnedValue = ((IdentifierNameSyntax)returnStatementExpression).Identifier.ValueText;
-                    // TODO
+                    returnInfo.value = variableConstraints[returnInfo.name].TryConvertValue(returnInfo.type);
                     break;
                 case MethodDeclarationSyntax:
                     break;
@@ -107,6 +112,7 @@ namespace AutoTest.CodeInterpreter.Services
             }
         }
 
+        // This should be extracted - not concerned to this service
         private static IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
         {
             foreach (var parameter in parameters)

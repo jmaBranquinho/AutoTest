@@ -12,6 +12,8 @@ namespace AutoTest.CodeInterpreter.ValueTrackers
 
         public abstract void Decrement();
 
+        public virtual object TryConvertValue(Type type) => throw new NotImplementedException();
+
         //public abstract void Sum();
 
         //public abstract void Subtract();

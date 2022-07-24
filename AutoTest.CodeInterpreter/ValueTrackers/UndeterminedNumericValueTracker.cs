@@ -1,4 +1,6 @@
-﻿namespace AutoTest.CodeInterpreter.ValueTrackers
+﻿using System.ComponentModel;
+
+namespace AutoTest.CodeInterpreter.ValueTrackers
 {
     public class UnderterminedNumericValue
     {
@@ -14,6 +16,8 @@
         public override void Decrement() => Value.Operations.Add((Operations.Subtractation, Unit));
 
         public override void Increment() => Value.Operations.Add((Operations.Sum, Unit));
+
+        public override object TryConvertValue(Type type) => Convert.ChangeType(Value.InitialValue, type);
 
         public enum Operations
         {

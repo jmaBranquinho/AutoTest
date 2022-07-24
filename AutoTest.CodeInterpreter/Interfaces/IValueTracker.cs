@@ -2,6 +2,6 @@
 {
     public interface IValueTracker
     {
-
+        object TryConvertValue(Type type);
     }
 }
