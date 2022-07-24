@@ -8,10 +8,10 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models
         protected override string ParameterMethodAnnotation => "[Theory]";
         protected override string ParameterAnnotationTemplate => "[InlineData({0})]";
 
-        public XUnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) : base(name, parameters, methodStatements)
+        public XUnitTest(string name, IEnumerable<(string Name, Type Type, object Value)> parameters, IEnumerable<StatementWrapper> methodStatements) : base(name, parameters, methodStatements)
         { }
 
-        public XUnitTest(string name, IEnumerable<StatementWrapper> methodStatements) : base(name, Enumerable.Empty<IEnumerable<(string Name, Type Type, object Value)>>(), methodStatements)
+        public XUnitTest(string name, IEnumerable<StatementWrapper> methodStatements) : base(name, Enumerable.Empty<(string Name, Type Type, object Value)>(), methodStatements)
         { }
     }
 }

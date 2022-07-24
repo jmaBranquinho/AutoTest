@@ -16,7 +16,7 @@ namespace AutoTest.CodeInterpreter.Services
     /// </summary>
     public class CodeRunnerService
     {
-        public static IEnumerable<CodeRunExecution> RunMethod(MethodWrapper method) 
+        public IEnumerable<CodeRunExecution> RunMethod(MethodWrapper method) 
             => method.ExecutionPaths.Select(path 
                 => IterateMethodStatements(method, path));
 
@@ -37,7 +37,7 @@ namespace AutoTest.CodeInterpreter.Services
             {
                 Method = method,
                 Path = path,
-                Parameters = new List<List<(string Name, Type Type, object Value)>> { parameterListWithValues.ToList() },
+                ParameterConstraints = parameterConstraints,
             };
         }
 

@@ -56,12 +56,9 @@ public void UnitTestMethod(int x)
     Assert.Equal(Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var parameters = new List<List<(string Name, Type Type, object Value)>>
+            var parameters = new List<(string Name, Type Type, object Value)>
             {
-                new List<(string Name, Type Type, object Value)>
-                {
-                    ("x", typeof(int), 1 ),
-                }
+                ("x", typeof(int), 1 ),
             };
             var method = new XUnitTest("UnitTestMethod", parameters, new List<StatementWrapper> { methodSyntax }).ToString();
 

@@ -1,4 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.CodeInterpreter.Models
 {
@@ -8,6 +9,6 @@ namespace AutoTest.CodeInterpreter.Models
 
         public IEnumerable<StatementWrapper> Path { get; set; }
 
-        public IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> Parameters { get; set; }
+        public Dictionary<string, IConstraint> ParameterConstraints { get; set; }
     }
 }

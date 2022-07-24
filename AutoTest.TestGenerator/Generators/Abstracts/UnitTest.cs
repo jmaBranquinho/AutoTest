@@ -14,13 +14,13 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         protected abstract string ParameterMethodAnnotation { get; }
         protected abstract string ParameterAnnotationTemplate { get; }
 
-        private readonly IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> _unitTestParameters;
+        private readonly IEnumerable<(string Name, Type Type, object Value)> _unitTestParameters;
 
-        public UnitTest(string name, IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parameters, IEnumerable<StatementWrapper> methodStatements) 
+        public UnitTest(string name, IEnumerable<(string Name, Type Type, object Value)> parameters, IEnumerable<StatementWrapper> methodStatements) 
             : base(name, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
         {
             var isParameterless = !parameters?.Any() ?? true;
-            _unitTestParameters = parameters ?? new List<List<(string Name, Type Type, object Value)>>();
+            _unitTestParameters = parameters ?? new List<(string Name, Type Type, object Value)>();
 
             _annotations = isParameterless
                 ? new List<string>() { ParameterlessMethodAnnotation }
@@ -51,7 +51,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
                     .AddNewContext(
                         !IsParameterless() 
-                        ? string.Join(", ", _unitTestParameters.First().Select(p => p.Name).ToList()) 
+                        ? string.Join(", ", _unitTestParameters.First().Name) 
                         : string.Empty, Symbols.Parentheses)
                     .EndStatement(hasLineBreak: true));
 
@@ -75,7 +75,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         }
 
         // TODO: implement
-        private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList)
+        private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<(string Name, Type Type, object Value)> parametersList)
         {
             if (parametersList is null || !parametersList.Any())
             {
@@ -85,7 +85,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             var annotations = new List<string>();
             annotations.Add(ParameterMethodAnnotation);
 
-            var isNotUsingBuiltInTypes = parametersList.Any(x1 => x1.Any(x2 => !IsBuiltInType(x2.Type)));
+            var isNotUsingBuiltInTypes = parametersList.Any(x1 => !IsBuiltInType(x1.Type));
 
             if (isNotUsingBuiltInTypes)
             {
@@ -95,7 +95,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
             foreach (var parametersForMethod in parametersList)
             {
-                annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Select(p => p.Value))));
+                annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Value)));
             }
 
             return annotations;
@@ -111,8 +111,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             return stringBuilder.ToString();
         }
 
-        private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<IEnumerable<(string Name, Type Type, object Value)>> parametersList) 
-            => FormatParameters(parametersList.First().Select(p => (p.Name, p.Type)).ToList());
+        private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<(string Name, Type Type, object Value)> parametersList) 
+            => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());
 
         private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
     }
