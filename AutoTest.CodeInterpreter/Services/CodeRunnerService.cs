@@ -101,7 +101,10 @@ namespace AutoTest.CodeInterpreter.Services
                     }
                     break;
                 case ReturnStatementSyntax:
-                    returnInfo.value = variableConstraints[returnInfo.name].TryConvertValue(returnInfo.type);
+                    if(variableConstraints.ContainsKey(returnInfo.name))
+                    {
+                        returnInfo.value = variableConstraints[returnInfo.name].TryConvertValue(returnInfo.type);
+                    }
                     break;
                 case MethodDeclarationSyntax:
                     break;
