@@ -14,56 +14,56 @@ namespace AutoTest.TestGenerator.Tests.Unit.UnitTestFormatting.XUnit
     public class XUnitTestTests
     {
 
-        [Fact]
-        public void NameAndSimpleBodyWithoutParameters()
-        {
-            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithoutParameters);
+//        [Fact]
+//        public void NameAndSimpleBodyWithoutParameters()
+//        {
+//            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithoutParameters);
 
-            var expected = @"
-[Fact]
-public void UnitTestMethod()
-{
-    // Arrange
+//            var expected = @"
+//[Fact]
+//public void UnitTestMethod()
+//{
+//    // Arrange
     
-    // Act
-    var actual = _sut.TestMethod();
+//    // Act
+//    var actual = _sut.TestMethod();
     
-    // Assert
-    Assert.Equal(expected, actual);
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var method = new XUnitTest("UnitTestMethod", new List<StatementWrapper> { methodSyntax }).ToString();
+//    // Assert
+//    Assert.Equal(expected, actual);
+//}
+//".GetDefaultNewLineCharAndReplaceIt().Trim();
+//            var method = new XUnitTest("UnitTestMethod", new List<StatementWrapper> { methodSyntax }).ToString();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
-        }
+//            UnitTestHelper.AssertSimilarStrings(expected, method);
+//        }
 
-        [Fact]
-        public void NameAndSimpleBodyWithParameters()
-        {
-            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithParameters);
+//        [Fact]
+//        public void NameAndSimpleBodyWithParameters()
+//        {
+//            var methodSyntax = GetMethodFromExample(_simpleClassAndMethodWithParameters);
 
-            var expected = @"
-[Theory]
-[InlineData(1)]
-public void UnitTestMethod(int x)
-{
-    // Arrange
+//            var expected = @"
+//[Theory]
+//[InlineData(1)]
+//public void UnitTestMethod(int x)
+//{
+//    // Arrange
     
-    // Act
-    var actual = _sut.TestMethod(x);
+//    // Act
+//    var actual = _sut.TestMethod(x);
     
-    // Assert
-    Assert.Equal(expected, actual);
-}
-".GetDefaultNewLineCharAndReplaceIt().Trim();
-            var parameters = new List<(string Name, Type Type, object Value)>
-            {
-                ("x", typeof(int), 1 ),
-            };
-            var method = new XUnitTest("UnitTestMethod", parameters, new List<StatementWrapper> { methodSyntax }).ToString();
+//    // Assert
+//    Assert.Equal(expected, actual);
+//}
+//".GetDefaultNewLineCharAndReplaceIt().Trim();
+//            var parameters = new List<(string Name, Type Type, object Value)>
+//            {
+//                ("x", typeof(int), 1 ),
+//            };
+//            var method = new XUnitTest("UnitTestMethod", parameters, new List<StatementWrapper> { methodSyntax }).ToString();
 
-            UnitTestHelper.AssertSimilarStrings(expected, method);
-        }
+//            UnitTestHelper.AssertSimilarStrings(expected, method);
+//        }
 
 
         private static StatementWrapper GetMethodFromExample(string exampleCode)

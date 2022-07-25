@@ -1,6 +1,7 @@
 ﻿using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Helpers;
 using AutoTest.CodeGenerator.Models;
+using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,10 +17,10 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         private readonly IEnumerable<(string Name, Type Type, object Value)> _unitTestParameters;
 
-        public UnitTest(string name, IEnumerable<(string Name, Type Type, object Value)> parameters, IEnumerable<StatementWrapper> methodStatements) 
-            : base(name, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
+        public UnitTest(string testName, IEnumerable<(string Name, Type Type, object Value)> parameters, CodeRunExecution codeRun)
+            : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type)>(), string.Empty)
         {
-            PerformValidations(methodStatements);
+            PerformValidations(codeRun.Path);
 
             var isParameterless = !parameters?.Any() ?? true;
             _unitTestParameters = parameters ?? new List<(string Name, Type Type, object Value)>();
@@ -32,7 +33,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 ? Enumerable.Empty<string>()
                 : FormatXUnitTestMethodParameter(_unitTestParameters);
 
-            _body = FormatXUnitTestBody(methodStatements);
+            _body = FormatXUnitTestBody(codeRun.Path);
         }
 
         private string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements) 
@@ -49,7 +50,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                             ? string.Join(", ", _unitTestParameters.First().Name)
                             : string.Empty, Symbols.Parentheses)
                         .EndStatement(hasLineBreak: true));
-            }, "Act");
+            }, sectionTitle: "Act");
 
         // TODO: implement
         // TODO: assert property changes
@@ -60,7 +61,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 {
                     stringBuilder.Append("Assert.Equal".AddNewContext($"expected, actual", Symbols.Parentheses).EndStatement());
                 }
-            }, "Assert");
+            }, sectionTitle: "Assert");
 
         // TODO: implement
         private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<(string Name, Type Type, object Value)> parametersList)
@@ -91,7 +92,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         // TODO: implement
         private static string GenerateArrangeSection()
-            => WriteSection((stringBuilder) => { }, "Arrange");
+            => WriteSection((stringBuilder) => { }, sectionTitle: "Arrange");
 
         private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<(string Name, Type Type, object Value)> parametersList) 
             => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());

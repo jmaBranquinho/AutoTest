@@ -1,4 +1,5 @@
-﻿using AutoTest.CodeInterpreter.Services;
+﻿using AutoTest.CodeInterpreter.Models;
+using AutoTest.CodeInterpreter.Services;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
@@ -11,18 +12,18 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         public IEnumerable<UnitTest> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention = TestNamingConventions.MethodName_WhenCondition_ShouldResult)
         {
-            Func<string, IEnumerable<(string Name, Type Type, object Value)>, IEnumerable<StatementWrapper>, UnitTest> createUnitTest = GenerateUnitTest(method);
+            Func<string, IEnumerable<(string Name, Type Type, object Value)>, CodeRunExecution, UnitTest> createUnitTest = GenerateUnitTest(method);
 
             return codeRunnerService.RunMethod(method)
-                .Select(m => 
+                .Select(codeRun => 
                 {
-                    var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, m.ParameterConstraints);
-                    return createUnitTest(FormatMethodName(m.Method.Name, namingConvention), parameterListWithValues, m.Path);
+                    var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, codeRun.ParameterConstraints);
+                    return createUnitTest(FormatMethodName(codeRun.Method.Name, namingConvention), parameterListWithValues, codeRun);
                 })
                 .ToList();
         }
 
-        protected abstract Func<string, IEnumerable<(string Name, Type Type, object Value)>, IEnumerable<StatementWrapper>, UnitTest> GenerateUnitTest(MethodWrapper method);
+        protected abstract Func<string, IEnumerable<(string Name, Type Type, object Value)>, CodeRunExecution, UnitTest> GenerateUnitTest(MethodWrapper method);
 
         private static IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
         {
