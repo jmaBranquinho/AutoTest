@@ -39,35 +39,28 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection(methodStatements));
 
         private string GenerateActSection(IEnumerable<StatementWrapper> methodStatements)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Act");
-
-            var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
-            stringBuilder
-                .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
-                    .AddNewContext(
-                        !IsParameterless() 
-                        ? string.Join(", ", _unitTestParameters.First().Name) 
-                        : string.Empty, Symbols.Parentheses)
-                    .EndStatement(hasLineBreak: true));
-
-            return stringBuilder.ToString();
-        }
+            => WriteSection((stringBuilder) =>
+            {
+                var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
+                stringBuilder
+                    .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
+                        .AddNewContext(
+                            !IsParameterless()
+                            ? string.Join(", ", _unitTestParameters.First().Name)
+                            : string.Empty, Symbols.Parentheses)
+                        .EndStatement(hasLineBreak: true));
+            }, "Act");
 
         // TODO: implement
         // TODO: assert property changes
         private string GenerateAssertSection(IEnumerable<StatementWrapper> methodStatements)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Assert");
-            if (methodStatements is not null && methodStatements.Any())
+            => WriteSection((stringBuilder) =>
             {
-                stringBuilder.Append("Assert.Equal".AddNewContext($"expected, actual", Symbols.Parentheses).EndStatement());
-            }
-
-            return stringBuilder.ToString();
-        }
+                if (methodStatements is not null && methodStatements.Any())
+                {
+                    stringBuilder.Append("Assert.Equal".AddNewContext($"expected, actual", Symbols.Parentheses).EndStatement());
+                }
+            }, "Assert");
 
         // TODO: implement
         private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<(string Name, Type Type, object Value)> parametersList)
@@ -98,18 +91,23 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         // TODO: implement
         private static string GenerateArrangeSection()
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("// Arrange");
-            // TODO: implement
-
-            return stringBuilder.ToString();
-        }
+            => WriteSection((stringBuilder) => { }, "Arrange");
 
         private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<(string Name, Type Type, object Value)> parametersList) 
             => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());
 
         private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
+
+        private static string WriteSection(Action<StringBuilder> writeSection, string sectionTitle)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine($"// {sectionTitle}");
+
+            writeSection(stringBuilder);
+
+            return stringBuilder.ToString();
+        }
 
         private static void PerformValidations(IEnumerable<StatementWrapper> methodStatements)
         {
