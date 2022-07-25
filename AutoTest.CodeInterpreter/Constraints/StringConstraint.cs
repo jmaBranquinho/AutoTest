@@ -140,7 +140,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
             var builder = new StringBuilder();
             for (int i = 0; i < stringSize; i++)
             {
-                builder.Append(allowedChars.ElementAt(random.Next(0, allowedChars.Count() + 1)));
+                builder.Append(allowedChars.ElementAt(random.Next(0, allowedChars.Count())));
             }
             return builder.ToString();
         }

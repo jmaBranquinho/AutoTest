@@ -19,6 +19,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         public UnitTest(string name, IEnumerable<(string Name, Type Type, object Value)> parameters, IEnumerable<StatementWrapper> methodStatements) 
             : base(name, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type) >(), string.Empty)
         {
+            PerformValidations(methodStatements);
+
             var isParameterless = !parameters?.Any() ?? true;
             _unitTestParameters = parameters ?? new List<(string Name, Type Type, object Value)>();
 
@@ -41,11 +43,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("// Act");
 
-            if (methodStatements is null || !methodStatements.Any())
-            {
-                throw new Exception("no method statements"); // TODO
-            }
-
             var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
             stringBuilder
                 .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
@@ -66,9 +63,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             stringBuilder.AppendLine("// Assert");
             if (methodStatements is not null && methodStatements.Any())
             {
-                stringBuilder.Append("Assert.Equal(");
-                stringBuilder.Append("Assert.Equal(expected, actual");
-                stringBuilder.Append(");");
+                stringBuilder.Append("Assert.Equal".AddNewContext($"expected, actual", Symbols.Parentheses).EndStatement());
             }
 
             return stringBuilder.ToString();
@@ -82,8 +77,10 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 return new List<string>() { ParameterlessMethodAnnotation };
             }
 
-            var annotations = new List<string>();
-            annotations.Add(ParameterMethodAnnotation);
+            var annotations = new List<string>
+            {
+                ParameterMethodAnnotation
+            };
 
             var isNotUsingBuiltInTypes = parametersList.Any(x1 => !IsBuiltInType(x1.Type));
 
@@ -93,10 +90,8 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 throw new NotImplementedException();
             }
 
-            foreach (var parametersForMethod in parametersList)
-            {
-                annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Value)));
-            }
+            parametersList.ToList()
+                .ForEach(parametersForMethod => annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Value))));
 
             return annotations;
         }
@@ -115,5 +110,13 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());
 
         private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
+
+        private static void PerformValidations(IEnumerable<StatementWrapper> methodStatements)
+        {
+            if (methodStatements is null || !methodStatements.Any())
+            {
+                throw new Exception("no method statements"); // TODO
+            }
+        }
     }
 }

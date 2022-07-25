@@ -22,7 +22,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    Assert.Equal(Assert.Equal(expected, actual);
+    Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodFromExample(_simpleMethodGreaterThan);
@@ -66,7 +66,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    Assert.Equal(Assert.Equal(expected, actual);
+    Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodFromExample(_simpleMethodGreaterThanEquals);
@@ -110,7 +110,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    Assert.Equal(Assert.Equal(expected, actual);
+    Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodFromExample(_simpleMethodLessThan);
@@ -154,7 +154,7 @@ public void TestMethod_WhenSomething_ShouldSomething(int x)
     var actual = _sut.TestMethod(x);
     
     // Assert
-    Assert.Equal(Assert.Equal(expected, actual);
+    Assert.Equal(expected, actual);
 }
 ".GetDefaultNewLineCharAndReplaceIt().Trim();
             var method = GetMethodFromExample(_simpleMethodLessThanEquals);

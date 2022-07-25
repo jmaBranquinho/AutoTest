@@ -31,13 +31,13 @@ namespace AutoTest.CodeInterpreter.Services
 
             methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnInfo, parameterConstraints, variableConstraints));
 
-            var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, parameterConstraints);
-
             return new CodeRunExecution
             {
                 Method = method,
                 Path = path,
                 ParameterConstraints = parameterConstraints,
+                VariableConstraints = variableConstraints,
+                ReturnInfo = returnInfo,
             };
         }
 
@@ -49,8 +49,6 @@ namespace AutoTest.CodeInterpreter.Services
             return (variableName, PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString), null);
         }
 
-        // TODO: implement
-        // TODO: extract
         private static void AdjustParameterConstraints(
             StatementWrapper statementWrapper,
             (string name, Type type, object? value) returnInfo,
@@ -115,16 +113,6 @@ namespace AutoTest.CodeInterpreter.Services
             }
         }
 
-        // This should be extracted - not concerned to this service
-        private static IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
-        {
-            foreach (var parameter in parameters)
-            {
-                yield return (parameter.Key, parameter.Value, constraints[parameter.Key].Generate());
-            }
-        }
-
-        // TODO: implement for other types
         private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
             => parameters.ToList()
                 .ForEach(parameter => constraints.Add(parameter.Key, AnalyzerHelper.GetConstraintFromType(parameter.Value)));
