@@ -1,4 +1,5 @@
-﻿using AutoTest.CodeInterpreter.Analyzers;
+﻿using AutoTest.CodeGenerator.Models;
+using AutoTest.CodeInterpreter.Analyzers;
 using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.ValueTrackers;
@@ -41,17 +42,17 @@ namespace AutoTest.CodeInterpreter.Services
             };
         }
 
-        private static (string name, Type type, object? value) GetMethodReturnType(StatementWrapper statementWrapper)
+        private static Parameter GetMethodReturnType(StatementWrapper statementWrapper)
         {
             var methodDeclarationSyntax = (MethodDeclarationSyntax)statementWrapper.SyntaxNode;
             var variableName = methodDeclarationSyntax.Identifier.ValueText;
             var returnTypeAsString = ((PredefinedTypeSyntax)methodDeclarationSyntax.ReturnType).Keyword.ValueText;
-            return (variableName, PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString), null);
+            return new Parameter { Name = variableName, Type = PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString) };
         }
 
         private static void AdjustParameterConstraints(
             StatementWrapper statementWrapper,
-            (string name, Type type, object? value) returnInfo,
+            Parameter returnInfo,
             Dictionary<string, IConstraint> constraints, 
             Dictionary<string, IValueTracker> variableConstraints)
         {
@@ -99,9 +100,9 @@ namespace AutoTest.CodeInterpreter.Services
                     }
                     break;
                 case ReturnStatementSyntax:
-                    if(variableConstraints.ContainsKey(returnInfo.name))
+                    if(variableConstraints.ContainsKey(returnInfo.Name))
                     {
-                        returnInfo.value = variableConstraints[returnInfo.name].TryConvertValue(returnInfo.type);
+                        returnInfo.Value = variableConstraints[returnInfo.Name].TryConvertValue(returnInfo.Type);
                     }
                     break;
                 case MethodDeclarationSyntax:

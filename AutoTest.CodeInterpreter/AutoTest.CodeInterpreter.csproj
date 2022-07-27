@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutoTest.CodeGenerator\AutoTest.CodeGenerator.csproj" />
     <ProjectReference Include="..\AutoTest.Core\AutoTest.Core.csproj" />
   </ItemGroup>
 

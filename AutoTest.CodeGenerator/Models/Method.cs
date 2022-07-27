@@ -16,7 +16,7 @@ namespace AutoTest.CodeGenerator.Models
 
         protected bool IsParameterless() => !_parameters?.Any() ?? true;
 
-        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<(string Name, Type Type)> parameters, string body)
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<ParameterDefinition> parameters, string body)
         {
             InitializeLists(name, annotations, modifiers, returnType, body);
             _parameters = FormatParameters(parameters);
@@ -38,7 +38,7 @@ namespace AutoTest.CodeGenerator.Models
             return stringBuilder.ToString().AddNewContext(_body);
         }
 
-        protected static IEnumerable<string> FormatParameters(IEnumerable<(string Name, Type Type)> parameters)
+        protected static IEnumerable<string> FormatParameters(IEnumerable<ParameterDefinition> parameters)
         {
             foreach (var parameter in parameters)
             {

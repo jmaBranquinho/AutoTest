@@ -18,7 +18,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private readonly IEnumerable<Parameter> _unitTestParameters;
 
         public UnitTestBase(string testName, IEnumerable<Parameter> parameters, CodeRunExecution codeRun)
-            : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type)>(), string.Empty)
+            : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<ParameterDefinition>(), string.Empty)
         {
             PerformValidations(codeRun.Path);
 
@@ -95,7 +95,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             => WriteSection((stringBuilder) => { }, sectionTitle: "Arrange");
 
         private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<Parameter> parametersList) 
-            => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());
+            => FormatParameters(parametersList);
 
         private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
 
