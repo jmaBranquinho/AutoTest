@@ -1,4 +1,5 @@
-﻿using AutoTest.CodeInterpreter.Models;
+﻿using AutoTest.CodeGenerator.Models;
+using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.Services;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.TestGenerator.Generators.Enums;
@@ -10,9 +11,9 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
     {
         private static readonly CodeRunnerService codeRunnerService = new();
 
-        public IEnumerable<UnitTest> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention = TestNamingConventions.MethodName_WhenCondition_ShouldResult)
+        public IEnumerable<UnitTestBase> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention = TestNamingConventions.MethodName_WhenCondition_ShouldResult)
         {
-            Func<string, IEnumerable<(string Name, Type Type, object Value)>, CodeRunExecution, UnitTest> createUnitTest = GenerateUnitTest(method);
+            Func<string, IEnumerable<Parameter>, CodeRunExecution, UnitTestBase> createUnitTest = GenerateUnitTest(method);
 
             return codeRunnerService.RunMethod(method)
                 .Select(codeRun => 
@@ -23,20 +24,23 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 .ToList();
         }
 
-        protected abstract Func<string, IEnumerable<(string Name, Type Type, object Value)>, CodeRunExecution, UnitTest> GenerateUnitTest(MethodWrapper method);
+        protected abstract Func<string, IEnumerable<Parameter>, CodeRunExecution, UnitTestBase> GenerateUnitTest(MethodWrapper method);
 
-        private static IEnumerable<(string Name, Type Type, object Value)> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
+        private static IEnumerable<Parameter> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
         {
             foreach (var parameter in parameters)
             {
-                yield return (parameter.Key, parameter.Value, constraints[parameter.Key].Generate());
+                yield return new Parameter { Name = parameter.Key, Type = parameter.Value, Value = constraints[parameter.Key].Generate() };
             }
         }
 
-        // TODO: implement
         private static string FormatMethodName(string methodName, TestNamingConventions namingConvention)
         {
-            return $"{methodName}_WhenSomething_ShouldSomething";
+            return namingConvention switch
+            {
+                TestNamingConventions.MethodName_WhenCondition_ShouldResult => $"{methodName}_WhenSomething_ShouldSomething",
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

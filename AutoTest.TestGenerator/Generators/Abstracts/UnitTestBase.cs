@@ -9,21 +9,21 @@ using System.Text;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {
-    public abstract class UnitTest : Method
+    public abstract class UnitTestBase : Method
     {
         protected abstract string ParameterlessMethodAnnotation { get; }
         protected abstract string ParameterMethodAnnotation { get; }
         protected abstract string ParameterAnnotationTemplate { get; }
 
-        private readonly IEnumerable<(string Name, Type Type, object Value)> _unitTestParameters;
+        private readonly IEnumerable<Parameter> _unitTestParameters;
 
-        public UnitTest(string testName, IEnumerable<(string Name, Type Type, object Value)> parameters, CodeRunExecution codeRun)
+        public UnitTestBase(string testName, IEnumerable<Parameter> parameters, CodeRunExecution codeRun)
             : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<(string Name, Type Type)>(), string.Empty)
         {
             PerformValidations(codeRun.Path);
 
             var isParameterless = !parameters?.Any() ?? true;
-            _unitTestParameters = parameters ?? new List<(string Name, Type Type, object Value)>();
+            _unitTestParameters = parameters ?? new List<Parameter>();
 
             _annotations = isParameterless
                 ? new List<string>() { ParameterlessMethodAnnotation }
@@ -64,7 +64,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }, sectionTitle: "Assert");
 
         // TODO: implement
-        private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<(string Name, Type Type, object Value)> parametersList)
+        private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<Parameter> parametersList)
         {
             if (parametersList is null || !parametersList.Any())
             {
@@ -94,7 +94,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private static string GenerateArrangeSection()
             => WriteSection((stringBuilder) => { }, sectionTitle: "Arrange");
 
-        private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<(string Name, Type Type, object Value)> parametersList) 
+        private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<Parameter> parametersList) 
             => FormatParameters(parametersList.Select(p => (p.Name, p.Type)).ToList());
 
         private static bool IsBuiltInType(Type type) => PrimitiveTypeConvertionHelper.PrimitiveTypes.Any(t => t == type);
