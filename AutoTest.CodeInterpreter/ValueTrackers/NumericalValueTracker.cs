@@ -12,7 +12,9 @@ namespace AutoTest.CodeInterpreter.ValueTrackers
 
         public abstract void Decrement();
 
-        public virtual object TryConvertValue(Type type) => throw new NotImplementedException();
+        public abstract object TryConvertValue(Type type);
+
+        //public virtual T TryConvertValue<T>() => throw new NotImplementedException();
 
         //public abstract void Sum();
 

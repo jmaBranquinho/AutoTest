@@ -20,6 +20,8 @@ namespace AutoTest.TestGenerator.Tests.Unit.TestMethodGeneration.XUnit
             var pathSize = methodStatement + varDeclaration + countIncrement4Times + returnStatement;
             method.ExecutionPaths.Count().Should().Be(1);  
             method.ExecutionPaths.First().Count().Should().Be(pathSize);
+            result.Count().Should().Be(1);
+            result.First().ToString().Should().Contain("var expected = 4");
         }
 
         private static readonly string _simpleFor = @"

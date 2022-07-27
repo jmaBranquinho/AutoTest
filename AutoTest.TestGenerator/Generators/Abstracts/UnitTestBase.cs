@@ -33,11 +33,20 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 ? Enumerable.Empty<string>()
                 : FormatXUnitTestMethodParameter(_unitTestParameters);
 
-            _body = FormatXUnitTestBody(codeRun.Path);
+            _body = FormatXUnitTestBody(codeRun);
         }
 
-        private string FormatXUnitTestBody(IEnumerable<StatementWrapper> methodStatements) 
-            => string.Join(Environment.NewLine, GenerateArrangeSection(), GenerateActSection(methodStatements), GenerateAssertSection(methodStatements));
+        private string FormatXUnitTestBody(CodeRunExecution run) 
+            => string.Join(Environment.NewLine, GenerateArrangeSection(run.ReturnParameter), GenerateActSection(run.Path), GenerateAssertSection(run.Path));
+
+        private static string GenerateArrangeSection(Parameter? @return)
+            => WriteSection((stringBuilder) => 
+            {
+                if (@return is not null && @return.Value is not null)
+                {
+                    stringBuilder.AppendLine($"var expected = {@return.Value};");
+                }
+            }, sectionTitle: "Arrange");
 
         private string GenerateActSection(IEnumerable<StatementWrapper> methodStatements)
             => WriteSection((stringBuilder) =>
@@ -47,7 +56,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                     .Append($"var actual = _sut.{methodDeclaration.Identifier.Text}"
                         .AddNewContext(
                             !IsParameterless()
-                            ? string.Join(", ", _unitTestParameters.First().Name)
+                            ? _unitTestParameters.First().Name
                             : string.Empty, Symbols.Parentheses)
                         .EndStatement(hasLineBreak: true));
             }, sectionTitle: "Act");
@@ -85,14 +94,10 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }
 
             parametersList.ToList()
-                .ForEach(parametersForMethod => annotations.Add(string.Format(ParameterAnnotationTemplate, string.Join(", ", parametersForMethod.Value))));
+                .ForEach(parametersForMethod => annotations.Add(string.Format(ParameterAnnotationTemplate, parametersForMethod.Value)));
 
             return annotations;
         }
-
-        // TODO: implement
-        private static string GenerateArrangeSection()
-            => WriteSection((stringBuilder) => { }, sectionTitle: "Arrange");
 
         private static IEnumerable<string> FormatXUnitTestMethodParameter(IEnumerable<Parameter> parametersList) 
             => FormatParameters(parametersList);

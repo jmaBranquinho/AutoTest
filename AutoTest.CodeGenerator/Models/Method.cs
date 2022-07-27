@@ -7,12 +7,12 @@ namespace AutoTest.CodeGenerator.Models
 {
     public class Method
     {
-        protected string _name;
-        protected IEnumerable<string> _annotations;
-        protected IEnumerable<MethodModifiers> _modifiers;
-        protected string _returnType;
-        protected IEnumerable<string> _parameters;
-        protected string _body;
+        protected string _name = null!;
+        protected IEnumerable<string> _annotations = null!;
+        protected IEnumerable<MethodModifiers> _modifiers = null!;
+        protected string _returnType = null!;
+        protected IEnumerable<string> _parameters = null!;
+        protected string _body = null!;
 
         protected bool IsParameterless() => !_parameters?.Any() ?? true;
 
@@ -33,7 +33,7 @@ namespace AutoTest.CodeGenerator.Models
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(Environment.NewLine, _annotations);
             stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(string.Join(", ", _parameters), Symbols.Parentheses));
+            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(_parameters.JoinWithComma(), Symbols.Parentheses));
 
             return stringBuilder.ToString().AddNewContext(_body);
         }
@@ -46,7 +46,7 @@ namespace AutoTest.CodeGenerator.Models
             }
         }
 
-        private string AddMethodModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
+        private string AddMethodModifiers() => _modifiers.Select(m => m.ToString().ToLowerInvariant()).JoinWithSpaces();
 
         private void InitializeLists(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, string body)
         {

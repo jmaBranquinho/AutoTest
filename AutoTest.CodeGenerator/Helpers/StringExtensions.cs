@@ -5,7 +5,12 @@ namespace AutoTest.CodeGenerator.Helpers
 {
     public static class StringExtensions
     {
-        public static string FormatAsPrivateField(this string text) => $"_{ChangeFirstLetterCase(text, isToBeSetToUpper: false)}";
+        public const string Space = " ";
+        public const string Identation = "\t";
+        public const string Underscore = "_";
+        public const string Comma = ",";
+
+        public static string FormatAsPrivateField(this string text) => $"{Underscore}{ChangeFirstLetterCase(text, isToBeSetToUpper: false)}";
 
         public static string FormatAsPublicField(this string text) => ChangeFirstLetterCase(text, isToBeSetToUpper: true);
 
@@ -26,13 +31,17 @@ namespace AutoTest.CodeGenerator.Helpers
 
         public static IEnumerable<string> AddIdentation(this IEnumerable<string> text, int identationLevel = 1) => text.Select(t => t.AddIdentation(identationLevel));
 
-        public static string AddIdentation(this string text, int identationLevel = 1)
-        {
-            var identation = "\t";
-            return $"{Repeat(identation, identationLevel)}{text.Replace(Environment.NewLine, $"{Environment.NewLine}{Repeat(identation, identationLevel)}")}";
-        }
+        public static string AddIdentation(this string text, int identationLevel = 1) 
+            => $"{Repeat(Identation, identationLevel)}{text.Replace(Environment.NewLine, $"{Environment.NewLine}{Repeat(Identation, identationLevel)}")}";
 
         public static string Repeat(this string text, int times) => new StringBuilder().Insert(0, text, times).ToString();
+
+        public static string JoinWithSpaces<T>(this IEnumerable<T> text) => text.JoinWithString(Space);
+
+        public static string JoinWithComma<T>(this IEnumerable<T> text, bool AddSpaces = true) => text.JoinWithString(Comma, AddSpaces ? Space : string.Empty);
+
+        public static string JoinWithString<T>(this IEnumerable<T> text, params string[] separators) 
+            => string.Join(string.Join(string.Empty, separators), text);
 
         private static string ChangeFirstLetterCase(string text, bool isToBeSetToUpper)
         {

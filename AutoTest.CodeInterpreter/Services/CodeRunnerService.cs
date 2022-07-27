@@ -28,9 +28,9 @@ namespace AutoTest.CodeInterpreter.Services
             var parameterConstraints = new Dictionary<string, IConstraint>();
             var variableConstraints = new Dictionary<string, IValueTracker>();
             PopulateParameterConstraints(parameterConstraints, method.Parameters);
-            var returnInfo = GetMethodReturnType(path.First());
+            var returnParameter = GetMethodReturnType(path.First());
 
-            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnInfo, parameterConstraints, variableConstraints));
+            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnParameter, parameterConstraints, variableConstraints));
 
             return new CodeRunExecution
             {
@@ -38,21 +38,20 @@ namespace AutoTest.CodeInterpreter.Services
                 Path = path,
                 ParameterConstraints = parameterConstraints,
                 VariableConstraints = variableConstraints,
-                ReturnInfo = returnInfo,
+                ReturnParameter = returnParameter,
             };
         }
 
         private static Parameter GetMethodReturnType(StatementWrapper statementWrapper)
         {
             var methodDeclarationSyntax = (MethodDeclarationSyntax)statementWrapper.SyntaxNode;
-            var variableName = methodDeclarationSyntax.Identifier.ValueText;
             var returnTypeAsString = ((PredefinedTypeSyntax)methodDeclarationSyntax.ReturnType).Keyword.ValueText;
-            return new Parameter { Name = variableName, Type = PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString) };
+            return new Parameter { Type = PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString) };
         }
 
         private static void AdjustParameterConstraints(
             StatementWrapper statementWrapper,
-            Parameter returnInfo,
+            Parameter returnParameter,
             Dictionary<string, IConstraint> constraints, 
             Dictionary<string, IValueTracker> variableConstraints)
         {
@@ -100,9 +99,11 @@ namespace AutoTest.CodeInterpreter.Services
                     }
                     break;
                 case ReturnStatementSyntax:
-                    if(variableConstraints.ContainsKey(returnInfo.Name))
+                    var returnStatementVariableName = ((IdentifierNameSyntax)((ReturnStatementSyntax)statementWrapper.SyntaxNode).Expression).Identifier.ValueText;
+                    if(variableConstraints.ContainsKey(returnStatementVariableName))
                     {
-                        returnInfo.Value = variableConstraints[returnInfo.Name].TryConvertValue(returnInfo.Type);
+                        returnParameter.Name = returnStatementVariableName;
+                        returnParameter.Value = variableConstraints[returnStatementVariableName].TryConvertValue(returnParameter.Type);
                     }
                     break;
                 case MethodDeclarationSyntax:

@@ -13,6 +13,6 @@ namespace AutoTest.CodeInterpreter.Models
 
         public Dictionary<string, IConstraint> ParameterConstraints { get; set; } = null!;
         public Dictionary<string, IValueTracker> VariableConstraints { get; set; } = null!;
-        public Parameter ReturnInfo { get; set; } = null!;
+        public Parameter? ReturnParameter { get; set; }
     }
 }
