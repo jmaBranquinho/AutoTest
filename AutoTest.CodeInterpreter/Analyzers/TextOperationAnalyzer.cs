@@ -20,5 +20,15 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 
             addConstraint((StringConstraint)constraint, operators.FirstOrDefault());
         }
+
+        public void AddInitialValue(IConstraint constraint, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ModifyKnownValue(IConstraint constraint, object value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

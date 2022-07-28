@@ -1,9 +1,4 @@
 ﻿using AutoTest.TestGenerator.Generators.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
@@ -12,5 +7,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
     {
         public abstract object Generate();
         public abstract Type GetVariableType();
+
+        public abstract bool IsUndeterminedValue();
     }
 }

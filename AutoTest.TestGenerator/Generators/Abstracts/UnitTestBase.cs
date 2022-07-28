@@ -37,14 +37,20 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         }
 
         private string FormatXUnitTestBody(CodeRunExecution run) 
-            => string.Join(Environment.NewLine, GenerateArrangeSection(run.ReturnParameter), GenerateActSection(run.Path), GenerateAssertSection(run.Path));
+            => string.Join(Environment.NewLine, GenerateArrangeSection(run), GenerateActSection(run.Path), GenerateAssertSection(run.Path));
 
-        private static string GenerateArrangeSection(Parameter? @return)
+        private static string GenerateArrangeSection(CodeRunExecution run)
             => WriteSection((stringBuilder) => 
             {
-                if (@return is not null && @return.Value is not null)
+                if (run.ReturnParameter is not null && run.ReturnParameter.Value is not null)
                 {
-                    stringBuilder.AppendLine($"var expected = {@return.Value};");
+                    var returnConstraintKeyValuePair = run.ParameterConstraints.FirstOrDefault(constraint => constraint.Key == run.ReturnParameter.Name);
+                    var isReturnDetermined = !returnConstraintKeyValuePair.Value.IsUndeterminedValue();
+
+                    if(isReturnDetermined)
+                    {
+                        stringBuilder.AppendLine($"var expected = {run.ReturnParameter.Value};");
+                    }
                 }
             }, sectionTitle: "Arrange");
 

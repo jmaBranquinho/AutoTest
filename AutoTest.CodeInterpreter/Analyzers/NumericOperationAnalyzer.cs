@@ -26,17 +26,17 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             Action<NumericalConstraint<T>, T> addConstraint = (!isElseStatement && kind != SyntaxKind.NotEqualsExpression) || isReversedEqualityOperation
                 ? (constraint, value) =>
                 {
-                    constraint.SetMinValue(constraint.SumWithType(value, requiresModification ? SumModifications.IncrementUnit : SumModifications.NoModification));
+                    constraint.SetMinValue(constraint.SumToUndeterminedValue(value, requiresModification ? SumModifications.IncrementUnit : SumModifications.NoModification));
                     if(isEqualOrNonEqualOperation)
                     {
-                        constraint.SetMaxValue(constraint.SumWithType(value, SumModifications.IncrementUnit));
+                        constraint.SetMaxValue(constraint.SumToUndeterminedValue(value, SumModifications.IncrementUnit));
                     }
                 }
                 : (constraint, value) =>
                 {
                     if(!isEqualOrNonEqualOperation)
                     {
-                        constraint.SetMaxValue(constraint.SumWithType(value, !requiresModification ? SumModifications.DecrementUnit : SumModifications.NoModification));
+                        constraint.SetMaxValue(constraint.SumToUndeterminedValue(value, !requiresModification ? SumModifications.DecrementUnit : SumModifications.NoModification));
                     } 
                     else
                     {
@@ -44,25 +44,12 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                     }
                 };
 
-            addConstraint((NumericalConstraint<T>)constraint, NumericOperationAnalyzer<T>.ConvertToType(operators.FirstOrDefault()));
+            AnalyzerHelper.ConvertToType<T>(operators.FirstOrDefault(), out var convertedOperator);
+            addConstraint((NumericalConstraint<T>)constraint, (T)convertedOperator);
         }
 
-        private static T ConvertToType(string value)
-        {
-            var cleanedValue = value
-                .Replace("d", string.Empty)
-                .Replace("m", string.Empty);
+        public void AddInitialValue(IConstraint constraint, object value) => ((NumericalConstraint<T>)constraint).SetInitialValue((T)value);
 
-            if (typeof(T) == typeof(double))
-            {
-                return (T)(object)double.Parse(cleanedValue);
-            }
-            else if (typeof(T) == typeof(decimal))
-            {
-                return (T)(object)decimal.Parse(cleanedValue);
-            }
-
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
+        public void ModifyKnownValue(IConstraint constraint, object value) => ((NumericalConstraint<T>)constraint).SumToValue((T)value);
     }
 }

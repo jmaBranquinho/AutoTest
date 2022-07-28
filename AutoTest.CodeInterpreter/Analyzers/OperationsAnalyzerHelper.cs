@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.TestGenerator.Generators.Analyzers
 {
-    public static class OperationsAnalyzer
+    public static class OperationsAnalyzerHelper
     {
         public static void AdjustConstraints(Dictionary<string, IConstraint> constraints, BinaryExpressionSyntax binaryExpression, bool IsElseStatement)
         {
@@ -17,15 +17,23 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             ProcessOperation(kind, binaryExpression, constraint, type, IsElseStatement, operators.Where(op => op != variable).ToList());
         }
 
-        private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression,IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators)
+        public static void SetInitialValue(Type type, IConstraint constraint, object value) 
+            => GetOperationAnalyzer(type).AddInitialValue(constraint, value);
+
+        public static void ModifyKnownValue(Type type, IConstraint constraint, object value)
+            => GetOperationAnalyzer(type).ModifyKnownValue(constraint, value);
+
+        private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression, IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators) 
+            => GetOperationAnalyzer(type).AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
+
+        private static IOperationsAnalyzer GetOperationAnalyzer(Type type)
         {
             IOperationsAnalyzer analyzer;
-            if (IsNumericOperation(kind, type))
+            if (IsNumericOperation(type))
             {
-                var NumericalConstraintAnalyzerType = typeof(NumericOperationAnalyzer<>).MakeGenericType(type);
-                analyzer = (INumericalAnalyzer) Activator.CreateInstance(NumericalConstraintAnalyzerType);
+                analyzer = GetNumericalAnalyzer(type);
             }
-            else if(IsTextOperation(kind, type))
+            else if (IsTextOperation(type))
             {
                 analyzer = new TextOperationAnalyzer();
             }
@@ -34,15 +42,16 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 throw new NotImplementedException();//TODO
             }
 
-            analyzer.AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
-
-            
+            return analyzer;
         }
 
-        // TODO migrate IsSupported so no dummy type needs to be passed
-        private static bool IsNumericOperation(SyntaxKind kind, Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type) && NumericOperationAnalyzer<int>.IsSupported(kind);
+        private static IOperationsAnalyzer GetNumericalAnalyzer(Type type) 
+            => (INumericalAnalyzer)Activator.CreateInstance(typeof(NumericOperationAnalyzer<>).MakeGenericType(type));
 
-        private static bool IsTextOperation(SyntaxKind _, Type type) => type == typeof(string) || type == typeof(char);
+        // TODO migrate IsSupported so no dummy type needs to be passed
+        private static bool IsNumericOperation(Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type);// && NumericOperationAnalyzer<int>.IsSupported(kind);
+
+        private static bool IsTextOperation(Type type) => type == typeof(string) || type == typeof(char);
 
         private static (Type type, IConstraint? constraint, string variable) GetOperationTypeAndConstraint(Dictionary<string, IConstraint> constraints, IEnumerable<string> operators)
         {

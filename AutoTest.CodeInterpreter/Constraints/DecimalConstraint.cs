@@ -1,4 +1,5 @@
 ﻿using AutoTest.TestGenerator.Generators.Enums;
+using AutoTest.TestGenerator.Generators.Interfaces;
 using System.Diagnostics;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
@@ -15,7 +16,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public override decimal ParseStringToType(string text) => decimal.Parse(text);
 
-        public override decimal SumWithType(decimal value, SumModifications modifier) => value + ResolveSumModifier(modifier);
+        public override decimal SumToUndeterminedValue(decimal value, SumModifications modifier) => value + ResolveSumModifier(modifier);
 
         public override NumericalConstraint<decimal> Excluding(params decimal[] values)
         {
@@ -41,6 +42,11 @@ namespace AutoTest.TestGenerator.Generators.Constraints
             }
 
             return this;
+        }
+
+        public override INumericalConstraint<decimal> SetInitialValue(object value)
+        {
+            throw new NotImplementedException();
         }
 
         protected override (decimal min, decimal max) AdjustRangeToHumanPreference()
@@ -71,5 +77,10 @@ namespace AutoTest.TestGenerator.Generators.Constraints
                 SumModifications.DecrementUnit => - (decimal)double.Epsilon,
                 _ => 0,
             };
+
+        public override void SumToValue(decimal value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace AutoTest.CodeGenerator.Tests.Unit
 
         public static string GetDefaultNewLineCharAndReplaceIt(this string text)
         {
-            var newLine = text.Substring(0, 2);
+            var newLine = text[..2];
             if(newLine != "\r\n")
             {
                 return text.Replace(newLine.First().ToString(), Environment.NewLine);

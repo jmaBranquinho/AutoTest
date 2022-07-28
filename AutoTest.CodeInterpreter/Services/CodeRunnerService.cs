@@ -1,8 +1,6 @@
 ﻿using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Analyzers;
-using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Models;
-using AutoTest.CodeInterpreter.ValueTrackers;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.Core.Helpers;
 using AutoTest.TestGenerator.Generators.Analyzers;
@@ -26,18 +24,16 @@ namespace AutoTest.CodeInterpreter.Services
             var methodStatements = path.Skip(1).ToList();
 
             var parameterConstraints = new Dictionary<string, IConstraint>();
-            var variableConstraints = new Dictionary<string, IValueTracker>();
             PopulateParameterConstraints(parameterConstraints, method.Parameters);
             var returnParameter = GetMethodReturnType(path.First());
 
-            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnParameter, parameterConstraints, variableConstraints));
+            methodStatements.ForEach(statement => AdjustParameterConstraints(statement, returnParameter, parameterConstraints));
 
             return new CodeRunExecution
             {
                 Method = method,
                 Path = path,
                 ParameterConstraints = parameterConstraints,
-                VariableConstraints = variableConstraints,
                 ReturnParameter = returnParameter,
             };
         }
@@ -52,58 +48,59 @@ namespace AutoTest.CodeInterpreter.Services
         private static void AdjustParameterConstraints(
             StatementWrapper statementWrapper,
             Parameter returnParameter,
-            Dictionary<string, IConstraint> constraints, 
-            Dictionary<string, IValueTracker> variableConstraints)
+            Dictionary<string, IConstraint> constraints)
         {
             switch (statementWrapper.SyntaxNode)
             {
                 case IfStatementSyntax ifSyntax:
-                    OperationsAnalyzer.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
+                    OperationsAnalyzerHelper.AdjustConstraints(constraints, (BinaryExpressionSyntax)ifSyntax.Condition, statementWrapper.IsElseStatement);
                     break;
-                case ExpressionStatementSyntax:
-                case LocalDeclarationStatementSyntax:
-                    if (statementWrapper.SyntaxNode is LocalDeclarationStatementSyntax localDeclarationStatementSyntax)
-                    {
-                        var variableDeclaration = localDeclarationStatementSyntax
-                            .Declaration
-                            .Variables.First();
-                        var variableName = variableDeclaration.Identifier.ValueText;
-                        var variableValue = ((LiteralExpressionSyntax)variableDeclaration.Initializer.Value).Token.Value;
-                        variableConstraints.Add(variableName, new UndeterminedNumericValueTracker(new UnderterminedNumericValue { InitialValue = variableValue}));
-                    }
-                    else if (statementWrapper.SyntaxNode is ExpressionStatementSyntax expressionStatementSyntax)
-                    {
-                        var expression = expressionStatementSyntax.Expression;
-                        var expressionKind = expression.Kind();
+                case ExpressionStatementSyntax expressionStatementSyntax:
+                    var expression = expressionStatementSyntax.Expression;
+                    var expressionKind = expression.Kind();
 
-                        var isNumericExpressionKind = expressionKind == SyntaxKind.PostIncrementExpression 
-                            || expressionKind == SyntaxKind.PostDecrementExpression;
-                        if (isNumericExpressionKind)
-                        {
-                            var operation = (UndeterminedNumericValueTracker tracker) =>
-                            {
-                                switch (expressionKind)
-                                {
-                                    case SyntaxKind.PostIncrementExpression:
-                                        tracker.Increment();
-                                        break;
-                                    case SyntaxKind.PostDecrementExpression:
-                                        tracker.Decrement();
-                                        break;
-                                    default: throw new NotImplementedException();
-                                }
-                            };
-                            var variableName = ((IdentifierNameSyntax)((PostfixUnaryExpressionSyntax)expression).Operand).Identifier.ValueText;
-                            operation((UndeterminedNumericValueTracker)variableConstraints[variableName]);
-                        }
-                    }
-                    break;
-                case ReturnStatementSyntax:
-                    var returnStatementVariableName = ((IdentifierNameSyntax)((ReturnStatementSyntax)statementWrapper.SyntaxNode).Expression).Identifier.ValueText;
-                    if(variableConstraints.ContainsKey(returnStatementVariableName))
+                    var isNumericExpressionKind = expressionKind == SyntaxKind.PostIncrementExpression
+                        || expressionKind == SyntaxKind.PostDecrementExpression;
+
+                    if (!isNumericExpressionKind)
                     {
+                        throw new NotImplementedException();
+                    }
+
+                    object? value = expressionKind switch
+                    {
+                        SyntaxKind.PostIncrementExpression => 1,
+                        SyntaxKind.PostDecrementExpression => -1,
+                        _ => throw new NotImplementedException(),
+                    };
+                    var variableName1 = ((IdentifierNameSyntax)((PostfixUnaryExpressionSyntax)expression).Operand).Identifier.ValueText;
+                    OperationsAnalyzerHelper.ModifyKnownValue(AnalyzerHelper.GetNumericTypeFromValue(value), constraints[variableName1], value);
+                    break;
+                case LocalDeclarationStatementSyntax localDeclarationStatementSyntax:
+
+                    var variableDeclaration = localDeclarationStatementSyntax
+                            .Declaration
+                            .Variables.First();//TODO: turn into a loop
+                    var variableName = variableDeclaration.Identifier.ValueText;
+                    var variableValue = ((LiteralExpressionSyntax)variableDeclaration.Initializer.Value).Token.Value;
+                    var variableType = AnalyzerHelper.GetNumericTypeFromValue(variableValue);
+
+                    constraints.Add(variableName, AnalyzerHelper.GetConstraintFromType(variableType));
+                    OperationsAnalyzerHelper.SetInitialValue(variableType, constraints[variableName], variableValue);
+                    break;
+                case ReturnStatementSyntax returnStatementSyntax:
+                    if(returnStatementSyntax.Expression is IdentifierNameSyntax identifierNameSyntax)
+                    {
+                        var returnStatementVariableName = identifierNameSyntax.Identifier.ValueText;
                         returnParameter.Name = returnStatementVariableName;
-                        returnParameter.Value = variableConstraints[returnStatementVariableName].TryConvertValue(returnParameter.Type);
+                        if(!constraints[returnStatementVariableName].IsUndeterminedValue())
+                        {
+                            returnParameter.Value = constraints[returnStatementVariableName].Generate();
+                        }
+                    } 
+                    else
+                    {
+                        //TODO: literal expression
                     }
                     break;
                 case MethodDeclarationSyntax:

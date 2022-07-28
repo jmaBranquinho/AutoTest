@@ -13,11 +13,17 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected T _minValue;
 
+        protected T _value;
+
+        protected bool _isValueSet;
+
         protected List<T> _exclusions = new();
 
         public abstract T ParseStringToType(string text);
 
-        public abstract T SumWithType(T value, SumModifications modifier = SumModifications.NoModification);
+        public abstract T SumToUndeterminedValue(T value, SumModifications modifier = SumModifications.NoModification);
+
+        public abstract void SumToValue(T value);
 
         public abstract INumericalConstraint<T> SetMaxValue(T value);
 
@@ -25,8 +31,17 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public abstract INumericalConstraint<T> Excluding(params T[] values);
 
+        public abstract INumericalConstraint<T> SetInitialValue(object value);
+
+        public bool IsUndeterminedValue() => !_isValueSet;
+
         public object Generate()
         {
+            if(!IsUndeterminedValue())
+            {
+                return _value!;
+            }
+
             var (min, max) = AdjustRangeToHumanPreference();
             return _exclusions.Any()
                 ? GenerateRandomWithExclusions(min, max)

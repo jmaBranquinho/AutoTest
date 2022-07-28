@@ -4,5 +4,6 @@
     {
         public Type GetVariableType();
         public object Generate();
+        public bool IsUndeterminedValue();
     }
 }

@@ -6,12 +6,18 @@ namespace AutoTest.TestGenerator.Generators.Interfaces
     {
         public T ParseStringToType(string text);
 
-        public T SumWithType(T value, SumModifications modifier = SumModifications.NoModification);
+        public T SumToUndeterminedValue(T value, SumModifications modifier = SumModifications.NoModification);
+
+        public void SumToValue(T value);
 
         public INumericalConstraint<T> SetMaxValue(T value);
 
         public INumericalConstraint<T> SetMinValue(T value);
 
         public INumericalConstraint<T> Excluding(params T[] values);
+
+        public INumericalConstraint<T> SetInitialValue(object value);
+
+        public bool IsUndeterminedValue();
     }
 }

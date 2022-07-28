@@ -1,4 +1,5 @@
 ﻿using AutoTest.TestGenerator.Generators.Enums;
+using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
@@ -14,7 +15,9 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public override int ParseStringToType(string text) => int.Parse(text);
 
-        public override int SumWithType(int value, SumModifications modifier) => value + ResolveSumModifier(modifier);
+        public override int SumToUndeterminedValue(int value, SumModifications modifier) => value + ResolveSumModifier(modifier);
+
+        public override void SumToValue(int value) => _value += value;
 
         public override NumericalConstraint<int> Excluding(params int[] values)
         {
@@ -31,6 +34,13 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         public override NumericalConstraint<int> SetMinValue(int value)
         {
             _minValue = value;
+            return this;
+        }
+
+        public override INumericalConstraint<int> SetInitialValue(object value)
+        {
+            _value = (int)value;
+            _isValueSet = true;
             return this;
         }
 

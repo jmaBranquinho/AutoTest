@@ -175,5 +175,10 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         private static bool HasKey(CharacterGroups value, CharacterGroups flag) => (value & flag) != 0;
+
+        public bool IsUndeterminedValue()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
