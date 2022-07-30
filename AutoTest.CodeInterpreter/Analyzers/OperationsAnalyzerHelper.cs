@@ -12,7 +12,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
     public static class OperationsAnalyzerHelper
     {
         public static void AdjustParameterConstraints(
-            Parameter returnParameter,
+            LiteralOrParameterDefinition returnParameter,
             Dictionary<string, IConstraint> constraints,
             StatementWrapper statementWrapper)
         {
@@ -50,9 +50,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             var operators = GetOperators(binaryExpression);
             var kind = binaryExpression.Kind();
             var (type, constraint, variable) = GetOperationTypeAndConstraint(constraints, operators);
-
-            // TODO Check if constraint is null
-            ProcessOperation(kind, binaryExpression, constraint, type, IsElseStatement, operators.Where(op => op != variable).ToList());
+            ProcessOperation(kind, binaryExpression, constraint!, type, IsElseStatement, operators.Where(op => op != variable).ToList());
         }
 
         private static void AdjustConstraints(Dictionary<string, IConstraint> constraints, ExpressionStatementSyntax expressionStatementSyntax)
@@ -92,20 +90,25 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             }
         }
 
-        private static void AdjustReturnParameter(Dictionary<string, IConstraint> constraints, Parameter returnParameter, ReturnStatementSyntax returnStatementSyntax)
+        private static void AdjustReturnParameter(Dictionary<string, IConstraint> constraints, LiteralOrParameterDefinition returnParameter, ReturnStatementSyntax returnStatementSyntax)
         {
-            if (returnStatementSyntax.Expression is IdentifierNameSyntax identifierNameSyntax)
+            switch(returnStatementSyntax.Expression)
             {
-                var returnStatementVariableName = identifierNameSyntax.Identifier.ValueText;
-                returnParameter.Name = returnStatementVariableName;
-                if (!constraints[returnStatementVariableName].IsUndeterminedValue())
-                {
-                    returnParameter.Value = constraints[returnStatementVariableName].Generate();
-                }
-            }
-            else
-            {
-                //TODO: literal expression
+                case ExpressionSyntax when returnStatementSyntax.Expression is IdentifierNameSyntax:
+                    var returnStatementVariableName = ((IdentifierNameSyntax)returnStatementSyntax.Expression).Identifier.ValueText;
+                    returnParameter.Name = returnStatementVariableName;
+                    if (!constraints[returnStatementVariableName].IsUndeterminedValue())
+                    {
+                        returnParameter.Value = constraints[returnStatementVariableName].Generate();
+                    }
+                    break;
+                case ExpressionSyntax when returnStatementSyntax.Expression is LiteralExpressionSyntax:
+                    returnParameter.Name = string.Empty;
+                    returnParameter.Value = ((LiteralExpressionSyntax)returnStatementSyntax.Expression).Token.Value;
+                    returnParameter.IsLiteral = true;
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -118,24 +121,13 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
         private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression, IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators) 
             => GetOperationAnalyzer(type).AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
 
-        private static IOperationsAnalyzer GetOperationAnalyzer(Type type)
-        {
-            IOperationsAnalyzer analyzer;
-            if (IsNumericOperation(type))
+        private static IOperationsAnalyzer GetOperationAnalyzer(Type type) 
+            => type switch
             {
-                analyzer = GetNumericalAnalyzer(type);
-            }
-            else if (IsTextOperation(type))
-            {
-                analyzer = new TextOperationAnalyzer();
-            }
-            else
-            {
-                throw new NotImplementedException();//TODO
-            }
-
-            return analyzer;
-        }
+                Type when IsNumericOperation(type) => GetNumericalAnalyzer(type),
+                Type when IsTextOperation(type) => new TextOperationAnalyzer(),
+                _ => throw new NotImplementedException(),//TODO
+            };
 
         private static IOperationsAnalyzer GetNumericalAnalyzer(Type type) 
             => (INumericalAnalyzer)Activator.CreateInstance(typeof(NumericOperationAnalyzer<>).MakeGenericType(type));

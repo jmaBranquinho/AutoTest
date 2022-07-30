@@ -45,9 +45,9 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 if (run.ReturnParameter is not null && run.ReturnParameter.Value is not null)
                 {
                     var returnConstraintKeyValuePair = run.ParameterConstraints.FirstOrDefault(constraint => constraint.Key == run.ReturnParameter.Name);
-                    var isReturnDetermined = !returnConstraintKeyValuePair.Value.IsUndeterminedValue();
+                    var isReturnDeterminedAndRequiresVar = !run.ReturnParameter.IsLiteral && !returnConstraintKeyValuePair.Value.IsUndeterminedValue();
 
-                    if(isReturnDetermined)
+                    if(isReturnDeterminedAndRequiresVar)
                     {
                         stringBuilder.AppendLine($"var expected = {run.ReturnParameter.Value};");
                     }

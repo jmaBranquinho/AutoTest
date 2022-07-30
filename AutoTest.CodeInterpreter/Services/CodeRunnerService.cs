@@ -37,11 +37,11 @@ namespace AutoTest.CodeInterpreter.Services
             };
         }
 
-        private static Parameter GetMethodReturnType(StatementWrapper statementWrapper)
+        private static LiteralOrParameterDefinition GetMethodReturnType(StatementWrapper statementWrapper)
         {
             var methodDeclarationSyntax = (MethodDeclarationSyntax)statementWrapper.SyntaxNode;
             var returnTypeAsString = ((PredefinedTypeSyntax)methodDeclarationSyntax.ReturnType).Keyword.ValueText;
-            return new Parameter { Type = PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString) };
+            return new LiteralOrParameterDefinition { Type = PrimitiveTypeConvertionHelper.GetTypeFromString(returnTypeAsString) };
         }
 
         private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
