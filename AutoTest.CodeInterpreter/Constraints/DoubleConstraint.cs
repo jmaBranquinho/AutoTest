@@ -1,52 +1,22 @@
-﻿using AutoTest.TestGenerator.Generators.Enums;
-using AutoTest.TestGenerator.Generators.Interfaces;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.TestGenerator.Generators.Enums;
 using System.Diagnostics;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class DoubleConstraint : NumericalConstraint<double>
     {
-        protected override double HumanPreferenceMin => 0;
-
-        protected override double HumanPreferenceMax => 100;
-
-        protected new double _maxValue = double.MaxValue;
-
-        protected new double _minValue = double.MinValue;
-
-        public override double ParseStringToType(string text) => double.Parse(text);
-
-        public override double SumToUndeterminedValue(double value, SumModifications modifier) => value + ResolveSumModifier(modifier);
-
-        public override NumericalConstraint<double> Excluding(params double[] values)
+        public override double PerformMathOperation(MathOperations mathOperation, double value1, double value2)
         {
-            _exclusions.AddRange(values);
-            return this;
-        }
-
-        public override NumericalConstraint<double> SetMaxValue(double value)
-        {
-            if (value < _maxValue)
+            return mathOperation switch
             {
-                _maxValue = value;
-            }
-
-            return this;
-        }
-
-        public override NumericalConstraint<double> SetMinValue(double value)
-        {
-            if (value > _minValue)
-            {
-                _minValue = value;
-            }
-
-            return this;
-        }
-
-        public override INumericalConstraint<double> SetInitialValue(object value)
-        {
-            throw new NotImplementedException();
+                MathOperations.Sum => value1 + value2,
+                MathOperations.Multiplication => value1 * value2,
+                MathOperations.Subtraction => PerformMathOperation(MathOperations.Sum, value1, -value2),
+                MathOperations.Division => PerformMathOperation(MathOperations.Multiplication, value1, 1 / value2),
+                _ => throw new NotImplementedException(),
+            };
+            ;
         }
 
         protected override (double min, double max) AdjustRangeToHumanPreference()
@@ -70,17 +40,17 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected override double GenerateRandomBetweenRange(double min, double max) => new Random().NextDouble() * (max - min) + min;
 
-        private static double ResolveSumModifier(SumModifications modifier) 
-            => modifier switch
+        protected override double GetValueFromAbstraction(AbstractedNumericValues abstractedValue)
+            => abstractedValue switch
             {
-                SumModifications.IncrementUnit => double.Epsilon,
-                SumModifications.DecrementUnit => -double.Epsilon,
-                _ => 0,
+                AbstractedNumericValues.One => 1d,
+                AbstractedNumericValues.MinusOne => -1d,
+                _ => 0d,
             };
-
-        public override void SumToValue(double value)
+        protected override void SetMaxAndMinValues()
         {
-            throw new NotImplementedException();
+            _maxValue = double.MaxValue;
+            _minValue = double.MinValue;
         }
     }
 }

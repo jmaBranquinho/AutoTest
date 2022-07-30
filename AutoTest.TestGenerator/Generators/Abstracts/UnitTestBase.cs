@@ -67,7 +67,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                         .EndStatement(hasLineBreak: true));
             }, sectionTitle: "Act");
 
-        // TODO: implement
         // TODO: assert property changes
         private string GenerateAssertSection(IEnumerable<StatementWrapper> methodStatements)
             => WriteSection((stringBuilder) =>
@@ -78,7 +77,6 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 }
             }, sectionTitle: "Assert");
 
-        // TODO: implement
         private IEnumerable<string> FormatXUnitParameterTestAnnotations(IEnumerable<Parameter> parametersList)
         {
             if (parametersList is null || !parametersList.Any())

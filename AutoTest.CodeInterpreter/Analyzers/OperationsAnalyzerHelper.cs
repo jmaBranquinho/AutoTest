@@ -1,4 +1,5 @@
-﻿using AutoTest.Core.Helpers;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.Core.Helpers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,8 +21,8 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
         public static void SetInitialValue(Type type, IConstraint constraint, object value) 
             => GetOperationAnalyzer(type).AddInitialValue(constraint, value);
 
-        public static void ModifyKnownValue(Type type, IConstraint constraint, object value)
-            => GetOperationAnalyzer(type).ModifyKnownValue(constraint, value);
+        public static void UpdateValue(Type type, IConstraint constraint, MathOperations mathOperation, object value)
+            => GetOperationAnalyzer(type).UpdateValue(constraint, mathOperation, value);
 
         private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression, IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators) 
             => GetOperationAnalyzer(type).AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);

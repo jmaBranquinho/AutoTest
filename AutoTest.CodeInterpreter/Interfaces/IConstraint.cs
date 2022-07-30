@@ -2,8 +2,11 @@
 {
     public interface IConstraint
     {
-        public Type GetVariableType();
-        public object Generate();
-        public bool IsUndeterminedValue();
+        Type GetVariableType();
+
+        bool IsUndeterminedValue();
+
+        object Generate();
+
     }
 }

@@ -1,23 +1,24 @@
-﻿using AutoTest.TestGenerator.Generators.Enums;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.TestGenerator.Generators.Enums;
 
 namespace AutoTest.TestGenerator.Generators.Interfaces
 {
     public interface INumericalConstraint<T> : IConstraint
     {
-        public T ParseStringToType(string text);
+        T ParseStringToType(string text);
 
-        public T SumToUndeterminedValue(T value, SumModifications modifier = SumModifications.NoModification);
+        void PerformMathOperationOnValue(MathOperations mathOperation, T value);
 
-        public void SumToValue(T value);
+        T PerformMathOperation(MathOperations mathOperation, T value1, AbstractedNumericValues value2);
 
-        public INumericalConstraint<T> SetMaxValue(T value);
+        T PerformMathOperation(MathOperations mathOperation, T value1, T value2);
 
-        public INumericalConstraint<T> SetMinValue(T value);
+        INumericalConstraint<T> SetMaxValue(T value);
 
-        public INumericalConstraint<T> Excluding(params T[] values);
+        INumericalConstraint<T> SetMinValue(T value);
 
-        public INumericalConstraint<T> SetInitialValue(object value);
+        INumericalConstraint<T> Excluding(params T[] values);
 
-        public bool IsUndeterminedValue();
+        INumericalConstraint<T> SetInitialValue(object value);
     }
 }

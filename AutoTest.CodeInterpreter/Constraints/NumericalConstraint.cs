@@ -1,13 +1,23 @@
-﻿using AutoTest.TestGenerator.Generators.Enums;
+﻿using AutoTest.CodeInterpreter.Analyzers;
+using AutoTest.CodeInterpreter.Enums;
+using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public abstract class NumericalConstraint<T> : INumericalConstraint<T>
+        where T : struct,
+            IComparable,
+            IComparable<T>,
+            IConvertible,
+            IEquatable<T>,
+            IFormattable
     {
-        protected abstract T HumanPreferenceMin { get; }
+        public NumericalConstraint() => SetMaxAndMinValues();
 
-        protected abstract T HumanPreferenceMax { get; }
+        protected int HumanPreferenceMin => 0;
+
+        protected int HumanPreferenceMax => 100;
 
         protected T _maxValue;
 
@@ -19,25 +29,45 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected List<T> _exclusions = new();
 
-        public abstract T ParseStringToType(string text);
+        public T ParseStringToType(string text) => NumericHelper.ConvertToType<T>(text);
 
-        public abstract T SumToUndeterminedValue(T value, SumModifications modifier = SumModifications.NoModification);
-
-        public abstract void SumToValue(T value);
-
-        public abstract INumericalConstraint<T> SetMaxValue(T value);
-
-        public abstract INumericalConstraint<T> SetMinValue(T value);
-
-        public abstract INumericalConstraint<T> Excluding(params T[] values);
-
-        public abstract INumericalConstraint<T> SetInitialValue(object value);
+        public Type GetVariableType() => typeof(T);
 
         public bool IsUndeterminedValue() => !_isValueSet;
 
+        public void PerformMathOperationOnValue(MathOperations mathOperation, T value) => _value = PerformMathOperation(mathOperation, _value, value);
+
+        public T PerformMathOperation(MathOperations mathOperation, T value1, AbstractedNumericValues value2) 
+            => PerformMathOperation(mathOperation, value1, GetValueFromAbstraction(value2));
+
+        public INumericalConstraint<T> SetMaxValue(T value)
+        {
+            _maxValue = value;
+            return this;
+        }
+
+        public INumericalConstraint<T> SetMinValue(T value)
+        {
+            _minValue = value;
+            return this;
+        }
+
+        public INumericalConstraint<T> Excluding(params T[] values)
+        {
+            _exclusions.AddRange(values);
+            return this;
+        }
+
+        public INumericalConstraint<T> SetInitialValue(object value)
+        {
+            _value = (T)value;
+            _isValueSet = true;
+            return this;
+        }
+
         public object Generate()
         {
-            if(!IsUndeterminedValue())
+            if (!IsUndeterminedValue())
             {
                 return _value!;
             }
@@ -48,12 +78,16 @@ namespace AutoTest.TestGenerator.Generators.Constraints
                 : GenerateRandomBetweenRange(min, max);
         }
 
-        public Type GetVariableType() => typeof(T);
+        public abstract T PerformMathOperation(MathOperations mathOperation, T value1, T value2);
 
         protected abstract (T min, T max) AdjustRangeToHumanPreference();
 
         protected abstract T GenerateRandomWithExclusions(T min, T max);
 
         protected abstract T GenerateRandomBetweenRange(T min, T max);
+
+        protected abstract T GetValueFromAbstraction(AbstractedNumericValues abstractedValue);
+
+        protected abstract void SetMaxAndMinValues();
     }
 }

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace AutoTest.CodeInterpreter.Analyzers
 {
-    public static class AnalyzerHelper
+    public static class NumericHelper
     {
         private static readonly Dictionary<Type, Func<IConstraint>> TypeToConstraintDictionary =
             new()
@@ -49,11 +49,11 @@ namespace AutoTest.CodeInterpreter.Analyzers
             }
         }
 
-        //public static object ConvertToType<T>(T type, object? input)
-        //{
-        //    ConvertToType<T>(input, out var output);
-        //    return output;
-        //}
+        public static T ConvertToType<T>(object? value)
+        {
+            _ = ConvertToType<T>(value, out var convertedValue);
+            return (T)convertedValue;
+        }
 
         public static bool ConvertToType<T>(object? value, out object convertedValue)
         {
@@ -76,8 +76,6 @@ namespace AutoTest.CodeInterpreter.Analyzers
             convertedValue = default!;
             return false;
         }
-
-        private static bool IsConvertibleToType<T>(T type, object? value) => ConvertToType<T>(value, out var _);
 
     }
 }

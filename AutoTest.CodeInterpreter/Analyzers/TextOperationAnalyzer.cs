@@ -1,4 +1,5 @@
-﻿using AutoTest.TestGenerator.Generators.Constraints;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.TestGenerator.Generators.Constraints;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,7 +27,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             throw new NotImplementedException();
         }
 
-        public void ModifyKnownValue(IConstraint constraint, object value)
+        public void UpdateValue(IConstraint constraint, MathOperations mathOperation, object value)
         {
             throw new NotImplementedException();
         }

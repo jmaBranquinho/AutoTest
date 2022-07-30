@@ -1,52 +1,22 @@
-﻿using AutoTest.TestGenerator.Generators.Enums;
-using AutoTest.TestGenerator.Generators.Interfaces;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.TestGenerator.Generators.Enums;
 using System.Diagnostics;
 
 namespace AutoTest.TestGenerator.Generators.Constraints
 {
     public class DecimalConstraint : NumericalConstraint<decimal>
     {
-        protected override decimal HumanPreferenceMin => 0;
-
-        protected override decimal HumanPreferenceMax => 100;
-
-        protected new decimal _maxValue = decimal.MaxValue;
-
-        protected new decimal _minValue = decimal.MinValue;
-
-        public override decimal ParseStringToType(string text) => decimal.Parse(text);
-
-        public override decimal SumToUndeterminedValue(decimal value, SumModifications modifier) => value + ResolveSumModifier(modifier);
-
-        public override NumericalConstraint<decimal> Excluding(params decimal[] values)
+        public override decimal PerformMathOperation(MathOperations mathOperation, decimal value1, decimal value2)
         {
-            _exclusions.AddRange(values);
-            return this;
-        }
-
-        public override NumericalConstraint<decimal> SetMaxValue(decimal value)
-        {
-            if (value < _maxValue)
+            return mathOperation switch
             {
-                _maxValue = value;
-            }
-
-            return this;
-        }
-
-        public override NumericalConstraint<decimal> SetMinValue(decimal value)
-        {
-            if (value > _minValue)
-            {
-                _minValue = value;
-            }
-
-            return this;
-        }
-
-        public override INumericalConstraint<decimal> SetInitialValue(object value)
-        {
-            throw new NotImplementedException();
+                MathOperations.Sum => value1 + value2,
+                MathOperations.Multiplication => value1 * value2,
+                MathOperations.Subtraction => PerformMathOperation(MathOperations.Sum, value1, -value2),
+                MathOperations.Division => PerformMathOperation(MathOperations.Multiplication, value1, 1 / value2),
+                _ => throw new NotImplementedException(),
+            };
+            ;
         }
 
         protected override (decimal min, decimal max) AdjustRangeToHumanPreference()
@@ -70,17 +40,18 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected override decimal GenerateRandomBetweenRange(decimal min, decimal max) => (decimal) new Random().NextDouble() * (max - min) + min;
 
-        private static decimal ResolveSumModifier(SumModifications modifier)
-            => modifier switch
+        protected override decimal GetValueFromAbstraction(AbstractedNumericValues abstractedValue)
+            => abstractedValue switch
             {
-                SumModifications.IncrementUnit => (decimal) double.Epsilon,
-                SumModifications.DecrementUnit => - (decimal)double.Epsilon,
-                _ => 0,
+                AbstractedNumericValues.One => 1m,
+                AbstractedNumericValues.MinusOne => -1m,
+                _ => 0m,
             };
 
-        public override void SumToValue(decimal value)
+        protected override void SetMaxAndMinValues()
         {
-            throw new NotImplementedException();
+            _maxValue = decimal.MaxValue;
+            _minValue = decimal.MinValue;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoTest.CodeGenerator.Models;
 using AutoTest.CodeInterpreter.Analyzers;
+using AutoTest.CodeInterpreter.Enums;
 using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.Core.Helpers;
@@ -74,7 +75,7 @@ namespace AutoTest.CodeInterpreter.Services
                         _ => throw new NotImplementedException(),
                     };
                     var variableName1 = ((IdentifierNameSyntax)((PostfixUnaryExpressionSyntax)expression).Operand).Identifier.ValueText;
-                    OperationsAnalyzerHelper.ModifyKnownValue(AnalyzerHelper.GetNumericTypeFromValue(value), constraints[variableName1], value);
+                    OperationsAnalyzerHelper.UpdateValue(NumericHelper.GetNumericTypeFromValue(value), constraints[variableName1], MathOperations.Sum, value);
                     break;
                 case LocalDeclarationStatementSyntax localDeclarationStatementSyntax:
 
@@ -83,9 +84,9 @@ namespace AutoTest.CodeInterpreter.Services
                             .Variables.First();//TODO: turn into a loop
                     var variableName = variableDeclaration.Identifier.ValueText;
                     var variableValue = ((LiteralExpressionSyntax)variableDeclaration.Initializer.Value).Token.Value;
-                    var variableType = AnalyzerHelper.GetNumericTypeFromValue(variableValue);
+                    var variableType = NumericHelper.GetNumericTypeFromValue(variableValue);
 
-                    constraints.Add(variableName, AnalyzerHelper.GetConstraintFromType(variableType));
+                    constraints.Add(variableName, NumericHelper.GetConstraintFromType(variableType));
                     OperationsAnalyzerHelper.SetInitialValue(variableType, constraints[variableName], variableValue);
                     break;
                 case ReturnStatementSyntax returnStatementSyntax:
@@ -114,6 +115,6 @@ namespace AutoTest.CodeInterpreter.Services
 
         private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
             => parameters.ToList()
-                .ForEach(parameter => constraints.Add(parameter.Key, AnalyzerHelper.GetConstraintFromType(parameter.Value)));
+                .ForEach(parameter => constraints.Add(parameter.Key, NumericHelper.GetConstraintFromType(parameter.Value)));
     }
 }

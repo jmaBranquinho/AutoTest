@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using AutoTest.CodeInterpreter.Enums;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AutoTest.TestGenerator.Generators.Interfaces
@@ -9,6 +10,6 @@ namespace AutoTest.TestGenerator.Generators.Interfaces
 
         void AddInitialValue(IConstraint constraint, object value);
 
-        void ModifyKnownValue(IConstraint constraint, object value);
+        void UpdateValue(IConstraint constraint, MathOperations mathOperation, object value);
     }
 }

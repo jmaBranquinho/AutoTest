@@ -10,17 +10,19 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         private readonly int _defaultStringSizeIncreased = 1000;
 
-        private new int? _maxValue;
+        private int? _maxValue;
 
-        private new int? _minValue;
+        private int? _minValue;
+
+        private string _exactValue = null!;
+
+        private bool _isValueSet;
 
         private List<string> _excludedStrings = new();
 
         private List<char> _excludedCharacters = new();
 
         private List<CharacterGroups> _stringBuildingRules = new();
-
-        private string _exactValue;
 
         public StringConstraint SetMaxLength(int value)
         {
@@ -63,6 +65,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         public StringConstraint Exactly(string value)
         {
             _exactValue = value;
+            _isValueSet = true;
             return this;
         }
 
@@ -84,16 +87,18 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         public Type GetVariableType() => typeof(string);
 
-        private IEnumerable<char> GenerateUpperCaseLetters()
+        public bool IsUndeterminedValue() => !_isValueSet;
+
+        private static IEnumerable<char> GenerateUpperCaseLetters()
             => Enumerable.Range('A', 'Z' - 'A' + 1).Select(c => (char)c).ToList();
 
-        private IEnumerable<char> GenerateLowerCaseLetters()
+        private static IEnumerable<char> GenerateLowerCaseLetters()
             => Enumerable.Range('a', 'z' - 'a' + 1).Select(c => (char)c).ToList();
 
-        private IEnumerable<char> GenerateNumbers()
+        private static IEnumerable<char> GenerateNumbers()
             => Enumerable.Range(0, 9).Select(c => (char)c).ToList();
 
-        private IEnumerable<char> GenerateSpecialCharacters()
+        private static IEnumerable<char> GenerateSpecialCharacters()
             => new List<char> { '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', 
                 ',', '.', '/', ':', ';', '<', '>', '=', '?', '@', '[', ']', '\\', '{', '}',
                 '|', '_', '^', '~',
@@ -175,10 +180,5 @@ namespace AutoTest.TestGenerator.Generators.Constraints
         }
 
         private static bool HasKey(CharacterGroups value, CharacterGroups flag) => (value & flag) != 0;
-
-        public bool IsUndeterminedValue()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
