@@ -28,37 +28,46 @@ namespace AutoTest.CodeInterpreter
 
         private SolutionWrapper PerformCodeAnalysis(string code) 
             => new SolutionWrapper
-            {
-                Name = "Solution", // TODO: change name
-                Namespaces = GetCompilationUnitSyntax(code)
-                        .Members
-                        .Cast<SyntaxNode>()
-                        .Select(namespaceStatement =>
-                            new NamespaceWrapper
-                            {
-                                Name = ((NamespaceDeclarationSyntax)namespaceStatement).Name.ToFullString(),
-                                Classes = namespaceStatement
-                                    .DescendantNodes()
-                                    .OfType<ClassDeclarationSyntax>()
-                                    .Cast<SyntaxNode>()
-                                    .Select(classStatement =>
-                                        new ClassWrapper
-                                        {
-                                            Name = ((ClassDeclarationSyntax)classStatement).Identifier.ValueText,
-                                            Methods = classStatement
-                                                .DescendantNodes()
-                                                .OfType<MethodDeclarationSyntax>()
-                                                .Select(methodStatement =>
-                                                    new MethodWrapper
-                                                    {
-                                                        Name = methodStatement.Identifier.ValueText,
-                                                        ExecutionPaths = HandleStatements(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
-                                                    }).ToList(),
-                                        }).ToList(),
-                            }).ToList(),
-            }.Consolidate();
+                {
+                    Namespaces = GetNamespaces(code),
+                }
+                .Consolidate();
 
-        private List<CodeExecution> HandleStatements(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
+        private IEnumerable<NamespaceWrapper> GetNamespaces(string code)
+            => GetCompilationUnitSyntax(code)
+                .Members
+                .Cast<SyntaxNode>()
+                .Select(namespaceStatement => new NamespaceWrapper
+                {
+                    Name = ((NamespaceDeclarationSyntax)namespaceStatement).Name.ToFullString(),
+                    Classes = GetClasses(namespaceStatement),
+                })
+                .ToList();
+
+        private IEnumerable<ClassWrapper> GetClasses(SyntaxNode namespaceStatement)
+            => namespaceStatement
+                .DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Cast<SyntaxNode>()
+                .Select(classStatement => new ClassWrapper
+                {
+                    Name = ((ClassDeclarationSyntax)classStatement).Identifier.ValueText,
+                    Methods = GetMethods(classStatement)
+                })
+            .ToList();
+
+        private IEnumerable<MethodWrapper> GetMethods(SyntaxNode classStatement)
+            => classStatement
+                .DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .Select(methodStatement => new MethodWrapper
+                {
+                    Name = methodStatement.Identifier.ValueText,
+                    ExecutionPaths = GetExecutionPaths(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
+                })
+                .ToList();
+
+        private List<CodeExecution> GetExecutionPaths(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
         {
             bool hasPathReachedEnd = statements == null ||
                 !statements.Any() || statements.First() == null ||
@@ -75,7 +84,7 @@ namespace AutoTest.CodeInterpreter
             {
                 var statement = statements.First();
                 var analyzer = _dictionary.GetAnalyzerFromDictionary(statement.GetType());
-                return analyzer.Analyze(statement, currentExecutionPaths, HandleStatements);
+                return analyzer.Analyze(statement, currentExecutionPaths, GetExecutionPaths);
             }
 
             var executionPaths = new List<CodeExecution>
@@ -93,7 +102,7 @@ namespace AutoTest.CodeInterpreter
                 {
                     var list = new List<SyntaxNode>();
                     list.Add(statement);
-                    var analyzisResults = HandleStatements(list, executionPath);
+                    var analyzisResults = GetExecutionPaths(list, executionPath);
                     results.AddRange(analyzisResults.Where(path => path.IsFinished).ToList());
                     nextExecutionPaths.AddRange(analyzisResults);
                 }
@@ -104,10 +113,7 @@ namespace AutoTest.CodeInterpreter
             return executionPaths;
         }
 
-        private static CompilationUnitSyntax GetCompilationUnitSyntax(string code)
-        {
-            var tree = CSharpSyntaxTree.ParseText(code);
-            return tree.GetCompilationUnitRoot();
-        }
+        private static CompilationUnitSyntax GetCompilationUnitSyntax(string code) 
+            => CSharpSyntaxTree.ParseText(code).GetCompilationUnitRoot();
     }
 }

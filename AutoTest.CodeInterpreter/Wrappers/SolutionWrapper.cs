@@ -4,8 +4,6 @@ namespace AutoTest.CodeInterpreter.Wrappers
 {
     public class SolutionWrapper
     {
-        public string Name { get; set; } = null!;
-
         public IEnumerable<NamespaceWrapper> Namespaces { get; set; } = new List<NamespaceWrapper>();
 
         public SolutionWrapper Consolidate()
