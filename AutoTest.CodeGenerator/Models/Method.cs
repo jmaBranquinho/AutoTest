@@ -10,19 +10,19 @@ namespace AutoTest.CodeGenerator.Models
         protected string _name = null!;
         protected IEnumerable<string> _annotations = null!;
         protected IEnumerable<MethodModifiers> _modifiers = null!;
-        protected string _returnType = null!;
+        protected Type? _returnType = null!;
         protected IEnumerable<string> _parameters = null!;
         protected string _body = null!;
 
         protected bool IsParameterless() => !_parameters?.Any() ?? true;
 
-        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<ParameterDefinition> parameters, string body)
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, Type? returnType, IEnumerable<ParameterDefinition> parameters, string body)
         {
             InitializeLists(name, annotations, modifiers, returnType, body);
             _parameters = FormatParameters(parameters);
         }
 
-        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, IEnumerable<string> parameters, string body)
+        public Method(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, Type? returnType, IEnumerable<string> parameters, string body)
         {
             InitializeLists(name, annotations, modifiers, returnType, body);
             _parameters = parameters;
@@ -33,7 +33,7 @@ namespace AutoTest.CodeGenerator.Models
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(Environment.NewLine, _annotations);
             stringBuilder.Append(_annotations.Any() ? Environment.NewLine : string.Empty);
-            stringBuilder.Append($"{AddMethodModifiers()} {_returnType} {_name}".AddNewContext(_parameters.JoinWithComma(), Symbols.Parentheses));
+            stringBuilder.Append($"{AddMethodModifiers()} {GetFormattedReturnType()} {_name}".AddNewContext(_parameters.JoinWithComma(), Symbols.Parentheses));
 
             return stringBuilder.ToString().AddNewContext(_body);
         }
@@ -48,7 +48,7 @@ namespace AutoTest.CodeGenerator.Models
 
         private string AddMethodModifiers() => _modifiers.Select(m => m.ToString().ToLowerInvariant()).JoinWithSpaces();
 
-        private void InitializeLists(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, string returnType, string body)
+        private void InitializeLists(string name, IEnumerable<string> annotations, IEnumerable<MethodModifiers> modifiers, Type? returnType, string body)
         {
             _name = name;
             _annotations = annotations;
@@ -56,5 +56,7 @@ namespace AutoTest.CodeGenerator.Models
             _returnType = returnType;
             _body = body;
         }
+
+        private string GetFormattedReturnType() => _returnType == null ? "void" : _returnType.ToString();
     }
 }

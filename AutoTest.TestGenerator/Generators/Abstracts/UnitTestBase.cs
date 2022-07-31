@@ -18,7 +18,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
         private readonly IEnumerable<Parameter> _unitTestParameters;
 
         public UnitTestBase(string testName, IEnumerable<Parameter> parameters, CodeRunExecution codeRun)
-            : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, "void", Enumerable.Empty<ParameterDefinition>(), string.Empty)
+            : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, returnType: null, Enumerable.Empty<ParameterDefinition>(), string.Empty)
         {
             PerformValidations(codeRun.Path);
 

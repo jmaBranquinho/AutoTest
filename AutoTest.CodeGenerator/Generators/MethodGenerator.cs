@@ -17,7 +17,7 @@ namespace AutoTest.CodeGenerator.Generators
         private string _methodName;
         private List<string> _annotations = new();
         private List<MethodModifiers> _modifiers = new();
-        private string _returnType;
+        private Type? _returnType;
         private List<(string Name, string Type)> _parameters = new();
         private string _body;
 
@@ -49,7 +49,7 @@ namespace AutoTest.CodeGenerator.Generators
 
         public IMethodParametersSelectionStage WithReturnType(Type? returnType)
         {
-            _returnType = returnType?.ToString() ?? "void";
+            _returnType = returnType;
             return this;
         }
 

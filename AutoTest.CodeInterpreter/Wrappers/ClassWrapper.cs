@@ -4,18 +4,16 @@ namespace AutoTest.CodeInterpreter.Wrappers
 {
     public class ClassWrapper
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public List<MethodWrapper> Methods { get; set; }
+        public IEnumerable<MethodWrapper> Methods { get; set; } = new List<MethodWrapper>();
 
-        public NamespaceWrapper Namespace { get; set; }
-
-        public void Consolidate(SolutionWrapper solution, ConsolidationService consolidationService)
-        {
-            foreach (var method in Methods)
-            {
-                method.Consolidate(solution, consolidationService);
-            }
-        }
+        public void Consolidate(ConsolidationService consolidationService) 
+            => Methods
+                ?.ToList()
+                ?.ForEach(method => 
+                    method
+                    .AnalyzeMethodDetails()
+                    .Consolidate(consolidationService));
     }
 }

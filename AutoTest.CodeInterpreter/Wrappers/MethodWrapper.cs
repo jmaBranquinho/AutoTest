@@ -6,17 +6,15 @@ namespace AutoTest.CodeInterpreter.Wrappers
 {
     public class MethodWrapper
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public IEnumerable<IEnumerable<StatementWrapper>> ExecutionPaths { get; set; }
+        public IEnumerable<IEnumerable<StatementWrapper>> ExecutionPaths { get; set; } = new List<IEnumerable<StatementWrapper>>();
 
-        public Dictionary<string, Type> Parameters { get; set; }
-
-        public ClassWrapper Class { get; set; }
+        public Dictionary<string, Type> Parameters { get; set; } = new();
 
         private List<string> _references = new();
 
-        public void AnalyzeMethodDetails()
+        public MethodWrapper AnalyzeMethodDetails()
         {
             Parameters = new Dictionary<string, Type>();
 
@@ -26,20 +24,21 @@ namespace AutoTest.CodeInterpreter.Wrappers
                 .ToList()
                 .ForEach(parameter => Parameters
                     .Add(parameter.Identifier.Text, PrimitiveTypeConvertionHelper.GetTypeFromString(((PredefinedTypeSyntax)parameter.Type).Keyword.ValueText)));
+
+            return this;
         }
 
         public bool IsConsolidationRequired() => _references.Any() || ExecutionPaths.Any(p => p.Any(s => s.IsLoopStatement));
 
         public IEnumerable<string> GetReferences() => _references;
 
-        public void Consolidate(SolutionWrapper solution, ConsolidationService consolidationService)
+        public void Consolidate(ConsolidationService consolidationService)
         {
             _references.AddRange(
                 ExecutionPaths
                 .SelectMany(path => path
                     .Where(statement => statement.HasReference)
                     .Select(statement => statement.Reference.MethodCalled)));
-
             consolidationService.RegisterMethod(this);
         }
 

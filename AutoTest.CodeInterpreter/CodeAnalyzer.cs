@@ -11,10 +11,7 @@ namespace AutoTest.CodeInterpreter
     {
         private readonly SyntaxAnalyzerDictionary _dictionary;
 
-        public CodeAnalyzer()
-        {
-            _dictionary = new SyntaxAnalyzerDictionary();
-        }
+        public CodeAnalyzer() => _dictionary = new SyntaxAnalyzerDictionary();
 
         public SolutionWrapper AnalyzeCode(string code) => PerformCodeAnalysis(code);
 
@@ -29,58 +26,37 @@ namespace AutoTest.CodeInterpreter
             return PerformCodeAnalysis(code);
         }
 
-        private SolutionWrapper PerformCodeAnalysis(string code)
-        {
-            var root = GetCompilationUnitSyntax(code);
-            var namespaceStatements = root.Members.Cast<SyntaxNode>().ToList();
-
-            var solutionWrapper = new SolutionWrapper
+        private SolutionWrapper PerformCodeAnalysis(string code) 
+            => new SolutionWrapper
             {
                 Name = "Solution", // TODO: change name
-                Namespaces = new List<NamespaceWrapper>(),
-            };
-
-            foreach (var namespaceStatement in namespaceStatements)
-            {
-                var namespaceWrapper = new NamespaceWrapper
-                {
-                    Name = ((NamespaceDeclarationSyntax)namespaceStatement).Name.ToFullString(),
-                    Classes = new List<ClassWrapper>(),
-                    Solution = solutionWrapper,
-                };
-                solutionWrapper.Namespaces.Add(namespaceWrapper);
-
-                var classStatements = namespaceStatement.DescendantNodes().OfType<ClassDeclarationSyntax>().Cast<SyntaxNode>().ToList();
-
-                foreach (var classStatement in classStatements)
-                {
-                    var classWrapper = new ClassWrapper
-                    {
-                        Name = ((ClassDeclarationSyntax)classStatement).Identifier.ValueText,
-                        Methods = new List<MethodWrapper>(),
-                        Namespace = namespaceWrapper,
-                    };
-                    namespaceWrapper.Classes.Add(classWrapper);
-
-                    var methods = classStatement.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-
-                    //var publicMethods = methods.Where(m => m.Modifiers.Any(mod => mod.Text == "public")).ToList();
-
-                    foreach (var methodStatement in methods)
-                    {
-                        var methodWrapper = new MethodWrapper
-                        {
-                            Name = methodStatement.Identifier.ValueText,
-                            ExecutionPaths = HandleStatements(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
-                            Class = classWrapper,
-                        };
-                        methodWrapper.AnalyzeMethodDetails();
-                        classWrapper.Methods.Add(methodWrapper);
-                    }
-                }
-            }
-            return solutionWrapper.Consolidate();
-        }
+                Namespaces = GetCompilationUnitSyntax(code)
+                        .Members
+                        .Cast<SyntaxNode>()
+                        .Select(namespaceStatement =>
+                            new NamespaceWrapper
+                            {
+                                Name = ((NamespaceDeclarationSyntax)namespaceStatement).Name.ToFullString(),
+                                Classes = namespaceStatement
+                                    .DescendantNodes()
+                                    .OfType<ClassDeclarationSyntax>()
+                                    .Cast<SyntaxNode>()
+                                    .Select(classStatement =>
+                                        new ClassWrapper
+                                        {
+                                            Name = ((ClassDeclarationSyntax)classStatement).Identifier.ValueText,
+                                            Methods = classStatement
+                                                .DescendantNodes()
+                                                .OfType<MethodDeclarationSyntax>()
+                                                .Select(methodStatement =>
+                                                    new MethodWrapper
+                                                    {
+                                                        Name = methodStatement.Identifier.ValueText,
+                                                        ExecutionPaths = HandleStatements(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
+                                                    }).ToList(),
+                                        }).ToList(),
+                            }).ToList(),
+            }.Consolidate();
 
         private List<CodeExecution> HandleStatements(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
         {

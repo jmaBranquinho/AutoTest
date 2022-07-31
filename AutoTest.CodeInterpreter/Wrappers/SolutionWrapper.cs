@@ -4,19 +4,15 @@ namespace AutoTest.CodeInterpreter.Wrappers
 {
     public class SolutionWrapper
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public List<NamespaceWrapper> Namespaces { get; set; }
+        public IEnumerable<NamespaceWrapper> Namespaces { get; set; } = new List<NamespaceWrapper>();
 
         public SolutionWrapper Consolidate()
         {
             var consolidationService = new ConsolidationService();
-
-            foreach (var @namespace in Namespaces)
-            {
-                @namespace.Consolidate(this, consolidationService);
-            }
-
+            Namespaces?.ToList()?.ForEach(@namespace => @namespace.Consolidate(consolidationService));
+            consolidationService.Consolidate();
             return this;
         }
     }
