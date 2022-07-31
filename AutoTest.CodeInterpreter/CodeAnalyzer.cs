@@ -67,48 +67,25 @@ namespace AutoTest.CodeInterpreter
                 })
                 .ToList();
 
-        private List<CodeExecution> GetExecutionPaths(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
+        private IEnumerable<CodeExecution> GetExecutionPaths(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
         {
-            bool hasPathReachedEnd = statements == null ||
-                !statements.Any() || statements.First() == null ||
-                currentExecutionPaths.IsFinished;
-
-            if (hasPathReachedEnd)
+            if (!statements.Any() || statements.First() == null || currentExecutionPaths.IsFinished)
             {
                 return new List<CodeExecution>() { currentExecutionPaths };
             }
 
-            bool hasOnlyOnePathAvailable = statements!.Count == 1;
+            var executionPaths = new List<CodeExecution> {currentExecutionPaths};
 
-            if (hasOnlyOnePathAvailable)
+            statements.ForEach(statement =>
             {
-                var statement = statements.First();
-                var analyzer = _dictionary.GetAnalyzerFromDictionary(statement.GetType());
-                return analyzer.Analyze(statement, currentExecutionPaths, GetExecutionPaths);
-            }
-
-            var executionPaths = new List<CodeExecution>
-            {
-                currentExecutionPaths ?? new CodeExecution()
-            };
-
-            var results = new List<CodeExecution>();
-
-            foreach (var statement in statements)
-            {
-                var nextExecutionPaths = new List<CodeExecution>();
-
-                foreach (var executionPath in executionPaths.ToList())
-                {
-                    var list = new List<SyntaxNode>();
-                    list.Add(statement);
-                    var analyzisResults = GetExecutionPaths(list, executionPath);
-                    results.AddRange(analyzisResults.Where(path => path.IsFinished).ToList());
-                    nextExecutionPaths.AddRange(analyzisResults);
-                }
-
-                executionPaths = nextExecutionPaths;
-            }
+                executionPaths = executionPaths
+                    .SelectMany(executionPath =>
+                    {
+                        var analyzer = _dictionary.GetAnalyzerFromDictionary(statement.GetType());
+                        return analyzer.Analyze(statement, currentExecutionPaths, GetExecutionPaths);
+                    })
+                    .ToList();
+            });
 
             return executionPaths;
         }

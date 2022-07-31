@@ -1,5 +1,4 @@
-﻿
-using AutoTest.CodeInterpreter.Interfaces;
+﻿using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Wrappers;
 using Microsoft.CodeAnalysis;
 
@@ -9,7 +8,7 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => null;
 
-        Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, List<CodeExecution>>, List<CodeExecution>> ISyntaxAnalyzer.Analyze =>
+        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
                 throw new NotImplementedException();

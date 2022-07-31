@@ -7,6 +7,6 @@ namespace AutoTest.CodeInterpreter.Interfaces
     {
         public Type? ReferredType { get; }
 
-        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, List<CodeExecution>>, List<CodeExecution>> Analyze { get; }
+        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze { get; }
     }
 }
