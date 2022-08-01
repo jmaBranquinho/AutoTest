@@ -53,7 +53,7 @@
             .Concat(NumericalTypes)
             .Concat(TextTypes);
 
-        private static Dictionary<string, Type> _typeAndCorrespondingString = new Dictionary<string, Type>()
+        private static Dictionary<string, Type> _typeAndCorrespondingString = new()
         {
             { "int", typeof(int) },
             { "double", typeof(double) },

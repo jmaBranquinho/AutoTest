@@ -14,11 +14,11 @@ namespace AutoTest.CodeGenerator.Generators
             IClassGenerateSelectionStage
     {
         private string _className;
-        private List<ClassModifiers> _modifiers = new();
-        private List<string> _usings = new();
-        private List<string> _annotations = new();
-        private List<(string Name, string Type, bool IsInjected)> _parameters = new();
-        private List<Method> _methods = new();
+        private readonly List<ClassModifiers> _modifiers = new();
+        private readonly List<string> _usings = new();
+        private readonly List<string> _annotations = new();
+        private readonly List<(string Name, string Type, bool IsInjected)> _parameters = new();
+        private readonly List<Method> _methods = new();
 
         private ClassGenerator() { }
 

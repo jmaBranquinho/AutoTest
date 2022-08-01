@@ -5,10 +5,11 @@ namespace AutoTest.Core.Helpers
 {
     public static class StringExtensions
     {
-        public const string Space = " ";
-        public const string Identation = "\t";
-        public const string Underscore = "_";
-        public const string Comma = ",";
+        internal const string Space = " ";
+        internal const string Identation = "\t";
+        internal const string Underscore = "_";
+        internal const string Comma = ",";
+        internal const string Slash = "/";
 
         public static string FormatAsPrivateField(this string text) => $"{Underscore}{ChangeFirstLetterCase(text, isToBeSetToUpper: false)}";
 

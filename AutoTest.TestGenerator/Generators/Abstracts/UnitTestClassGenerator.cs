@@ -8,7 +8,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
     {
         protected abstract string ClassAnnotation { get; }
 
-        protected string _className;
+        protected string _className = null!;
 
         public Class Generate() 
             => ClassGenerator.NewClass()

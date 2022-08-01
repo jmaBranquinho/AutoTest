@@ -1,7 +1,6 @@
 ﻿using AutoTest.Core.Enums;
 using AutoTest.Core.Helpers;
 using AutoTest.Core.Models;
-using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators
 {
@@ -15,10 +14,10 @@ namespace AutoTest.CodeGenerator.Generators
             IMethodGenerationSelectionStage
     {
         private string _methodName;
-        private List<string> _annotations = new();
-        private List<MethodModifiers> _modifiers = new();
+        private readonly List<string> _annotations = new();
+        private readonly List<MethodModifiers> _modifiers = new();
         private Type? _returnType;
-        private List<(string Name, string Type)> _parameters = new();
+        private readonly List<(string Name, string Type)> _parameters = new();
         private string _body;
 
         private MethodGenerator() { }
@@ -69,15 +68,9 @@ namespace AutoTest.CodeGenerator.Generators
 
         public Method Generate() => new(_methodName, _annotations, _modifiers, _returnType, AddParameters(), _body);
 
-        private IEnumerable<string> AddParameters()
-        {
-            foreach (var parameter in _parameters)
-            {
-                yield return $"{parameter.Type} {parameter.Name.FormatAsVariable()}";
-            }
-        }
+        private IEnumerable<string> AddParameters() => _parameters.Select(p => $"{p.Type} {p.Name.FormatAsVariable()}");
 
-        private string AddMethodModifiers() => string.Join(" ", _modifiers.Select(m => m.ToString().ToLowerInvariant()));
+        private string AddMethodModifiers() => _modifiers.Select(m => m.ToString().ToLowerInvariant()).JoinWithSpaces();
     }
 
     public interface IMethodNameSelectionStage
