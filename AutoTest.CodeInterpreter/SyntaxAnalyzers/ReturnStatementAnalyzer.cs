@@ -10,27 +10,27 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(ReturnStatementSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
                 var returnStatement = (ReturnStatementSyntax)statement;
+                executionPath.IsFinished = true;
 
-                if (returnStatement?.Expression?.GetType() == typeof(ConditionalExpressionSyntax))
+                var result = new List<CodeExecution>() { executionPath };
+                var isConditional = returnStatement?.Expression?.GetType() == typeof(ConditionalExpressionSyntax);
+                SyntaxNode node = isConditional ? returnStatement?.Expression : returnStatement;
+                var reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression);
+
+                if (isConditional)
                 {
-                    executionPath.IsFinished = true;
                     var clone = executionPath.Clone();
-
-                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
-                    clone.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement.Expression, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
-
-                    return new List<CodeExecution>() { executionPath, clone };
+                    result.Add(clone);
                 }
-                else
-                {
-                    executionPath.Execution.Add(new StatementWrapper { SyntaxNode = returnStatement, Reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression) });
-                    executionPath.IsFinished = true;
-                    return new List<CodeExecution>() { executionPath };
-                }
+
+                result.ForEach(path =>
+                    path.Execution.Add(new StatementWrapper { SyntaxNode = node, Reference = reference }));
+
+                return result;
             };
     }
 }

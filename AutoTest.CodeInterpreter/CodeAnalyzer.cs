@@ -63,32 +63,16 @@ namespace AutoTest.CodeInterpreter
                 .Select(methodStatement => new MethodWrapper
                 {
                     Name = methodStatement.Identifier.ValueText,
-                    ExecutionPaths = GetExecutionPaths(new List<SyntaxNode> { methodStatement }, new CodeExecution()).Select(x => x.Execution).ToList(),
+                    ExecutionPaths = GetExecutionPaths(methodStatement, new CodeExecution()).Select(x => x.Execution).ToList(),
                 })
                 .ToList();
 
-        private IEnumerable<CodeExecution> GetExecutionPaths(List<SyntaxNode> statements, CodeExecution currentExecutionPaths)
-        {
-            if (!statements.Any() || statements.First() == null || currentExecutionPaths.IsFinished)
-            {
-                return new List<CodeExecution>() { currentExecutionPaths };
-            }
-
-            var executionPaths = new List<CodeExecution> {currentExecutionPaths};
-
-            statements.ForEach(statement =>
-            {
-                executionPaths = executionPaths
-                    .SelectMany(executionPath =>
-                    {
-                        var analyzer = _dictionary.GetAnalyzerFromDictionary(statement.GetType());
-                        return analyzer.Analyze(statement, currentExecutionPaths, GetExecutionPaths);
-                    })
-                    .ToList();
-            });
-
-            return executionPaths;
-        }
+        private IEnumerable<CodeExecution> GetExecutionPaths(SyntaxNode statement, CodeExecution currentExecutionPath) 
+            => statement == null || currentExecutionPath.IsFinished
+                ? new List<CodeExecution> { currentExecutionPath }
+                : _dictionary
+                    .GetAnalyzerFromDictionary(statement.GetType())
+                    .Analyze(statement, currentExecutionPath, GetExecutionPaths);
 
         private static CompilationUnitSyntax GetCompilationUnitSyntax(string code) 
             => CSharpSyntaxTree.ParseText(code).GetCompilationUnitRoot();

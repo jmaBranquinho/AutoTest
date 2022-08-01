@@ -9,6 +9,6 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(NamespaceDeclarationSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze => throw new NotImplementedException();
+        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze => throw new NotImplementedException();
     }
 }

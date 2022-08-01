@@ -9,10 +9,10 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(BlockSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
-            (statement, executionPath, recursiveFunction) =>
-            {
-                return recursiveFunction(((BlockSyntax)statement).Statements.Cast<SyntaxNode>().ToList(), executionPath);
-            };
+        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+            (statement, executionPath, recursiveFunction) 
+                => ((BlockSyntax)statement).Statements.Cast<SyntaxNode>().ToList()
+                    .Aggregate(new List<CodeExecution> { executionPath }, (paths, statement)
+                        => paths.SelectMany(path => recursiveFunction(statement, path)).ToList());
     }
 }

@@ -9,11 +9,10 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(ExpressionStatementSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<List<SyntaxNode>, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
-                var expressionStatement = (ExpressionStatementSyntax)statement;
-                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = expressionStatement });
+                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = (ExpressionStatementSyntax)statement });
                 return new List<CodeExecution>() { executionPath };
             };
     }
