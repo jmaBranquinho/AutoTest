@@ -1,4 +1,4 @@
-﻿using AutoTest.CodeGenerator.Models;
+﻿using AutoTest.Core.Models;
 using System;
 using System.IO;
 using Xunit;

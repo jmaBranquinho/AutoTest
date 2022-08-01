@@ -1,4 +1,4 @@
-﻿namespace AutoTest.CodeGenerator.Models
+﻿namespace AutoTest.Core.Models
 {
     public class LiteralOrParameterDefinition : Parameter
     {

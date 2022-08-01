@@ -1,9 +1,8 @@
-﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Helpers;
-using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Models;
+﻿using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.Core.Enums;
 using AutoTest.Core.Helpers;
+using AutoTest.Core.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 

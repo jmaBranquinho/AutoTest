@@ -1,6 +1,6 @@
-﻿using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Interfaces;
+﻿using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Interfaces;
 
 namespace AutoTest.CodeInterpreter.Models

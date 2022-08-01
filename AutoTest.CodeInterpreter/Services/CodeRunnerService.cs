@@ -1,8 +1,8 @@
-﻿using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Analyzers;
+﻿using AutoTest.CodeInterpreter.Analyzers;
 using AutoTest.CodeInterpreter.Models;
 using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.Core.Helpers;
+using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Analyzers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

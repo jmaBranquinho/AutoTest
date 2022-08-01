@@ -1,6 +1,6 @@
-﻿using AutoTest.CodeGenerator.Helpers;
+﻿using AutoTest.Core.Helpers;
 
-namespace AutoTest.CodeGenerator.Models
+namespace AutoTest.Core.Models
 {
     public class Project
     {

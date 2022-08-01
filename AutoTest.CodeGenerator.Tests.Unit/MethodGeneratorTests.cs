@@ -1,5 +1,5 @@
-using AutoTest.CodeGenerator.Enums;
 using AutoTest.CodeGenerator.Generators;
+using AutoTest.Core.Enums;
 using Xunit;
 
 namespace AutoTest.CodeGenerator.Tests.Unit

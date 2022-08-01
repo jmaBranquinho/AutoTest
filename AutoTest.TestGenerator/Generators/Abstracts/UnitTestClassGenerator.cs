@@ -1,6 +1,6 @@
-﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Generators;
-using AutoTest.CodeGenerator.Models;
+﻿using AutoTest.CodeGenerator.Generators;
+using AutoTest.Core.Enums;
+using AutoTest.Core.Models;
 
 namespace AutoTest.TestGenerator.Generators.Abstracts
 {

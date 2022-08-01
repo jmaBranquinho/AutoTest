@@ -1,5 +1,5 @@
-﻿using AutoTest.CodeGenerator.Models;
-using AutoTest.CodeInterpreter.Models;
+﻿using AutoTest.CodeInterpreter.Models;
+using AutoTest.Core.Models;
 
 namespace AutoTest.TestGenerator.Generators.UnitTest.NUnit.Models
 {

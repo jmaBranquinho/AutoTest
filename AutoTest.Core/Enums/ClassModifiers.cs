@@ -1,7 +1,7 @@
-﻿namespace AutoTest.CodeGenerator.Enums
+﻿namespace AutoTest.Core.Enums
 {
     [Flags]
-    public enum MethodModifiers
+    public enum ClassModifiers
     {
         None,
         Public,
@@ -10,12 +10,12 @@
         Internal,
         Static,
         Abstract,
-        Override,
+        Partial,
     }
 
-    public static class MethodModifiersExtensions
+    public static class ClassModifiersExtensions
     {
-        public static bool HasFlag(this MethodModifiers op, MethodModifiers checkflag)
+        public static bool HasFlag(this ClassModifiers op, ClassModifiers checkflag)
         {
             return (op & checkflag) == checkflag;
         }

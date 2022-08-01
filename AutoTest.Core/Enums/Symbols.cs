@@ -1,4 +1,4 @@
-﻿namespace AutoTest.CodeGenerator.Enums
+﻿namespace AutoTest.Core.Enums
 {
     public enum Symbols
     {

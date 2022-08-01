@@ -1,4 +1,4 @@
-﻿namespace AutoTest.CodeGenerator.Models
+﻿namespace AutoTest.Core.Models
 {
     public class Namespace
     {
@@ -34,7 +34,7 @@
             }
         }
 
-        private static string GetNamespaceString(Namespace @namespace) 
+        private static string GetNamespaceString(Namespace @namespace)
             => @namespace.Parent is null ? @namespace.NamespaceName : GetNamespaceString(@namespace.Parent).Concat($".{@namespace.NamespaceName}").ToString();
     }
 }

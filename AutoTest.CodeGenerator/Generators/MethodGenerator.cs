@@ -1,6 +1,6 @@
-﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Helpers;
-using AutoTest.CodeGenerator.Models;
+﻿using AutoTest.Core.Enums;
+using AutoTest.Core.Helpers;
+using AutoTest.Core.Models;
 using System.Text;
 
 namespace AutoTest.CodeGenerator.Generators

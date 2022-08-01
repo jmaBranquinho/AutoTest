@@ -1,8 +1,8 @@
-﻿using AutoTest.CodeGenerator.Enums;
-using AutoTest.CodeGenerator.Helpers;
+﻿using AutoTest.Core.Enums;
+using AutoTest.Core.Helpers;
 using System.Text;
 
-namespace AutoTest.CodeGenerator.Models
+namespace AutoTest.Core.Models
 {
     public class Class
     {
@@ -15,12 +15,12 @@ namespace AutoTest.CodeGenerator.Models
         public IEnumerable<Method> Methods { get; set; }
 
         public Class(
-            string classname, 
-            string @namespace, 
-            IEnumerable<string> usings, 
-            IEnumerable<string> annotations, 
-            IEnumerable<ClassModifiers> modifiers, 
-            IEnumerable<(string Name, string Type, bool IsInjected)> parameters, 
+            string classname,
+            string @namespace,
+            IEnumerable<string> usings,
+            IEnumerable<string> annotations,
+            IEnumerable<ClassModifiers> modifiers,
+            IEnumerable<(string Name, string Type, bool IsInjected)> parameters,
             IEnumerable<Method> methods)
         {
             ClassName = classname;
@@ -62,9 +62,9 @@ namespace AutoTest.CodeGenerator.Models
         public void ToFile(string path)
         {
             var attributes = File.GetAttributes(path);
-            if(attributes.HasFlag(FileAttributes.Directory))
+            if (attributes.HasFlag(FileAttributes.Directory))
             {
-                if(Directory.Exists(path))
+                if (Directory.Exists(path))
                 {
                     path += $"\\{ClassName}.cs";
                 }
@@ -72,7 +72,7 @@ namespace AutoTest.CodeGenerator.Models
                 {
                     throw new Exception("Directory does not exist!");// TODO
                 }
-            } 
+            }
             else
             {
                 if (!File.Exists(path))
