@@ -1,5 +1,5 @@
-﻿using AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers;
-using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Models.Wrappers;
+using AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

@@ -1,5 +1,5 @@
-﻿using AutoTest.CodeInterpreter.Analyzers;
-using AutoTest.CodeInterpreter.Enums;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.CodeInterpreter.OperationAnalyzers.Helpers;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
 
@@ -29,7 +29,7 @@ namespace AutoTest.TestGenerator.Generators.Constraints
 
         protected List<T> _exclusions = new();
 
-        public T ParseStringToType(string text) => NumericHelper.ConvertToType<T>(text);
+        public T ParseStringToType(string text) => NumericOperationHelper.ConvertToType<T>(text);
 
         public Type GetVariableType() => typeof(T);
 

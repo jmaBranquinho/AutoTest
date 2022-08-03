@@ -1,6 +1,6 @@
 ﻿using AutoTest.CodeInterpreter.Interfaces;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.CodeInterpreter.SyntaxAnalyzers.Helpers;
-using AutoTest.CodeInterpreter.Wrappers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

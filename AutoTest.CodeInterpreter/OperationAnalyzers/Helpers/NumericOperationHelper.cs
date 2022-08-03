@@ -3,9 +3,9 @@ using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using System.ComponentModel;
 
-namespace AutoTest.CodeInterpreter.Analyzers
+namespace AutoTest.CodeInterpreter.OperationAnalyzers.Helpers
 {
-    public static class NumericHelper
+    public static class NumericOperationHelper
     {
         private static readonly Dictionary<Type, Func<IConstraint>> TypeToConstraintDictionary =
             new()

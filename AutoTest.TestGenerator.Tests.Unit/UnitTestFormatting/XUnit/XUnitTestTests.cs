@@ -1,5 +1,5 @@
 ﻿using AutoTest.CodeGenerator.Tests.Unit;
-using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

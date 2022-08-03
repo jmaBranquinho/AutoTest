@@ -1,4 +1,4 @@
-﻿namespace AutoTest.CodeInterpreter.Wrappers
+﻿namespace AutoTest.CodeInterpreter.Models.Wrappers
 {
     public class CodeExecution
     {

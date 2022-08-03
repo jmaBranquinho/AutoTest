@@ -1,4 +1,4 @@
-﻿using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Models.Wrappers;
 using Microsoft.CodeAnalysis;
 
 namespace AutoTest.CodeInterpreter.Interfaces

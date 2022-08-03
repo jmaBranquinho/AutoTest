@@ -4,7 +4,7 @@ using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.TestGenerator.Generators.Analyzers
+namespace AutoTest.CodeInterpreter.OperationAnalyzers
 {
     public class TextOperationAnalyzer : IOperationsAnalyzer
     {

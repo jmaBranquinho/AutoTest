@@ -1,13 +1,13 @@
-﻿using AutoTest.CodeInterpreter.Analyzers;
-using AutoTest.CodeInterpreter.Enums;
-using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Enums;
+using AutoTest.CodeInterpreter.Models.Wrappers;
+using AutoTest.CodeInterpreter.OperationAnalyzers.Helpers;
 using AutoTest.Core.Helpers;
 using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.TestGenerator.Generators.Analyzers
+namespace AutoTest.CodeInterpreter.OperationAnalyzers
 {
     public static class OperationsAnalyzerHelper
     {
@@ -29,7 +29,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                         .ToList()
                         .ForEach(parameter =>
                         {
-                            constraints.Add(parameter.Name, NumericHelper.GetConstraintFromType(parameter.Type));
+                            constraints.Add(parameter.Name, NumericOperationHelper.GetConstraintFromType(parameter.Type));
                             SetInitialValue(parameter.Type, constraints[parameter.Name], parameter.Value!);
                         });
                     break;
@@ -73,7 +73,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 _ => throw new NotImplementedException(),
             };
             var variableName1 = ((IdentifierNameSyntax)((PostfixUnaryExpressionSyntax)expression).Operand).Identifier.ValueText;
-            UpdateValue(NumericHelper.GetNumericTypeFromValue(value), constraints[variableName1], MathOperations.Sum, value);
+            UpdateValue(NumericOperationHelper.GetNumericTypeFromValue(value), constraints[variableName1], MathOperations.Sum, value);
         }
 
         private static IEnumerable<Parameter> GetParametersFromDeclaration(LocalDeclarationStatementSyntax localDeclarationStatementSyntax)
@@ -85,14 +85,14 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 {
                     Name = variable.Identifier.ValueText,
                     Value = variableValue,
-                    Type = NumericHelper.GetNumericTypeFromValue(variableValue)
+                    Type = NumericOperationHelper.GetNumericTypeFromValue(variableValue)
                 };
             }
         }
 
         private static void AdjustReturnParameter(Dictionary<string, IConstraint> constraints, LiteralOrParameterDefinition returnParameter, ReturnStatementSyntax returnStatementSyntax)
         {
-            switch(returnStatementSyntax.Expression)
+            switch (returnStatementSyntax.Expression)
             {
                 case ExpressionSyntax when returnStatementSyntax.Expression is IdentifierNameSyntax:
                     var returnStatementVariableName = ((IdentifierNameSyntax)returnStatementSyntax.Expression).Identifier.ValueText;
@@ -112,16 +112,16 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
             }
         }
 
-        private static void SetInitialValue(Type type, IConstraint constraint, object value) 
+        private static void SetInitialValue(Type type, IConstraint constraint, object value)
             => GetOperationAnalyzer(type).AddInitialValue(constraint, value);
 
         private static void UpdateValue(Type type, IConstraint constraint, MathOperations mathOperation, object value)
             => GetOperationAnalyzer(type).UpdateValue(constraint, mathOperation, value);
 
-        private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression, IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators) 
+        private static void ProcessOperation(SyntaxKind kind, BinaryExpressionSyntax binaryExpression, IConstraint constraint, Type type, bool isElseStatement, IEnumerable<string> operators)
             => GetOperationAnalyzer(type).AdjustConstraint(constraint, kind, binaryExpression, isElseStatement, operators);
 
-        private static IOperationsAnalyzer GetOperationAnalyzer(Type type) 
+        private static IOperationsAnalyzer GetOperationAnalyzer(Type type)
             => type switch
             {
                 Type when IsNumericOperation(type) => GetNumericalAnalyzer(type),
@@ -129,7 +129,7 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
                 _ => throw new NotImplementedException(),//TODO
             };
 
-        private static IOperationsAnalyzer GetNumericalAnalyzer(Type type) 
+        private static IOperationsAnalyzer GetNumericalAnalyzer(Type type)
             => (INumericalAnalyzer)Activator.CreateInstance(typeof(NumericOperationAnalyzer<>).MakeGenericType(type));
 
         private static bool IsNumericOperation(Type type) => PrimitiveTypeConvertionHelper.NumericalTypes.Contains(type);
@@ -138,9 +138,10 @@ namespace AutoTest.TestGenerator.Generators.Analyzers
 
         private static (Type type, IConstraint? constraint, string variable) GetOperationTypeAndConstraint(Dictionary<string, IConstraint> constraints, IEnumerable<string> operators)
         {
-            foreach(var @operator in operators)
+            foreach (var @operator in operators)
             {
-                if(constraints.TryGetValue(@operator, out var constraint)) {
+                if (constraints.TryGetValue(@operator, out var constraint))
+                {
                     return (constraint.GetVariableType(), constraint, @operator);
                 }
             }

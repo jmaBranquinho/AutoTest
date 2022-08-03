@@ -1,5 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Models;
-using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Abstracts;
 using AutoTest.TestGenerator.Generators.UnitTest.XUnit.Models;

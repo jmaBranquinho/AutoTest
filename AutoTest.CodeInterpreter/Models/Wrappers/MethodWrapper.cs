@@ -2,7 +2,7 @@
 using AutoTest.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.CodeInterpreter.Wrappers
+namespace AutoTest.CodeInterpreter.Models.Wrappers
 {
     public class MethodWrapper
     {
@@ -12,7 +12,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public Dictionary<string, Type> Parameters { get; set; } = new();
 
-        private List<string> _references = new();
+        private readonly List<string> _references = new();
 
         public MethodWrapper AnalyzeMethodDetails()
         {

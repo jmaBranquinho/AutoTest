@@ -1,11 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.CodeInterpreter.Wrappers
+namespace AutoTest.CodeInterpreter.Models.Wrappers
 {
     public class StatementWrapper
     {
-        public SyntaxNode SyntaxNode { get; set; }
+        public SyntaxNode SyntaxNode { get; set; } = null!;
 
         public bool IsElseStatement { get; set; }
 

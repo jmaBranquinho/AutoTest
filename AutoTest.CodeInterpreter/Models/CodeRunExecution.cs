@@ -1,5 +1,4 @@
-﻿using AutoTest.CodeInterpreter.Interfaces;
-using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Interfaces;
 

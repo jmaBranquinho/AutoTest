@@ -1,5 +1,5 @@
 using AutoTest.CodeInterpreter;
-using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.TestGenerator.Generators.UnitTest.XUnit;
 using System.Collections.Generic;
 using System.Linq;

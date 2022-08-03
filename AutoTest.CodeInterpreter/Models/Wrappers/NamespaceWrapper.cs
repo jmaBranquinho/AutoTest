@@ -1,6 +1,6 @@
 ﻿using AutoTest.CodeInterpreter.Services;
 
-namespace AutoTest.CodeInterpreter.Wrappers
+namespace AutoTest.CodeInterpreter.Models.Wrappers
 {
     public class NamespaceWrapper
     {
@@ -8,7 +8,7 @@ namespace AutoTest.CodeInterpreter.Wrappers
 
         public IEnumerable<ClassWrapper> Classes { get; set; } = new List<ClassWrapper>();
 
-        public void Consolidate(ConsolidationService consolidationService) 
+        public void Consolidate(ConsolidationService consolidationService)
             => Classes?.ToList()?.ForEach(@class => @class.Consolidate(consolidationService));
     }
 }

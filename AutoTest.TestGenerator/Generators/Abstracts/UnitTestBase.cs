@@ -1,5 +1,5 @@
 ﻿using AutoTest.CodeInterpreter.Models;
-using AutoTest.CodeInterpreter.Wrappers;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.Core.Enums;
 using AutoTest.Core.Helpers;
 using AutoTest.Core.Models;

@@ -1,9 +1,9 @@
-﻿using AutoTest.CodeInterpreter.Analyzers;
-using AutoTest.CodeInterpreter.Models;
-using AutoTest.CodeInterpreter.Wrappers;
+﻿using AutoTest.CodeInterpreter.Models;
+using AutoTest.CodeInterpreter.Models.Wrappers;
+using AutoTest.CodeInterpreter.OperationAnalyzers;
+using AutoTest.CodeInterpreter.OperationAnalyzers.Helpers;
 using AutoTest.Core.Helpers;
 using AutoTest.Core.Models;
-using AutoTest.TestGenerator.Generators.Analyzers;
 using AutoTest.TestGenerator.Generators.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -46,6 +46,6 @@ namespace AutoTest.CodeInterpreter.Services
 
         private static void PopulateParameterConstraints(Dictionary<string, IConstraint> constraints, Dictionary<string, Type> parameters)
             => parameters.ToList()
-                .ForEach(parameter => constraints.Add(parameter.Key, NumericHelper.GetConstraintFromType(parameter.Value)));
+                .ForEach(parameter => constraints.Add(parameter.Key, NumericOperationHelper.GetConstraintFromType(parameter.Value)));
     }
 }

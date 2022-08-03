@@ -1,6 +1,6 @@
 ﻿using AutoTest.CodeInterpreter.Models;
+using AutoTest.CodeInterpreter.Models.Wrappers;
 using AutoTest.CodeInterpreter.Services;
-using AutoTest.CodeInterpreter.Wrappers;
 using AutoTest.Core.Models;
 using AutoTest.TestGenerator.Generators.Enums;
 using AutoTest.TestGenerator.Generators.Interfaces;
