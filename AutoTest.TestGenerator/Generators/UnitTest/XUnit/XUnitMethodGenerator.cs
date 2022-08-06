@@ -8,9 +8,9 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.XUnit
 {
     public class XUnitMethodGenerator : UnitTestMethodGenerator
     {
-        protected override Func<string, IEnumerable<Parameter>, CodeRunExecution, UnitTestBase> GenerateUnitTest(MethodWrapper method)
+        protected override Func<string, IEnumerable<Parameter>, ExecutionPathInfo, UnitTestBase> GenerateUnitTest(MethodWrapper method)
             => method.Parameters.Any()
-                ? ((name, parameters, codeRun) => new XUnitTest(name, parameters, codeRun))
-                : ((name, _, codeRun) => new XUnitTest(name, codeRun));
+                ? ((name, parameters, executionPathInfo) => new XUnitTest(name, parameters, executionPathInfo))
+                : ((name, _, executionPathInfo) => new XUnitTest(name, executionPathInfo));
     }
 }

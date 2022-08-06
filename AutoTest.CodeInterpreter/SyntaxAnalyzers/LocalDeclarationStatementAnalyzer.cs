@@ -9,10 +9,10 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(LocalDeclarationStatementSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
-                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = statement });
+                executionPath.Add(new StatementWrapper { SyntaxNode = statement });
                 return recursiveFunction(null, executionPath);
             };
     }

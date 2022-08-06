@@ -14,11 +14,11 @@ namespace AutoTest.CodeInterpreter.Services
     /// </summary>
     public class CodeRunnerService
     {
-        public IEnumerable<CodeRunExecution> RunMethod(MethodWrapper method) 
+        public IEnumerable<ExecutionPathInfo> RunMethod(MethodWrapper method) 
             => method.ExecutionPaths.Select(path 
                 => IterateMethodStatements(method, path));
 
-        private static CodeRunExecution IterateMethodStatements(MethodWrapper method, IEnumerable<StatementWrapper> path)
+        private static ExecutionPathInfo IterateMethodStatements(MethodWrapper method, ExecutionPath path)
         {
             var methodStatements = path.Skip(1).ToList();
 
@@ -28,10 +28,9 @@ namespace AutoTest.CodeInterpreter.Services
 
             methodStatements.ForEach(statement => OperationsAnalyzerHelper.AdjustParameterConstraints(returnParameter, parameterConstraints, statement));
 
-            return new CodeRunExecution
+            return new ExecutionPathInfo(path)
             {
                 Method = method,
-                Path = path,
                 ParameterConstraints = parameterConstraints,
                 ReturnParameter = returnParameter,
             };

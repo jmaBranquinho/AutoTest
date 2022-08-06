@@ -8,7 +8,7 @@ namespace AutoTest.CodeInterpreter.Models.Wrappers
     {
         public string Name { get; set; } = null!;
 
-        public IEnumerable<IEnumerable<StatementWrapper>> ExecutionPaths { get; set; } = new List<IEnumerable<StatementWrapper>>();
+        public IEnumerable<ExecutionPath> ExecutionPaths { get; set; } = new List<ExecutionPath>();
 
         public Dictionary<string, Type> Parameters { get; set; } = new();
 

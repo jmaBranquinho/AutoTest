@@ -9,14 +9,14 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(IfStatementSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
                 var ifSyntax = (IfStatementSyntax)statement;
 
-                var clone = executionPath.Clone();
-                executionPath.Execution.Add(new StatementWrapper { SyntaxNode = ifSyntax });
-                clone.Execution.Add(new StatementWrapper { SyntaxNode = ifSyntax, IsElseStatement = true });
+                var clone = (ExecutionPath)executionPath.Clone();
+                executionPath.Add(new StatementWrapper { SyntaxNode = ifSyntax });
+                clone.Add(new StatementWrapper { SyntaxNode = ifSyntax, IsElseStatement = true });
 
                 var results = recursiveFunction(ifSyntax.Statement, executionPath)
                     .Union(recursiveFunction(ifSyntax?.Else?.Statement, clone));

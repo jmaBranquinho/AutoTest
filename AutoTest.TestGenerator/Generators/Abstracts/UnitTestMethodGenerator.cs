@@ -13,18 +13,18 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         public IEnumerable<UnitTestBase> GenerateUnitTests(MethodWrapper method, TestNamingConventions namingConvention = TestNamingConventions.MethodName_WhenCondition_ShouldResult)
         {
-            Func<string, IEnumerable<Parameter>, CodeRunExecution, UnitTestBase> createUnitTest = GenerateUnitTest(method);
+            Func<string, IEnumerable<Parameter>, ExecutionPathInfo, UnitTestBase> createUnitTest = GenerateUnitTest(method);
 
             return codeRunnerService.RunMethod(method)
-                .Select(codeRun => 
+                .Select(executionPathInfo => 
                 {
-                    var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, codeRun.ParameterConstraints);
-                    return createUnitTest(FormatMethodName(codeRun.Method.Name, namingConvention), parameterListWithValues, codeRun);
+                    var parameterListWithValues = GenerateParameterListWithValues(method.Parameters, executionPathInfo.ParameterConstraints);
+                    return createUnitTest(FormatMethodName(executionPathInfo.Method.Name, namingConvention), parameterListWithValues, executionPathInfo);
                 })
                 .ToList();
         }
 
-        protected abstract Func<string, IEnumerable<Parameter>, CodeRunExecution, UnitTestBase> GenerateUnitTest(MethodWrapper method);
+        protected abstract Func<string, IEnumerable<Parameter>, ExecutionPathInfo, UnitTestBase> GenerateUnitTest(MethodWrapper method);
 
         private static IEnumerable<Parameter> GenerateParameterListWithValues(Dictionary<string, Type> parameters, Dictionary<string, IConstraint> constraints)
         {

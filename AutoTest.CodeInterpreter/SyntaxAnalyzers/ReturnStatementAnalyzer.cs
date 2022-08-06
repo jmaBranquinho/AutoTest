@@ -10,25 +10,24 @@ namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
     {
         public Type? ReferredType => typeof(ReturnStatementSyntax);
 
-        public Func<SyntaxNode, CodeExecution, Func<SyntaxNode, CodeExecution, IEnumerable<CodeExecution>>, IEnumerable<CodeExecution>> Analyze =>
+        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
             (statement, executionPath, recursiveFunction) =>
             {
                 var returnStatement = (ReturnStatementSyntax)statement;
-                executionPath.IsFinished = true;
 
-                var result = new List<CodeExecution>() { executionPath };
+                var result = new List<ExecutionPath>() { executionPath };
                 var isConditional = returnStatement?.Expression?.GetType() == typeof(ConditionalExpressionSyntax);
                 SyntaxNode node = isConditional ? returnStatement?.Expression : returnStatement;
                 var reference = ExpressionHelper.GetMethodReferences(returnStatement?.Expression);
 
                 if (isConditional)
                 {
-                    var clone = executionPath.Clone();
+                    var clone = (ExecutionPath)executionPath.Clone();
                     result.Add(clone);
                 }
 
                 result.ForEach(path =>
-                    path.Execution.Add(new StatementWrapper { SyntaxNode = node, Reference = reference }));
+                    path.Add(new StatementWrapper { SyntaxNode = node, Reference = reference }));
 
                 return result;
             };

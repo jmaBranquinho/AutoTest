@@ -16,10 +16,10 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
 
         private readonly IEnumerable<Parameter> _unitTestParameters;
 
-        public UnitTestBase(string testName, IEnumerable<Parameter> parameters, CodeRunExecution codeRun)
+        public UnitTestBase(string testName, IEnumerable<Parameter> parameters, ExecutionPathInfo executionPathInfo)
             : base(testName, Enumerable.Empty<string>(), new List<MethodModifiers> { MethodModifiers.Public }, returnType: null, Enumerable.Empty<ParameterDefinition>(), string.Empty)
         {
-            PerformValidations(codeRun.Path);
+            PerformValidations(executionPathInfo);
 
             var isParameterless = !parameters?.Any() ?? true;
             _unitTestParameters = parameters ?? new List<Parameter>();
@@ -32,13 +32,13 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 ? Enumerable.Empty<string>()
                 : FormatXUnitTestMethodParameter(_unitTestParameters);
 
-            _body = FormatXUnitTestBody(codeRun);
+            _body = FormatXUnitTestBody(executionPathInfo);
         }
 
-        private string FormatXUnitTestBody(CodeRunExecution run) 
-            => string.Join(Environment.NewLine, GenerateArrangeSection(run), GenerateActSection(run.Path), GenerateAssertSection(run.Path));
+        private string FormatXUnitTestBody(ExecutionPathInfo executionPathInfo) 
+            => string.Join(Environment.NewLine, GenerateArrangeSection(executionPathInfo), GenerateActSection(executionPathInfo), GenerateAssertSection(executionPathInfo));
 
-        private static string GenerateArrangeSection(CodeRunExecution run)
+        private static string GenerateArrangeSection(ExecutionPathInfo run)
             => WriteSection((stringBuilder) => 
             {
                 if (run.ReturnParameter is not null && run.ReturnParameter.Value is not null)
@@ -53,7 +53,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
                 }
             }, sectionTitle: "Arrange");
 
-        private string GenerateActSection(IEnumerable<StatementWrapper> methodStatements)
+        private string GenerateActSection(ExecutionPath methodStatements)
             => WriteSection((stringBuilder) =>
             {
                 var methodDeclaration = (MethodDeclarationSyntax)methodStatements.First().SyntaxNode;
@@ -67,7 +67,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             }, sectionTitle: "Act");
 
         // TODO: assert property changes
-        private string GenerateAssertSection(IEnumerable<StatementWrapper> methodStatements)
+        private string GenerateAssertSection(ExecutionPath methodStatements)
             => WriteSection((stringBuilder) =>
             {
                 if (methodStatements is not null && methodStatements.Any())
@@ -118,7 +118,7 @@ namespace AutoTest.TestGenerator.Generators.Abstracts
             return stringBuilder.ToString();
         }
 
-        private static void PerformValidations(IEnumerable<StatementWrapper> methodStatements)
+        private static void PerformValidations(ExecutionPath methodStatements)
         {
             if (methodStatements is null || !methodStatements.Any())
             {

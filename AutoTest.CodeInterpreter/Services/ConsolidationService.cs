@@ -46,11 +46,13 @@ namespace AutoTest.CodeInterpreter.Services
 
         private static void ExtractDependenciesIntoExecutionPaths(List<(MethodWrapper Method, bool IsConsolidated)> consolidatedMethods, MethodWrapper method)
         {
-            var redesignedPaths = new List<List<StatementWrapper>>();
+            var redesignedPaths = new List<ExecutionPath>();
             foreach (var path in method.ExecutionPaths)
             {
-                var currentPaths = new List<List<StatementWrapper>>();
-                currentPaths.Add(new List<StatementWrapper>());
+                var currentPaths = new List<ExecutionPath>
+                {
+                    new ExecutionPath()
+                };
 
                 foreach (var statement in path)
                 {
@@ -73,7 +75,7 @@ namespace AutoTest.CodeInterpreter.Services
             method.ExecutionPaths = redesignedPaths;
         }
 
-        private static void ExtractLoopLogicIntoExecutionPaths(List<List<StatementWrapper>> paths, StatementWrapper statement)
+        private static void ExtractLoopLogicIntoExecutionPaths(List<ExecutionPath> paths, StatementWrapper statement)
         {
             //TODO: only working for FOR loops
             if (statement.SyntaxNode is ForStatementSyntax)
@@ -125,22 +127,22 @@ namespace AutoTest.CodeInterpreter.Services
         }
 
         // TODO: add try catch and throw meaningful exception
-        private static void ReplaceStatementByMethodStatements(List<List<StatementWrapper>> currentPaths, IEnumerable<IEnumerable<StatementWrapper>> pathsToAdd)
+        private static void ReplaceStatementByMethodStatements(List<ExecutionPath> currentPaths, IEnumerable<ExecutionPath> pathsToAdd)
         {
-            var newPaths = new List<List<StatementWrapper>>();
+            var newPaths = new List<ExecutionPath>();
 
             currentPaths.ForEach(path =>
             {
                 path.AddRange(pathsToAdd.First());
                 if (pathsToAdd.Count() > 1)
                 {
-                    newPaths.AddRange(pathsToAdd.Skip(1).Select(pathToAdd => new List<StatementWrapper>(path).Union(pathToAdd).ToList()));
+                    newPaths.AddRange(pathsToAdd.Skip(1).Select(pathToAdd => new ExecutionPath(path).AddRange(pathToAdd)));
                 }
             });
 
             currentPaths.AddRange(newPaths);
         }
 
-        private static void AddToAll(List<List<StatementWrapper>> listOfLists, StatementWrapper statement) => listOfLists.ForEach(list => list.Add(statement));
+        private static void AddToAll(List<ExecutionPath> listOfLists, StatementWrapper statement) => listOfLists.ForEach(list => list.Add(statement));
     }
 }

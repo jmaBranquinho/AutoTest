@@ -63,13 +63,13 @@ namespace AutoTest.CodeInterpreter
                 .Select(methodStatement => new MethodWrapper
                 {
                     Name = methodStatement.Identifier.ValueText,
-                    ExecutionPaths = GetExecutionPaths(methodStatement, new CodeExecution()).Select(x => x.Execution).ToList(),
+                    ExecutionPaths = GetExecutionPaths(methodStatement, new ExecutionPath()).ToList(),
                 })
                 .ToList();
 
-        private IEnumerable<CodeExecution> GetExecutionPaths(SyntaxNode statement, CodeExecution currentExecutionPath) 
-            => statement == null || currentExecutionPath.IsFinished
-                ? new List<CodeExecution> { currentExecutionPath }
+        private IEnumerable<ExecutionPath> GetExecutionPaths(SyntaxNode statement, ExecutionPath currentExecutionPath) 
+            => statement == null
+                ? new List<ExecutionPath> { currentExecutionPath }
                 : _dictionary
                     .GetAnalyzerFromDictionary(statement.GetType())
                     .Analyze(statement, currentExecutionPath, GetExecutionPaths);

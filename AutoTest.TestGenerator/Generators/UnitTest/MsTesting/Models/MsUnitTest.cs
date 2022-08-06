@@ -9,10 +9,10 @@ namespace AutoTest.TestGenerator.Generators.UnitTest.MsTesting.Models
         protected override string ParameterMethodAnnotation => "[TestMethod]";
         protected override string ParameterAnnotationTemplate => "[DataRow({0})]";
 
-        public MsUnitTest(string name, IEnumerable<Parameter> parameters, CodeRunExecution codeRun) : base(name, parameters, codeRun)
+        public MsUnitTest(string name, IEnumerable<Parameter> parameters, ExecutionPathInfo executionPathInfo) : base(name, parameters, executionPathInfo)
         { }
 
-        public MsUnitTest(string name, CodeRunExecution codeRun) : base(name, Enumerable.Empty<Parameter>(), codeRun)
+        public MsUnitTest(string name, ExecutionPathInfo executionPathInfo) : base(name, Enumerable.Empty<Parameter>(), executionPathInfo)
         { }
     }
 }
