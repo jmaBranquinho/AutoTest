@@ -1,19 +1,28 @@
 ﻿using AutoTest.CodeInterpreter.Interfaces;
 using AutoTest.CodeInterpreter.Models.Wrappers;
+using MediatR;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Reflection;
 
 namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
 {
-    public class MethodStatementAnalyzer : ISyntaxAnalyzer
+    public class MethodStatementAnalyzer : StatementAnalyzerBase, IRequestHandler<StatementAnalysisRequest<MethodDeclarationSyntax, MethodWrapper>, MethodWrapper>
     {
-        public Type? ReferredType => typeof(MethodDeclarationSyntax);
+        public Task<MethodWrapper> Handle(StatementAnalysisRequest<MethodDeclarationSyntax, MethodWrapper> request, CancellationToken cancellationToken)
+        {
+            request.ExecutionPath.Add(new StatementWrapper { SyntaxNode = (MethodDeclarationSyntax)request.Statement });
 
-        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
-            (statement, executionPath, recursiveFunction) =>
-            {
-                executionPath.Add(new StatementWrapper { SyntaxNode = (MethodDeclarationSyntax)statement });
-                return recursiveFunction(((MethodDeclarationSyntax)statement).Body, executionPath);
-            };
+            //var result = request.RecursiveFunction(((MethodDeclarationSyntax)request.Statement).Body, request.ExecutionPath);
+
+
+            MethodInfo method = typeof(StatementAnalyzerBase).GetMethod("NewRequest", BindingFlags.NonPublic);
+            method = method.MakeGenericMethod(((MethodDeclarationSyntax)request.Statement).Body.GetType(), typeof(IEnumerable<ExecutionPath>));
+            var result = method.Invoke(this, new object[] { ((MethodDeclarationSyntax)request.Statement).Body, request.ExecutionPath });
+
+            return Task.FromResult((MethodWrapper)result);
+        }
+
+
     }
 }

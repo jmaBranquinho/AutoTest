@@ -1,18 +1,20 @@
-﻿using AutoTest.CodeInterpreter.Interfaces;
-using AutoTest.CodeInterpreter.Models.Wrappers;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿//using AutoTest.CodeInterpreter.Interfaces;
+//using AutoTest.CodeInterpreter.Models.Wrappers;
+//using MediatR;
+//using Microsoft.CodeAnalysis;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
-{
-    public class BlockStatementAnalyzer : ISyntaxAnalyzer
-    {
-        public Type? ReferredType => typeof(BlockSyntax);
+//namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
+//{
+//    public class BlockStatementAnalyzer : IRequestHandler<StatementAnalysisRequest<BlockSyntax, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>>
+//    {
+//        public Task<IEnumerable<ExecutionPath>> Handle(StatementAnalysisRequest<BlockSyntax, IEnumerable<ExecutionPath>> request, CancellationToken cancellationToken)
+//        {
+//            var result = ((BlockSyntax)request.Statement).Statements.Cast<SyntaxNode>().ToList()
+//                    .Aggregate(new List<ExecutionPath> { request.ExecutionPath }, (paths, statement)
+//                        => paths.SelectMany(path => request.RecursiveFunction(statement, path)).ToList());
 
-        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
-            (statement, executionPath, recursiveFunction) 
-                => ((BlockSyntax)statement).Statements.Cast<SyntaxNode>().ToList()
-                    .Aggregate(new List<ExecutionPath> { executionPath }, (paths, statement)
-                        => paths.SelectMany(path => recursiveFunction(statement, path)).ToList());
-    }
-}
+//            return Task.FromResult((IEnumerable<ExecutionPath>)result);
+//        }
+//    }
+//}

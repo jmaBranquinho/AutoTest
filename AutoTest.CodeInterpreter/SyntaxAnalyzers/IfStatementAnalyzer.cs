@@ -1,27 +1,25 @@
-﻿using AutoTest.CodeInterpreter.Interfaces;
-using AutoTest.CodeInterpreter.Models.Wrappers;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿//using AutoTest.CodeInterpreter.Interfaces;
+//using AutoTest.CodeInterpreter.Models.Wrappers;
+//using MediatR;
+//using Microsoft.CodeAnalysis;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
-{
-    public class IfStatementAnalyzer : ISyntaxAnalyzer
-    {
-        public Type? ReferredType => typeof(IfStatementSyntax);
+//namespace AutoTest.CodeInterpreter.SyntaxAnalyzers
+//{
+//    public class IfStatementAnalyzer : IRequestHandler<StatementAnalysisRequest<IfStatementSyntax, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>>
+//    {
+//        public Task<IEnumerable<ExecutionPath>> Handle(StatementAnalysisRequest<IfStatementSyntax, IEnumerable<ExecutionPath>> request, CancellationToken cancellationToken)
+//        {
+//            var ifSyntax = (IfStatementSyntax)request.Statement;
 
-        public Func<SyntaxNode, ExecutionPath, Func<SyntaxNode, ExecutionPath, IEnumerable<ExecutionPath>>, IEnumerable<ExecutionPath>> Analyze =>
-            (statement, executionPath, recursiveFunction) =>
-            {
-                var ifSyntax = (IfStatementSyntax)statement;
+//            var clone = request.ExecutionPath.Clone();
+//            request.ExecutionPath.Add(new StatementWrapper { SyntaxNode = ifSyntax });
+//            clone.Add(new StatementWrapper { SyntaxNode = ifSyntax, IsElseStatement = true });
 
-                var clone = (ExecutionPath)executionPath.Clone();
-                executionPath.Add(new StatementWrapper { SyntaxNode = ifSyntax });
-                clone.Add(new StatementWrapper { SyntaxNode = ifSyntax, IsElseStatement = true });
+//            var results = request.RecursiveFunction(ifSyntax.Statement, request.ExecutionPath)
+//                .Union(request.RecursiveFunction(ifSyntax?.Else?.Statement, clone));
 
-                var results = recursiveFunction(ifSyntax.Statement, executionPath)
-                    .Union(recursiveFunction(ifSyntax?.Else?.Statement, clone));
-
-                return results;
-            };
-    }
-}
+//            return Task.FromResult(results);
+//        }
+//    }
+//}
